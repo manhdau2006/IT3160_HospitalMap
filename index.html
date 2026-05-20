@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Hospital Navigator - Premium Enterprise Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #0284c7, #1e3a8a, #0f172a);
+        }
+
+        /* Hiệu ứng Glassmorphism Cao cấp */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card-interactive {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card-interactive:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Nav link active state */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #22d3ee;
+            transition: width 0.3s;
+        }
+
+        .nav-link.active::after,
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.active {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+
+        .page-section {
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .page-section.active-page {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Cấu trúc Đồ thị Tri thức */
+        .tree-container {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            overflow: auto;
+        }
+
+        .tree-node {
+            position: absolute;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.85rem;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .tree-node i {
+            font-size: 16px;
+            color: #0ea5e9;
+        }
+
+        .tree-node.visited {
+            border-color: #0ea5e9;
+            color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.15);
+        }
+
+        .tree-node.active-path {
+            border-color: #06b6d4;
+            color: #06b6d4;
+            background: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .tree-node.target {
+            border-color: #22d3ee;
+            color: white;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Kỹ thuật hiệu ứng đường truyền SVG Pulse */
+        @keyframes stroke-flow {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .svg-active-edge {
+            stroke: #06b6d4 !important;
+            stroke-width: 3px !important;
+            stroke-dasharray: 6, 4;
+            animation: stroke-flow 0.8s linear infinite;
+            filter: drop-shadow(0 0 5px #06b6d4);
+        }
+
+        .svg-visited-edge {
+            stroke: rgba(14, 165, 233, 0.5) !important;
+            stroke-width: 2px !important;
+        }
+
+        /* Sơ đồ kiến trúc mặt bằng thực tế */
+        #gridMap {
+            display: grid;
+            gap: 1px;
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 12px;
+            width: fit-content;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .cell {
+            width: 26px;
+            height: 26px;
+            background-color: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: transparent;
+        }
+
+        .cell.architectural-wall {
+            background-color: #1e293b;
+            border-color: #334155;
+            cursor: not-allowed;
+        }
+
+        .cell.room-zone {
+            background-color: rgba(14, 165, 233, 0.08);
+            border: 1px dashed rgba(14, 165, 233, 0.3);
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .cell.congested {
+            background-color: rgba(245, 158, 11, 0.25);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .cell.start {
+            background-color: #0ea5e9;
+            border-radius: 6px;
+            color: white !important;
+            box-shadow: 0 0 12px #0ea5e9;
+            z-index: 10;
+        }
+
+        .cell.end {
+            background-color: #ef4444;
+            border-radius: 6px;
+            color: white !important;
+            box-shadow: 0 0 12px #ef4444;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .cell.path {
+            background-color: #06b6d4;
+            border-color: #0891b2;
+            color: white;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+            z-index: 5;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="text-slate-200 h-screen flex flex-col overflow-hidden antialiased">
+
+    <nav
+        class="glass-panel border-b border-white/10 px-8 py-4 flex justify-between items-center shrink-0 z-30 shadow-xl relative">
+        <div class="flex items-center gap-4">
+            <div
+                class="bg-gradient-to-tr from-cyan-500 to-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-cyan-500/30">
+                <i class="fa-solid fa-hospital text-xl animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-3">
+                    Smart Hospital Navigator <span
+                        class="text-[10px] tracking-widest uppercase bg-cyan-500/20 text-cyan-300 font-bold px-2.5 py-1 rounded-full border border-cyan-500/30">Enterprise
+                        v3.5</span>
+                </h1>
+                <p class="text-xs text-slate-300 font-medium mt-0.5">Hệ thống điều phối đa chặng & Bản đồ số hóa liên
+                    kết SVG</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <a href="#" id="nav-home" onclick="MapsToPage('home', this)"
+                class="nav-link active relative px-3 py-2 text-sm font-bold text-white transition-all">Trang Chủ</a>
+            <a href="#" id="nav-ai" onclick="MapsToPage('ai_diagnose', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">Phòng
+                Chẩn Đoán AI</a>
+            <a href="#" onclick="MapsToPage('diagram', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">Sơ
+                Đồ Khối</a>
+            <a href="#" onclick="MapsToPage('resources', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">Tài
+                Nguyên</a>
+            <a href="#" onclick="MapsToPage('support', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">Hỗ
+                Trợ</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-[10px] uppercase font-bold text-cyan-200 tracking-wider">Trực ban điều phối</p>
+                <p class="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 justify-end"><span
+                        class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> AI Engine Active</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 overflow-hidden relative" id="mainContent">
+
+        <!-- PAGE: Trang Chủ -->
+        <div id="page-home" class="page-section absolute inset-0 flex items-center justify-center p-6 active-page">
+            <div class="text-center glass-panel p-12 rounded-3xl max-w-3xl shadow-2xl border border-cyan-500/20">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-2xl mb-6 shadow-lg shadow-cyan-500/40">
+                    <i class="fa-solid fa-hospital text-4xl text-white"></i>
+                </div>
+                <h2 class="text-4xl font-extrabold text-white mb-4 tracking-tight">Hệ Thống Trí Tuệ Nhân Tạo <br><span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Smart Hospital
+                        Navigator</span></h2>
+                <p class="text-cyan-100 text-lg mb-8 leading-relaxed">Nền tảng số hóa mặt bằng y tế và thuật toán định
+                    tuyến đa chặng tối ưu A*. Hỗ trợ tự động phân tích đồ thị tri thức lâm sàng.</p>
+                <button onclick="MapsToPage('ai_diagnose', document.getElementById('nav-ai'))"
+                    class="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl text-white font-bold text-lg hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/50 transition-all">
+                    <i class="fa-solid fa-stethoscope mr-2"></i> Khởi Động Phòng Chẩn Đoán
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE: AI Diagnose -->
+        <div id="page-ai_diagnose" class="page-section absolute inset-0">
+            <div id="phase1" class="absolute inset-0 flex p-6 gap-6 transition-all duration-500 ease-in-out">
+                <div class="w-96 flex flex-col gap-4 shrink-0 h-full">
+                    <div class="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col flex-1 overflow-hidden">
+                        <div
+                            class="flex items-center gap-2.5 text-cyan-400 font-bold text-xs uppercase tracking-widest mb-2">
+                            <i class="fa-solid fa-notes-medical text-sm"></i> Khai báo lâm sàng đa triệu chứng
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">Chọn tổ hợp các triệu chứng hiện tại của
+                            bạn.
+                            Hệ thống AI sẽ phân tích chéo cấu trúc sơ đồ tri thức 5 hệ bệnh chính để lập lộ trình điều
+                            trị
+                            tối ưu.</p>
+
+                        <div class="flex-1 overflow-y-auto pr-1 mb-4 space-y-1.5" id="symptomContainer"></div>
+
+                        <div class="border-t border-white/5 pt-4 mb-4">
+                            <label
+                                class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Giải
+                                thuật duyệt cây tri thức:</label>
+                            <div class="grid grid-cols-2 gap-2 bg-slate-950/60 p-1 rounded-xl border border-white/5">
+                                <button id="btnBFS"
+                                    class="py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all">BFS
+                                    (Bao quát)</button>
+                                <button id="btnDFS"
+                                    class="py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">DFS
+                                    (Chuyên sâu)</button>
+                            </div>
+                        </div>
+
+                        <button id="startTriageBtn"
+                            class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm rounded-xl shadow-xl shadow-cyan-600/30 transition-all disabled:opacity-30 disabled:pointer-events-none"
+                            disabled>
+                            Bắt đầu Phân tích Đồ Thị
+                        </button>
+                    </div>
+
+                    <div id="itineraryPanel"
+                        class="glass-panel p-6 rounded-2xl border-l-4 border-cyan-500 shadow-2xl hidden flex flex-col shrink-0">
+                        <div class="flex justify-between items-center mb-3">
+                            <span
+                                class="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fa-solid fa-rectangle-list"></i> Hành trình khám đề xuất
+                            </span>
+                            <span
+                                class="text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30">Greedy
+                                Sorted</span>
+                        </div>
+
+                        <div id="itineraryStepsList" class="space-y-3 my-2 max-h-40 overflow-y-auto pr-1"></div>
+
+                        <button id="proceedToNavBtn"
+                            class="w-full mt-3 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/30">
+                            XÁC NHẬN & ĐI ĐẾN BẢN ĐỒ
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 glass-panel rounded-2xl shadow-2xl p-6 flex flex-col relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-2 border-b border-white/5 pb-3">
+                        <h3 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                            <i class="fa-solid fa-network-wired text-cyan-400"></i> Medical Knowledge Graph Interface
+                            (Bản
+                            đồ Cấu trúc hình học chuẩn xác)
+                        </h3>
+                        <span id="triageStatus"
+                            class="text-[10px] font-mono font-bold text-slate-400 bg-slate-950/60 border border-white/5 px-2.5 py-1 rounded-md">Trạng
+                            thái: Sẵn sàng</span>
+                    </div>
+                    <div class="tree-container flex-1" id="treeContainer"></div>
+                </div>
+            </div>
+
+            <div id="phase2"
+                class="absolute inset-0 flex p-6 gap-6 translate-x-full opacity-0 transition-all duration-500 ease-in-out pointer-events-none">
+                <div
+                    class="flex-1 glass-panel rounded-2xl shadow-2xl p-6 flex flex-col items-center justify-center overflow-auto relative">
+                    <div class="w-full flex justify-between items-center mb-4 shrink-0 border-b border-white/5 pb-4">
+                        <div>
+                            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-map-marked-alt text-cyan-400"></i> Sơ đồ thiết kế mặt bằng số hóa
+                                nội
+                                khu (Khu liên hợp Tòa K)
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Phân bổ 5 chuyên khoa khu chức năng hình học thực
+                                tế
+                            </p>
+                        </div>
+
+                        <div
+                            class="flex gap-3 text-[10px] font-bold text-slate-300 bg-slate-950/50 p-2.5 rounded-xl border border-white/5 shadow-inner">
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-3 h-3 rounded-md bg-cyan-500 block shadow-glow"></span> Vị trí của bạn
+                            </div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-3 h-3 rounded-md bg-red-500 block shadow-glow"></span> Phòng đích đến</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-3 h-3 rounded-md bg-amber-500/30 border border-amber-500 block"></span>
+                                Hành
+                                lang ùn tắc</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-3 h-3 rounded-md bg-[#1e293b] border border-slate-600 block"></span> Tường
+                                tòa
+                                nhà</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-3 h-3 rounded-md bg-cyan-400 block"></span> Lộ trình tối ưu</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex items-center justify-center w-full">
+                        <div id="gridMap"></div>
+                    </div>
+
+                    <div
+                        class="text-[11px] text-slate-400 mt-4 text-center bg-cyan-500/5 border border-cyan-500/10 text-cyan-300 px-4 py-2 rounded-xl max-w-2xl w-full">
+                        <i class="fa-solid fa-fingerprint text-cyan-400 mr-1.5"></i> <strong>Tương tác hiện
+                            trường:</strong>
+                        Giữ <strong>Shift + Quét chuột</strong> để tạo vùng <strong>Đông Đúc (Màu cam)</strong> để thử
+                        nghiệm bẻ lái giải thuật A*.
+                    </div>
+                </div>
+
+                <div class="w-96 flex flex-col gap-4 shrink-0 h-full">
+                    <div
+                        class="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col justify-between h-full overflow-hidden">
+                        <div class="flex flex-col flex-1 overflow-hidden">
+
+                            <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3 shrink-0">
+                                <h2
+                                    class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-compass text-cyan-400"></i> Định vị Hành trình A*
+                                </h2>
+                                <button id="backToPhase1Btn"
+                                    class="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-arrow-left-long"></i>
+                                </button>
+                            </div>
+
+                            <div
+                                class="bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border border-cyan-500/20 p-4 rounded-xl mb-4 flex items-center gap-3 shrink-0 shadow-inner">
+                                <div class="bg-cyan-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shadow-md shadow-cyan-500/20"
+                                    id="currentStopBadge">
+                                    1
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-[9px] uppercase font-bold text-cyan-400 tracking-wider">Chặng
+                                            hành
+                                            trình hiện tại:</p>
+                                        <span id="itineraryCounterBadge"
+                                            class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-300">1
+                                            / 1</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-white mt-0.5" id="currentNavTargetLabel">...</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex-1 flex flex-col overflow-hidden mb-4 bg-slate-950/40 border border-white/5 rounded-xl p-3">
+                                <p
+                                    class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 flex items-center gap-1.5 border-b border-white/5 pb-2 shrink-0">
+                                    <i class="fa-solid fa-walking text-cyan-400"></i> Hướng dẫn di chuyển thực tế
+                                </p>
+                                <div id="stepDirectionsList" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+                                    <div class="text-slate-500 italic text-center pt-8">Chưa có lộ trình cụ thể...</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mb-3 shrink-0">
+                                <div>
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cổng
+                                        xuất phát:</label>
+                                    <select id="startSelect"
+                                        class="w-full border border-white/10 rounded-lg py-1.5 px-2 text-xs bg-slate-900 text-slate-200 font-medium focus:ring-1 focus:ring-cyan-500 outline-none">
+                                        <option value="1,1">Sảnh tiếp đón K1 (1,1)</option>
+                                        <option value="13,1">Cổng Giải Phóng (13,1)</option>
+                                        <option value="7,13">Quầy cấp phát thuốc (7,13)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hàm
+                                        Heuristic h(n):</label>
+                                    <select id="heuristicSelect"
+                                        class="w-full border border-white/10 rounded-lg py-1.5 px-2 text-xs bg-slate-900 text-slate-200 font-medium focus:ring-1 focus:ring-cyan-500 outline-none">
+                                        <option value="manhattan">Manhattan</option>
+                                        <option value="euclidean">Euclidean</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="nextStopBtn"
+                            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-900/20 mb-4 shrink-0 hidden">
+                            <span>Đã đến nơi - Tiếp tục chặng tiếp theo</span>
+                            <i class="fa-solid fa-angles-right"></i>
+                        </button>
+
+                        <div
+                            class="bg-slate-950 border border-white/5 rounded-xl p-3.5 text-white shrink-0 shadow-inner">
+                            <div class="grid grid-cols-2 gap-2 text-center">
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Khoảng cách
+                                        đi bộ
+                                    </p>
+                                    <p class="text-xs font-bold font-mono text-white mt-0.5" id="metricSteps">0 m</p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Thời gian
+                                        tính
+                                    </p>
+                                    <p class="text-xs font-bold font-mono text-emerald-400 mt-0.5"><span
+                                            id="metricTime">0</span> ms</p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Ô kiểm định
+                                        (Explored)</p>
+                                    <p class="text-xs font-bold font-mono text-amber-400 mt-0.5" id="metricExplored">0
+                                    </p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Chi phí Hành
+                                        trình f(n)</p>
+                                    <p class="text-xs font-bold font-mono text-cyan-300 mt-0.5" id="metricCost">0.0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End page-ai_diagnose -->
+
+        <div id="page-diagram" class="page-section absolute inset-0 flex items-center justify-center p-6">
+            <div class="glass-panel p-10 rounded-3xl text-center max-w-2xl border border-cyan-500/20 shadow-2xl">
+                <i class="fa-solid fa-cubes text-6xl text-cyan-400 mb-6"></i>
+                <h2 class="text-3xl font-bold text-white mb-4">Sơ Đồ Khối Hệ Thống</h2>
+                <p class="text-cyan-100 text-lg leading-relaxed">Cấu trúc kiến trúc Microservices và luồng dữ liệu đồ
+                    thị tri thức y khoa. Tính năng đang trong quá trình nâng cấp đồ họa 3D.</p>
+            </div>
+        </div>
+
+        <div id="page-resources" class="page-section absolute inset-0 flex items-center justify-center p-6">
+            <div class="glass-panel p-10 rounded-3xl text-center max-w-2xl border border-cyan-500/20 shadow-2xl">
+                <i class="fa-solid fa-book-medical text-6xl text-cyan-400 mb-6"></i>
+                <h2 class="text-3xl font-bold text-white mb-4">Tài Nguyên Y Khoa</h2>
+                <p class="text-cyan-100 text-lg leading-relaxed">Truy cập vào hệ thống thư viện dữ liệu huấn luyện
+                    (Dataset) và các chuẩn đoán lâm sàng theo tiêu chuẩn quốc tế ICD-10.</p>
+            </div>
+        </div>
+
+        <div id="page-support" class="page-section absolute inset-0 flex items-center justify-center p-6">
+            <div class="glass-panel p-10 rounded-3xl text-center max-w-2xl border border-cyan-500/20 shadow-2xl">
+                <i class="fa-solid fa-headset text-6xl text-cyan-400 mb-6"></i>
+                <h2 class="text-3xl font-bold text-white mb-4">Hỗ Trợ Kỹ Thuật</h2>
+                <p class="text-cyan-100 text-lg leading-relaxed">Vui lòng liên hệ trực ban điều phối trung tâm hoặc đội
+                    ngũ kỹ thuật AI Engine qua tổng đài nội bộ.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /*******************************************************
+         * MAPS TO PAGE ENGINE (Chuyển trang & Quản lý Phase)
+         *******************************************************/
+        function MapsToPage(pageId, linkElement) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-white');
+                link.classList.add('text-cyan-100');
+            });
+            if (linkElement) {
+                linkElement.classList.add('active', 'text-white');
+                linkElement.classList.remove('text-cyan-100');
+            }
+
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active-page');
+            });
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+
+                if (pageId === 'ai_diagnose') {
+                    resetTriageFlow();
+                }
+            }
+        }
+
+        function resetTriageFlow() {
+            const p1 = document.getElementById('phase1');
+            const p2 = document.getElementById('phase2');
+
+            if (p1) {
+                p1.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+                p1.classList.add('translate-x-0', 'opacity-100');
+            }
+            if (p2) {
+                p2.classList.remove('translate-x-0', 'opacity-100');
+                p2.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+            }
+
+            selectedSymptoms.clear();
+            renderPremiumSymptoms();
+            startTriageBtn.disabled = true;
+            itineraryPanel.classList.add('hidden');
+            cleanGraphVisuals();
+            document.getElementById('triageStatus').textContent = "Trạng thái: Sẵn sàng";
+            isTriageRunning = false;
+            currentItineraryIndex = 0;
+            medicalItinerary = [];
+        }
+
+        /*******************************************************
+         * 1. MEDICAL DATA GRAPH STRUCTURE (MỞ RỘNG 5 HỆ LỚN)
+         *******************************************************/
+        const MEDICAL_GRAPH = {
+            nodes: [
+                { id: 'root', label: 'Bệnh Nhân', x: 50, y: 230, type: 'root', icon: 'fa-user-injured' },
+
+                // 1. Hệ Tiêu Hóa
+                { id: 'sys_tieuhoa', label: 'Hệ Tiêu Hóa', x: 220, y: 55, type: 'system', icon: 'fa-bacteria' },
+                { id: 'sym_daubung', label: 'Đau Bụng / Co Thắt', x: 440, y: 30, type: 'symptom', icon: 'fa-circle-exclamation' },
+                { id: 'sym_tieuchay', label: 'Nôn Mửa / Tiêu Chảy', x: 440, y: 90, type: 'symptom', icon: 'fa-faucet-drip' },
+                { id: 'sym_traonguoc', label: 'Ợ Chua / Trào Ngược', x: 440, y: 160, type: 'symptom', icon: 'fa-fire-flame-simple' },
+                {
+                    id: 'dept_tieuhoa', label: 'Khoa Tiêu Hóa', x: 720, y: 55, type: 'dept', icon: 'fa-hand-holding-medical',
+                    rooms: [
+                        { name: 'Phòng Khám Tiêu Hóa 102', gridX: 18, gridY: 2, patients: 9 },
+                        { name: 'Phòng Nội Soi 105', gridX: 18, gridY: 5, patients: 4 }
+                    ]
+                },
+
+                // 2. Hệ Hô Hấp
+                { id: 'sys_hohap', label: 'Hệ Hô Hấp', x: 220, y: 165, type: 'system', icon: 'fa-lungs' },
+                { id: 'sym_khotho', label: 'Khó Thở / Ho Khan', x: 440, y: 155, type: 'symptom', icon: 'fa-wind' },
+                { id: 'sym_daunguchohap', label: 'Đau Ngực Khi Ho', x: 440, y: 195, type: 'symptom', icon: 'fa-mask-ventilator' },
+                {
+                    id: 'dept_hohap', label: 'Khoa Hô Hấp', x: 720, y: 165, type: 'dept', icon: 'fa-head-side-cough',
+                    rooms: [
+                        { name: 'Phòng Khám Hô Hấp 204', gridX: 18, gridY: 11, patients: 3 },
+                        { name: 'Khu Đo Chức Năng Phổi', gridX: 18, gridY: 13, patients: 14 }
+                    ]
+                },
+
+                // 3. Hệ Thần Kinh
+                { id: 'sys_thankinh', label: 'Hệ Thần Kinh', x: 220, y: 275, type: 'system', icon: 'fa-brain' },
+                { id: 'sym_daudau', label: 'Đau Đầu / Co Giật', x: 440, y: 240, type: 'symptom', icon: 'fa-bolt-lightning' },
+                { id: 'sym_chongmat', label: 'Chóng Mặt / Ngất Xỉu', x: 440, y: 280, type: 'symptom', icon: 'fa-spinner' },
+                { id: 'sym_tebi', label: 'Tê Bì Tay Chân', x: 440, y: 320, type: 'symptom', icon: 'fa-wave-square' },
+                {
+                    id: 'dept_thankinh', label: 'Khoa Thần Kinh', x: 720, y: 275, type: 'dept', icon: 'fa-stethoscope',
+                    rooms: [
+                        { name: 'Phòng Khám Thần Kinh 301', gridX: 2, gridY: 10, patients: 7 },
+                        { name: 'Phòng Điện Não Đồ 303', gridX: 2, gridY: 13, patients: 2 }
+                    ]
+                },
+
+                // 4. Hệ Tim Mạch
+                { id: 'sys_timmach', label: 'Hệ Tim Mạch', x: 220, y: 375, type: 'system', icon: 'fa-heart-pulse' },
+                { id: 'sym_dauthanguc', label: 'Đau Thắt Ngực', x: 440, y: 365, type: 'symptom', icon: 'fa-heart-crack' },
+                { id: 'sym_hoihop', label: 'Hồi Hộp / Trống Ngực', x: 440, y: 405, type: 'symptom', icon: 'fa-gauge-high' },
+                {
+                    id: 'dept_timmach', label: 'Khoa Tim Mạch', x: 720, y: 375, type: 'dept', icon: 'fa-user-md',
+                    rooms: [
+                        { name: 'Phòng Điều Áp Tim Mạch 401', gridX: 2, gridY: 2, patients: 11 },
+                        { name: 'Phòng Siêu Âm Tim 405', gridX: 2, gridY: 5, patients: 5 }
+                    ]
+                },
+
+                // 5. Hệ Cơ Xương Khớp
+                { id: 'sys_xuongkhop', label: 'Cơ Xương Khớp', x: 220, y: 450, type: 'system', icon: 'fa-bone' },
+                { id: 'sym_daukhop', label: 'Đau Khớp / Sưng Viêm', x: 440, y: 450, type: 'symptom', icon: 'fa-capsules' },
+                {
+                    id: 'dept_xuongkhop', label: 'Khoa Xương Khớp', x: 720, y: 450, type: 'dept', icon: 'fa-kit-medical',
+                    rooms: [
+                        { name: 'Phòng Chấn Thương Chỉnh Hình 501', gridX: 9, gridY: 2, patients: 1 }
+                    ]
+                }
+            ],
+            edges: [
+                { from: 'root', to: 'sys_tieuhoa' }, { from: 'root', to: 'sys_hohap' }, { from: 'root', to: 'sys_thankinh' }, { from: 'root', to: 'sys_timmach' }, { from: 'root', to: 'sys_xuongkhop' },
+                { from: 'sys_tieuhoa', to: 'sym_daubung' }, { from: 'sys_tieuhoa', to: 'sym_tieuchay' }, { from: 'sys_tieuhoa', to: 'sym_traonguoc' },
+                { from: 'sym_daubung', to: 'dept_tieuhoa' }, { from: 'sym_tieuchay', to: 'dept_tieuhoa' }, { from: 'sym_traonguoc', to: 'dept_tieuhoa' },
+                { from: 'sys_hohap', to: 'sym_khotho' }, { from: 'sys_hohap', to: 'sym_daunguchohap' },
+                { from: 'sym_khotho', to: 'dept_hohap' }, { from: 'sym_daunguchohap', to: 'dept_hohap' },
+                { from: 'sys_thankinh', to: 'sym_daudau' }, { from: 'sys_thankinh', to: 'sym_chongmat' }, { from: 'sys_thankinh', to: 'sym_tebi' },
+                { from: 'sym_daudau', to: 'dept_thankinh' }, { from: 'sym_chongmat', to: 'dept_thankinh' }, { from: 'sym_tebi', to: 'dept_thankinh' },
+                { from: 'sys_timmach', to: 'sym_dauthanguc' }, { from: 'sys_timmach', to: 'sym_hoihop' },
+                { from: 'sym_dauthanguc', to: 'dept_timmach' }, { from: 'sym_hoihop', to: 'dept_timmach' },
+                { from: 'sys_xuongkhop', to: 'sym_daukhop' }, { from: 'sym_daukhop', to: 'dept_xuongkhop' }
+            ]
+        };
+
+        const GRID_ROWS = 15; const GRID_COLS = 20;
+        let gridMatrix = [];
+        let startPos = { r: 1, c: 1 };
+        let targetPos = null;
+        let isMouseDown = false;
+        let isShiftPressed = false;
+        let dragMode = null;
+
+        let selectedSymptoms = new Set();
+        let currentAlgoMode = 'BFS';
+        let isTriageRunning = false;
+        let medicalItinerary = [];
+        let currentItineraryIndex = 0;
+
+        // Cơ sở dữ liệu định vị địa lý không gian thực
+        const REAL_WORLD_MAP_LABELS = {
+            "1,1": "Sảnh Đón Tiếp Khu Tòa K",
+            "18,2": "Khoa Tiêu Hóa (Phòng 102)",
+            "18,5": "Khu Nội Soi Tiêu Hóa (Phòng 105)",
+            "18,11": "Khoa Hô Hấp (Phòng 204)",
+            "18,13": "Khu Đo Chức Năng Phổi",
+            "2,10": "Khoa Thần Kinh (Phòng 301)",
+            "2,13": "Phòng Điện Não Đồ 303",
+            "2,2": "Phòng Điều Áp Tim Mạch 401",
+            "2,5": "Phòng Siêu Âm Tim 405",
+            "9,2": "Phòng Chấn Thương Chỉnh Hình 501"
+        };
+
+        const symptomContainer = document.getElementById('symptomContainer');
+        const startTriageBtn = document.getElementById('startTriageBtn');
+        const treeContainer = document.getElementById('treeContainer');
+        const itineraryPanel = document.getElementById('itineraryPanel');
+        const itineraryStepsList = document.getElementById('itineraryStepsList');
+        const gridMapEl = document.getElementById('gridMap');
+        const heuristicSelect = document.getElementById('heuristicSelect');
+        const stepDirectionsList = document.getElementById('stepDirectionsList');
+        const nextStopBtn = document.getElementById('nextStopBtn');
+
+        class PriorityMinHeap {
+            constructor() { this.data = []; }
+            push(item) { this.data.push(item); this.up(this.data.length - 1); }
+            pop() {
+                if (this.data.length === 0) return null;
+                const top = this.data[0]; const bottom = this.data.pop();
+                if (this.data.length > 0) { this.data[0] = bottom; this.down(0); }
+                return top;
+            }
+            isEmpty() { return this.data.length === 0; }
+            up(i) {
+                while (i > 0) {
+                    let p = Math.floor((i - 1) / 2);
+                    if (this.data[i].f >= this.data[p].f) break;
+                    [this.data[i], this.data[p]] = [this.data[p], this.data[i]]; i = p;
+                }
+            }
+            down(i) {
+                let len = this.data.length;
+                while (2 * i + 1 < len) {
+                    let l = 2 * i + 1, r = 2 * i + 2, best = l;
+                    if (r < len && this.data[r].f < this.data[l].f) best = r;
+                    if (this.data[i].f <= this.data[best].f) break;
+                    [this.data[i], this.data[best]] = [this.data[best], this.data[i]]; i = best;
+                }
+            }
+        }
+
+        function initApp() {
+            renderPremiumSymptoms();
+            renderMedicalGraph();
+            buildRealisticHospitalBlueprint();
+            bindUserInteractions();
+        }
+
+        function renderPremiumSymptoms() {
+            const symptoms = MEDICAL_GRAPH.nodes.filter(n => n.type === 'symptom');
+            symptomContainer.innerHTML = '';
+            symptomContainer.className = "flex-1 overflow-y-auto pr-2 mb-4 space-y-4"; // Increased spacing
+
+            symptoms.forEach(sym => {
+                const card = document.createElement('div');
+                card.className = "glass-card-interactive flex items-center justify-between p-5 rounded-2xl cursor-pointer select-none border border-white/10 transition-all";
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 shadow-inner">
+                            <i class="fa-solid ${sym.icon} text-lg"></i>
+                        </div>
+                        <span class="text-sm font-bold text-white">${sym.label}</span>
+                    </div>
+                    <div class="chk-box w-5 h-5 rounded-md border-2 border-white/20 flex items-center justify-center text-xs text-transparent transition-all">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                `;
+
+                if (selectedSymptoms.has(sym.id)) {
+                    const chk = card.querySelector('.chk-box');
+                    chk.className = "chk-box w-5 h-5 rounded-md bg-cyan-500 border-2 border-cyan-500 flex items-center justify-center text-xs text-white transition-all shadow-lg shadow-cyan-500/40";
+                    card.classList.add('!border-cyan-400', 'bg-gradient-to-r', 'from-cyan-500/20', 'to-blue-600/20');
+                }
+
+                card.addEventListener('click', () => {
+                    const chk = card.querySelector('.chk-box');
+                    if (selectedSymptoms.has(sym.id)) {
+                        selectedSymptoms.delete(sym.id);
+                        chk.className = "chk-box w-5 h-5 rounded-md border-2 border-white/20 flex items-center justify-center text-xs text-transparent transition-all";
+                        card.classList.remove('!border-cyan-400', 'bg-gradient-to-r', 'from-cyan-500/20', 'to-blue-600/20');
+                    } else {
+                        selectedSymptoms.add(sym.id);
+                        chk.className = "chk-box w-5 h-5 rounded-md bg-cyan-500 border-2 border-cyan-500 flex items-center justify-center text-xs text-white transition-all shadow-lg shadow-cyan-500/40";
+                        card.classList.add('!border-cyan-400', 'bg-gradient-to-r', 'from-cyan-500/20', 'to-blue-600/20');
+                    }
+                    startTriageBtn.disabled = selectedSymptoms.size === 0;
+                });
+                symptomContainer.appendChild(card);
+            });
+        }
+
+        /*******************************************************
+         * 2. GIẢI QUYẾT LỖI LỆCH ĐƯỜNG ĐI: SVG CANVAS OVERLAY ENGINE
+         *******************************************************/
+        function renderMedicalGraph() {
+            treeContainer.innerHTML = '';
+
+            // Khởi tạo Canvas SVG bao phủ toàn bộ vùng đồ thị liên kết
+            const svgNamespace = "http://www.w3.org/2000/svg";
+            const svgCanvas = document.createElementNS(svgNamespace, "svg");
+            svgCanvas.id = "graphSvg";
+            svgCanvas.setAttribute("class", "absolute inset-0 w-full h-full pointer-events-none z-10");
+            treeContainer.appendChild(svgCanvas);
+
+            // Vẽ các đường cong kết nối chuẩn xác hình học
+            MEDICAL_GRAPH.edges.forEach(edge => {
+                const src = MEDICAL_GRAPH.nodes.find(n => n.id === edge.from);
+                const dest = MEDICAL_GRAPH.nodes.find(n => n.id === edge.to);
+                if (src && dest) {
+                    const pathEl = document.createElementNS(svgNamespace, "path");
+                    pathEl.id = `edge-${src.id}-${dest.id}`;
+
+                    // Vẽ đường cong Bezier mượt mà nối từ tâm các Node dữ liệu
+                    const controlPointX = src.x + (dest.x - src.x) / 2;
+                    const pathData = `M ${src.x} ${src.y} C ${controlPointX} ${src.y}, ${controlPointX} ${dest.y}, ${dest.x} ${dest.y}`;
+
+                    pathEl.setAttribute("d", pathData);
+                    pathEl.setAttribute("stroke", "rgba(255, 255, 255, 0.08)");
+                    pathEl.setAttribute("stroke-width", "2");
+                    pathEl.setAttribute("fill", "none");
+                    pathEl.setAttribute("class", "transition-all duration-300");
+                    svgCanvas.appendChild(pathEl);
+                }
+            });
+
+            // Kết xuất vị trí các Bong bóng Node thông tin
+            MEDICAL_GRAPH.nodes.forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.className = 'tree-node z-20'; // Đẩy z-index lên trên lớp SVG nền
+                nodeEl.style.left = `${node.x}px`;
+                nodeEl.style.top = `${node.y}px`;
+                nodeEl.innerHTML = `<i class="fa-solid ${node.icon}"></i><span>${node.label}</span>`;
+                treeContainer.appendChild(nodeEl);
+            });
+        }
+
+        function cleanGraphVisuals() {
+            document.querySelectorAll('.tree-node').forEach(el => el.className = 'tree-node z-20');
+            const svgCanvas = document.getElementById('graphSvg');
+            if (svgCanvas) {
+                Array.from(svgCanvas.children).forEach(path => {
+                    path.setAttribute("class", "transition-all duration-300");
+                    path.setAttribute("stroke", "rgba(255, 255, 255, 0.08)");
+                    path.setAttribute("stroke-width", "2");
+                });
+            }
+        }
+
+        async function executeClinicalTriage() {
+            if (selectedSymptoms.size === 0 || isTriageRunning) return;
+            isTriageRunning = true; startTriageBtn.disabled = true;
+            itineraryPanel.classList.add('hidden'); cleanGraphVisuals();
+
+            document.getElementById('triageStatus').textContent = `Đang chạy giải thuật ${currentAlgoMode}...`;
+
+            const adj = {}; MEDICAL_GRAPH.nodes.forEach(n => adj[n.id] = []);
+            MEDICAL_GRAPH.edges.forEach(e => adj[e.from].push(e.to));
+
+            let scanStructure = ['root'];
+            let visited = new Set();
+            let parents = {};
+            let triggeredSymptoms = [];
+
+            while (scanStructure.length > 0) {
+                let curr = (currentAlgoMode === 'DFS') ? scanStructure.pop() : scanStructure.shift();
+                if (visited.has(curr)) continue;
+                visited.add(curr);
+
+                if (parents[curr]) {
+                    const edgeEl = document.getElementById(`edge-${parents[curr]}-${curr}`);
+                    if (edgeEl) edgeEl.setAttribute("class", "svg-visited-edge");
+                }
+                document.getElementById(`node-${curr}`)?.classList.add('visited');
+                await new Promise(res => setTimeout(res, 100));
+
+                if (selectedSymptoms.has(curr)) triggeredSymptoms.push(curr);
+
+                let children = adj[curr] || [];
+                for (let child of children) {
+                    if (!visited.has(child)) {
+                        scanStructure.push(child); parents[child] = curr;
+                    }
+                }
+            }
+
+            let targetDepartments = new Set();
+            triggeredSymptoms.forEach(symId => {
+                MEDICAL_GRAPH.edges.filter(e => e.from === symId).forEach(e => {
+                    const deptNode = MEDICAL_GRAPH.nodes.find(n => n.id === e.to);
+                    if (deptNode) targetDepartments.add(deptNode);
+                });
+            });
+
+            if (targetDepartments.size === 0) targetDepartments.add(MEDICAL_GRAPH.nodes.find(n => n.id === 'dept_tieuhoa'));
+
+            medicalItinerary = [];
+            targetDepartments.forEach(dept => {
+                let bestRoom = dept.rooms[0];
+                for (let i = 1; i < dept.rooms.length; i++) {
+                    if (dept.rooms[i].patients < bestRoom.patients) bestRoom = dept.rooms[i];
+                }
+                medicalItinerary.push({
+                    deptLabel: dept.label,
+                    roomName: bestRoom.name,
+                    x: bestRoom.gridX,
+                    y: bestRoom.gridY,
+                    patients: bestRoom.patients
+                });
+
+                triggerPathHighlight(dept.id, parents);
+            });
+
+            medicalItinerary.sort((a, b) => a.patients - b.patients);
+            renderItineraryPanelUI();
+
+            document.getElementById('triageStatus').textContent = "Phân phối tuyến đa chặng hoàn tất!";
+            isTriageRunning = false; startTriageBtn.disabled = false;
+        }
+
+        function triggerPathHighlight(deptId, parents) {
+            document.getElementById(`node-${deptId}`)?.classList.add('target');
+            let edge = MEDICAL_GRAPH.edges.find(e => e.to === deptId && document.getElementById(`node-${e.from}`).classList.contains('visited'));
+            if (edge) {
+                document.getElementById(`edge-${edge.from}-${deptId}`)?.setAttribute("class", "svg-active-edge");
+                let c = edge.from;
+                while (c && c !== 'root') {
+                    let p = parents[c];
+                    if (p) {
+                        document.getElementById(`edge-${p}-${c}`)?.setAttribute("class", "svg-active-edge");
+                        document.getElementById(`node-${c}`)?.classList.add('active-path');
+                    }
+                    c = p;
+                }
+            }
+            document.getElementById(`node-root`).classList.add('active-path');
+        }
+
+        function renderItineraryPanelUI() {
+            itineraryStepsList.innerHTML = '';
+            medicalItinerary.forEach((stop, index) => {
+                const stepRow = document.createElement('div');
+                stepRow.className = "flex items-start gap-3 p-2.5 bg-white/5 border border-white/5 rounded-xl text-xs";
+                stepRow.innerHTML = `
+                    <div class="w-5 h-5 rounded-md bg-cyan-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 shadow-md shadow-cyan-600/40">
+                        ${index + 1}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-white">${stop.deptLabel}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${stop.roomName}</p>
+                        <div class="flex items-center gap-1 text-[10px] text-emerald-400 mt-1 font-medium">
+                            <i class="fa-solid fa-user-clock text-[9px]"></i> Hàng đợi: ${stop.patients} người
+                        </div>
+                    </div>
+                `;
+                itineraryStepsList.appendChild(stepRow);
+            });
+            itineraryPanel.classList.remove('hidden');
+        }
+
+        /*******************************************************
+         * 3. KIẾN TRÚC BLUEPRINT MẶT BẰNG PHÂN BỔ 5 KHU VỰC
+         *******************************************************/
+        function buildRealisticHospitalBlueprint() {
+            gridMatrix = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
+
+            // Xây dựng lõi tường kết cấu tòa nhà cố định
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    if (c === 4 && r > 0 && r < 12) gridMatrix[r][c] = 1;
+                    if (c === 15 && r >= 0 && r < 14) gridMatrix[r][c] = 1;
+                    if (r === 8 && c > 4 && c < 15) gridMatrix[r][c] = 1;
+
+                    // Thiết lập các điểm cửa ngõ thông phòng chức năng công cộng
+                    if ((c === 4 && r === 3) || (c === 4 && r === 10) || (c === 15 && r === 4) || (c === 15 && r === 12) || (r === 8 && c === 9)) {
+                        gridMatrix[r][c] = 0;
+                    }
+
+                    // Đồng bộ định vị vùng 5 chuyên khoa phòng khám thực tế
+                    if (c > 15 && r >= 1 && r <= 6) gridMatrix[r][c] = 3;  // Khu Tiêu Hóa
+                    if (c > 15 && r >= 10 && r <= 14) gridMatrix[r][c] = 3; // Khu Hô Hấp
+                    if (c < 4 && r >= 9 && r <= 14) gridMatrix[r][c] = 3;   // Khu Thần Kinh
+                    if (c < 4 && r >= 1 && r <= 6) gridMatrix[r][c] = 3;    // Khu Tim Mạch
+                    if (c >= 6 && c <= 12 && r >= 1 && r <= 3) gridMatrix[r][c] = 3; // Khu Xương Khớp
+                }
+            }
+        }
+
+        function renderHospitalArchitectureMap() {
+            gridMapEl.innerHTML = '';
+            gridMapEl.style.gridTemplateColumns = `repeat(${GRID_COLS}, 26px)`;
+
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell border-[0.5px] border-white/5';
+                    cell.id = `cell-${r}-${c}`;
+
+                    if (gridMatrix[r][c] === 1) cell.classList.add('architectural-wall');
+                    if (gridMatrix[r][c] === 2) cell.classList.add('congested');
+                    if (gridMatrix[r][c] === 3) {
+                        cell.classList.add('room-zone');
+                        if ((r + c) % 5 === 0) cell.textContent = '★';
+                    }
+
+                    if (r === startPos.r && c === startPos.c) {
+                        cell.className = 'cell start';
+                        cell.innerHTML = '<i class="fa-solid fa-street-view text-xs"></i>';
+                    }
+                    if (targetPos && r === targetPos.r && c === targetPos.c) {
+                        cell.className = 'cell end';
+                        cell.innerHTML = '<i class="fa-solid fa-location-dot text-xs"></i>';
+                    }
+
+                    cell.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        if ((r === startPos.r && c === startPos.c) || (targetPos && r === targetPos.r && c === targetPos.c) || gridMatrix[r][c] === 1) return;
+                        isMouseDown = true;
+                        if (isShiftPressed) {
+                            dragMode = (gridMatrix[r][c] === 2) ? 'clear-congest' : 'set-congest';
+                        }
+                        updateCellWeight(r, c, dragMode);
+                    });
+                    cell.addEventListener('mouseenter', () => { if (isMouseDown && isShiftPressed) updateCellWeight(r, c, dragMode); });
+
+                    gridMapEl.appendChild(cell);
+                }
+            }
+        }
+
+        function updateCellWeight(r, c, mode) {
+            if ((r === startPos.r && c === startPos.c) || (targetPos && r === targetPos.r && c === targetPos.c) || gridMatrix[r][c] === 1) return;
+            const el = document.getElementById(`cell-${r}-${c}`);
+
+            if (mode === 'set-congest') {
+                gridMatrix[r][c] = 2; el.className = 'cell congested';
+            } else if (mode === 'clear-congest') {
+                gridMatrix[r][c] = (REAL_WORLD_MAP_LABELS[`${c},${r}`] || gridMatrix[r][c] === 3) ? 3 : 0;
+                el.className = gridMatrix[r][c] === 3 ? 'cell room-zone' : 'cell border-[0.5px] border-white/5';
+            }
+            executeAStarRoutingEngine();
+        }
+
+        function executeAStarRoutingEngine() {
+            if (!targetPos) return;
+            const startTime = performance.now();
+
+            document.querySelectorAll('.cell').forEach(el => el.classList.remove('path'));
+
+            const heuristicType = heuristicSelect.value;
+            const calculateHeuristic = (r, c) => {
+                return (heuristicType === 'manhattan') ?
+                    (Math.abs(r - targetPos.r) + Math.abs(c - targetPos.c)) :
+                    Math.sqrt(Math.pow(r - targetPos.r, 2) + Math.pow(c - targetPos.c, 2));
+            };
+
+            const openHeap = new PriorityMinHeap();
+            const closedSet = new Set();
+            const openTracker = new Set();
+
+            const cellMeta = Array.from({ length: GRID_ROWS }, () =>
+                Array(GRID_COLS).fill(null).map(() => ({ f: Infinity, g: Infinity, h: Infinity, pR: -1, pC: -1 }))
+            );
+
+            cellMeta[startPos.r][startPos.c] = { f: 0, g: 0, h: calculateHeuristic(startPos.r, startPos.c), pR: startPos.r, pC: startPos.c };
+            openHeap.push({ r: startPos.r, c: startPos.c, f: 0 });
+            openTracker.add(`${startPos.r},${startPos.c}`);
+
+            let targetFound = false; let exploredNodesCount = 0;
+            const dRow = [-1, 1, 0, 0, -1, -1, 1, 1];
+            const dCol = [0, 0, -1, 1, -1, 1, -1, 1];
+
+            while (!openHeap.isEmpty()) {
+                const current = openHeap.pop();
+                const currKey = `${current.r},${current.c}`;
+
+                if (closedSet.has(currKey)) continue;
+                openTracker.delete(currKey); closedSet.add(currKey);
+                exploredNodesCount++;
+
+                if (current.r === targetPos.r && current.c === targetPos.c) { targetFound = true; break; }
+
+                for (let i = 0; i < 8; i++) {
+                    const nR = current.r + dRow[i]; const nC = current.c + dCol[i];
+
+                    if (nR < 0 || nR >= GRID_ROWS || nC < 0 || nC >= GRID_COLS) continue;
+                    if (gridMatrix[nR][nC] === 1 || closedSet.has(`${nR},${nC}`)) continue;
+
+                    if (i >= 4) { if (gridMatrix[current.r][nC] === 1 || gridMatrix[nR][current.c] === 1) continue; }
+
+                    let stepBaseCost = (i < 4) ? 1.0 : 1.414;
+                    if (gridMatrix[nR][nC] === 2) stepBaseCost += 7.0;
+
+                    const potentialG = cellMeta[current.r][current.c].g + stepBaseCost;
+                    const hCost = calculateHeuristic(nR, nC);
+                    const fCost = potentialG + hCost;
+
+                    if (fCost < cellMeta[nR][nC].f) {
+                        cellMeta[nR][nC] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c };
+                        if (!openTracker.has(`${nR},${nC}`)) {
+                            openHeap.push({ r: nR, c: nC, f: fCost }); openTracker.add(`${nR},${nC}`);
+                        }
+                    }
+                }
+            }
+
+            const endTime = performance.now();
+            document.getElementById('metricTime').textContent = (endTime - startTime).toFixed(2);
+            document.getElementById('metricExplored').textContent = exploredNodesCount;
+
+            if (targetFound) {
+                let nodePath = []; let traceR = targetPos.r, traceC = targetPos.c;
+                const totalCost = cellMeta[traceR][traceC].f;
+
+                while (!(cellMeta[traceR][traceC].pR === traceR && cellMeta[traceR][traceC].pC === traceC)) {
+                    nodePath.push({ r: traceR, c: traceC });
+                    let tmpR = cellMeta[traceR][traceC].pR; let tmpC = cellMeta[traceR][traceC].pC;
+                    traceR = tmpR; traceC = tmpC;
+                }
+                nodePath.push({ r: startPos.r, c: startPos.c });
+                nodePath.reverse();
+
+                document.getElementById('metricSteps').textContent = `${(nodePath.length - 1) * 2} mét`;
+                document.getElementById('metricCost').textContent = totalCost.toFixed(1);
+
+                nodePath.forEach(pt => {
+                    if (!(pt.r === startPos.r && pt.c === startPos.c) && !(pt.r === targetPos.r && pt.c === targetPos.c)) {
+                        document.getElementById(`cell-${pt.r}-${pt.c}`).classList.add('path');
+                    }
+                });
+
+                generateHumanReadableDirections(nodePath);
+            } else {
+                document.getElementById('metricSteps').textContent = 'N/A';
+                document.getElementById('metricCost').textContent = 'N/A';
+                stepDirectionsList.innerHTML = `<div class="text-rose-400 text-center font-semibold mt-4"><i class="fa-solid fa-triangle-exclamation"></i> Không có lối đi, tuyến đường bị cô lập!</div>`;
+            }
+        }
+
+        function generateHumanReadableDirections(path) {
+            stepDirectionsList.innerHTML = '';
+            let directions = [];
+
+            directions.push({
+                icon: 'fa-play-circle text-cyan-400',
+                text: `Khởi hành tại <strong class="text-white">${REAL_WORLD_MAP_LABELS[`${startPos.c},${startPos.r}`] || "Điểm dừng trước"}</strong>.`
+            });
+
+            let currentSegmentLength = 0;
+            let lastDirection = null;
+
+            for (let i = 0; i < path.length - 1; i++) {
+                let curr = path[i]; let next = path[i + 1];
+                let dr = next.r - curr.r; let dc = next.c - curr.c;
+                let currentDirection = "";
+
+                if (dr === -1 && dc === 0) currentDirection = "Đi thẳng theo hành lang hướng Bắc";
+                else if (dr === 1 && dc === 0) currentDirection = "Đi thẳng theo hành lang hướng Nam";
+                else if (dr === 0 && dc === -1) currentDirection = "Đi theo lối đi hướng Tây";
+                else if (dr === 0 && dc === 1) currentDirection = "Đi theo lối đi hướng Đông";
+                else currentDirection = "Di chuyển chéo xuyên sảnh tòa nhà";
+
+                if (lastDirection === null) {
+                    lastDirection = currentDirection; currentSegmentLength = 2;
+                } else if (currentDirection === lastDirection) {
+                    currentSegmentLength += 2;
+                } else {
+                    directions.push({ icon: 'fa-arrow-turn-up text-cyan-300', text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.` });
+                    lastDirection = currentDirection; currentSegmentLength = 2;
+                }
+            }
+
+            if (lastDirection !== null) {
+                directions.push({ icon: 'fa-arrow-trend-up text-cyan-300', text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.` });
+            }
+
+            const endStop = medicalItinerary[currentItineraryIndex];
+            directions.push({
+                icon: 'fa-flag-checkered text-rose-500 animate-pulse',
+                text: `Đến đích: Di chuyển thẳng vào bên trong <strong class="text-emerald-400">${endStop.roomName}</strong>.`
+            });
+
+            directions.forEach(dir => {
+                const item = document.createElement('div');
+                item.className = "flex gap-2.5 items-start bg-white/[0.02] p-2 rounded-lg border border-white/5";
+                item.innerHTML = `
+                    <div class="mt-0.5 text-xs text-center w-4 shrink-0"><i class="fa-solid ${dir.icon}"></i></div>
+                    <p class="text-slate-300 leading-tight">${dir.text}</p>
+                `;
+                stepDirectionsList.appendChild(item);
+            });
+        }
+
+        function setupNavigationSegment() {
+            if (medicalItinerary.length === 0) return;
+
+            const stop = medicalItinerary[currentItineraryIndex];
+            targetPos = { r: stop.y, c: stop.x };
+
+            document.getElementById('currentNavTargetLabel').textContent = `${stop.deptLabel} - ${stop.roomName}`;
+            document.getElementById('itineraryCounterBadge').textContent = `Chặng ${currentItineraryIndex + 1} / ${medicalItinerary.length}`;
+            document.getElementById('currentStopBadge').textContent = currentItineraryIndex + 1;
+
+            if (currentItineraryIndex < medicalItinerary.length - 1) {
+                nextStopBtn.classList.remove('hidden');
+                nextStopBtn.className = "w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-900/20 mb-4 shrink-0";
+                nextStopBtn.querySelector('span').textContent = `Hoàn tất thủ tục - Chuyển sang Chặng ${currentItineraryIndex + 2}`;
+            } else {
+                nextStopBtn.classList.remove('hidden');
+                nextStopBtn.querySelector('span').textContent = `Kết thúc Toàn bộ Lộ trình Khám`;
+                nextStopBtn.className = "w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-extrabold text-white rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-cyan-900/20 mb-4 shrink-0";
+            }
+
+            renderHospitalArchitectureMap();
+            executeAStarRoutingEngine();
+        }
+
+        function bindUserInteractions() {
+            startTriageBtn.addEventListener('click', executeClinicalTriage);
+
+            document.getElementById('proceedToNavBtn').addEventListener('click', () => {
+                currentItineraryIndex = 0;
+                const p1 = document.getElementById('phase1'); const p2 = document.getElementById('phase2');
+                p1.classList.add('-translate-x-full', 'opacity-0', 'pointer-events-none');
+                p2.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none'); p2.classList.add('translate-x-0');
+                setupNavigationSegment();
+            });
+
+            document.getElementById('backToPhase1Btn').addEventListener('click', () => {
+                const p1 = document.getElementById('phase1'); const p2 = document.getElementById('phase2');
+                p2.classList.remove('translate-x-0');
+                p2.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+                p1.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+            });
+
+            nextStopBtn.addEventListener('click', () => {
+                if (currentItineraryIndex < medicalItinerary.length - 1) {
+                    const prevStop = medicalItinerary[currentItineraryIndex];
+                    startPos = { r: prevStop.y, c: prevStop.x };
+                    currentItineraryIndex++;
+                    setupNavigationSegment();
+                } else {
+                    alert("Bạn đã hoàn thành việc mô phỏng toàn bộ lộ trình khám bệnh thông minh.");
+                    location.reload();
+                }
+            });
+
+            const bBFS = document.getElementById('btnBFS'); const bDFS = document.getElementById('btnDFS');
+            bBFS.addEventListener('click', () => {
+                currentAlgoMode = 'BFS';
+                bBFS.className = "py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                bDFS.className = "py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                cleanGraphVisuals(); itineraryPanel.classList.add('hidden');
+            });
+            bDFS.addEventListener('click', () => {
+                currentAlgoMode = 'DFS';
+                bDFS.className = "py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                bBFS.className = "py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                cleanGraphVisuals(); itineraryPanel.classList.add('hidden');
+            });
+
+            window.addEventListener('keydown', (e) => { if (e.key === 'Shift') isShiftPressed = true; });
+            window.addEventListener('keyup', (e) => { if (e.key === 'Shift') isShiftPressed = false; });
+            window.addEventListener('mouseup', () => { isMouseDown = false; dragMode = null; });
+
+            document.getElementById('startSelect').addEventListener('change', (e) => {
+                const [c, r] = e.target.value.split(',').map(Number);
+                startPos = { r, c };
+                renderHospitalArchitectureMap(); executeAStarRoutingEngine();
+            });
+            heuristicSelect.addEventListener('change', executeAStarRoutingEngine);
+        }
+
+        initApp();
+    </script>
+</body>
+
+</html>
