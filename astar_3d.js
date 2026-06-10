@@ -70,6 +70,7 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
     const W_ELEVATOR = config.w_elevator || 30.0; // Thời gian chờ thang máy (chỉ phạt khi đổi tầng)
     const PENALTY_CONGESTED = config.penalty_congested || 7.0; // Chi phí phạt khi đi qua ô ùn tắc
     const HEURISTIC_TYPE = config.heuristic || 'manhattan';    // 'manhattan' hoặc 'euclidean'
+    const customHeuristic = config.customHeuristic;            // Hàm heuristic tự định nghĩa tùy biến từ bên ngoài
 
     // Ký hiệu các loại ô lưới
     const CELL_WALKABLE = 0;
@@ -80,6 +81,11 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
 
     // 2. Định nghĩa hàm Heuristic h(n) đa tầng
     const heuristic = (state) => {
+        // Nếu truyền vào hàm tùy biến từ bên ngoài, ưu tiên sử dụng
+        if (typeof customHeuristic === 'function') {
+            return customHeuristic(state, goal);
+        }
+
         // Khoảng cách hình chiếu 2D
         let h2d = 0;
         if (HEURISTIC_TYPE === 'manhattan') {
