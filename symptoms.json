@@ -1,0 +1,501 @@
+﻿{
+    "id": "root",
+    "question": "Vùng cơ thể hoặc triệu chứng chính bạn đang gặp phải?",
+    "options": [
+        {
+            "label": "Đau/Khó chịu vùng bụng",
+            "next_node": {
+                "question": "Vị trí bụng bạn đang bị ảnh hưởng là ở đâu?",
+                "options": [
+                    {
+                        "label": "Vùng thượng vị (trên rốn)",
+                        "next_node": {
+                            "question": "Bạn có kèm các triệu chứng sau không?",
+                            "options": [
+                                {
+                                    "label": "Ợ chua, ợ nóng, đầy hơi",
+                                    "next_node": {
+                                        "question": "Triệu chứng kéo dài bao lâu?",
+                                        "options": [
+                                            {
+                                                "label": "Vài ngày đến vài tuần",
+                                                "next_node": {
+                                                    "question": "Mức độ đau như thế nào?",
+                                                    "options": [
+                                                        {
+                                                            "label": "Đau âm ỉ, khó chịu",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "Đau dữ dội, không giảm",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "Mới xuất hiện gần đây",
+                                                "next_node": {
+                                                    "question": "Bạn có nôn ói hoặc chán ăn không?",
+                                                    "options": [
+                                                        {
+                                                            "label": "Có",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "Không",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Đau lan ra lưng, nôn ói",
+                                    "next_node": {
+                                        "question": "Bạn có sốt hoặc vàng da không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Bụng dưới bên phải",
+                        "next_node": {
+                            "question": "Cơn đau có tăng khi ho, đi lại hoặc ấn vào không?",
+                            "options": [
+                                {
+                                    "label": "Có, đau tăng dần",
+                                    "next_node": {
+                                        "question": "Bạn có buồn nôn hoặc sốt nhẹ không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "next_node": {
+                                                    "question": "Bạn có chán ăn không?",
+                                                    "options": [
+                                                        {
+                                                            "label": "Có",
+                                                            "result": "Khoa Ngoại Tổng hợp",
+                                                            "department_id": "K_NGOAITONGHOP"
+                                                        },
+                                                        {
+                                                            "label": "Không",
+                                                            "result": "Khoa Ngoại Tổng hợp",
+                                                            "department_id": "K_NGOAITONGHOP"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "Không, chỉ đau khi ấn hoặc cử động",
+                                                "result": "Khoa Ngoại Tổng hợp",
+                                                "department_id": "K_NGOAITONGHOP"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Không, đau âm ỉ hoặc đầy bụng",
+                                    "next_node": {
+                                        "question": "Bạn có tiêu chảy hoặc táo bón không?",
+                                        "options": [
+                                            {
+                                                "label": "Tiêu chảy",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "Táo bón",
+                                                "result": "Khoa Ngoại Tổng hợp",
+                                                "department_id": "K_NGOAITONGHOP"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Bụng dưới bên trái hoặc quanh rốn",
+                        "next_node": {
+                            "question": "Bạn có kèm tiêu chảy hoặc buồn nôn không?",
+                            "options": [
+                                {
+                                    "label": "Có, tiêu chảy và buồn nôn",
+                                    "next_node": {
+                                        "question": "Đau có quặn từng cơn không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "next_node": {
+                                                    "question": "Bạn có sốt không?",
+                                                    "options": [
+                                                        {
+                                                            "label": "Có",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "Không",
+                                                            "result": "Khoa Tiêu hóa",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "Không, đau âm ỉ",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Chỉ đau âm ỉ, cảm giác đầy hơi",
+                                    "next_node": {
+                                        "question": "Bạn có thấy nặng bụng sau ăn không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Tiêu hóa",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Triệu chứng ở vùng Đầu - Mặt - Cổ",
+            "next_node": {
+                "question": "Bạn đang gặp triệu chứng ở đầu, mặt, cổ hay mắt?",
+                "options": [
+                    {
+                        "label": "Đầu",
+                        "next_node": {
+                            "question": "Loại đau đầu bạn gặp là gì?",
+                            "options": [
+                                {
+                                    "label": "Đau đầu dữ dội, buồn nôn, sợ ánh sáng",
+                                    "next_node": {
+                                        "question": "Triệu chứng này xuất hiện như thế nào?",
+                                        "options": [
+                                            {
+                                                "label": "Tái phát nhiều lần",
+                                                "result": "Khoa Thần kinh",
+                                                "department_id": "K_THANKINH"
+                                            },
+                                            {
+                                                "label": "Mới xuất hiện gần đây",
+                                                "result": "Khoa Thần kinh",
+                                                "department_id": "K_THANKINH"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Đau đầu ê ẩm, căng cơ cổ",
+                                    "next_node": {
+                                        "question": "Bạn có kèm cổ cứng hoặc chóng mặt không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Thần kinh",
+                                                "department_id": "K_THANKINH"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Thần kinh",
+                                                "department_id": "K_THANKINH"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Mắt",
+                        "next_node": {
+                            "question": "Triệu chứng ở mắt cụ thể là gì?",
+                            "options": [
+                                {
+                                    "label": "Đỏ mắt, xốn mắt, chảy nước nhiều",
+                                    "next_node": {
+                                        "question": "Bạn có thấy mờ mắt hoặc nhức mắt không?",
+                                        "options": [
+                                            {
+                                                "label": "Có mờ mắt",
+                                                "result": "Khoa Mắt",
+                                                "department_id": "K_MAT"
+                                            },
+                                            {
+                                                "label": "Chỉ đỏ và chảy nước",
+                                                "result": "Khoa Mắt",
+                                                "department_id": "K_MAT"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Mờ mắt, nhìn khó khăn",
+                                    "result": "Khoa Mắt",
+                                    "department_id": "K_MAT"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Họng hoặc mũi",
+                        "next_node": {
+                            "question": "Triệu chứng chủ yếu ở đâu?",
+                            "options": [
+                                {
+                                    "label": "Đau họng, khản tiếng, khó nuốt",
+                                    "next_node": {
+                                        "question": "Bạn có kèm sốt hoặc nổi hạch cổ không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Tai Mũi Họng",
+                                                "department_id": "K_TAIMUIHONG"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Tai Mũi Họng",
+                                                "department_id": "K_TAIMUIHONG"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Nghẹt mũi, chảy nước mũi, hắt hơi liên tục",
+                                    "result": "Khoa Tai Mũi Họng",
+                                    "department_id": "K_TAIMUIHONG"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Triệu chứng Hô hấp, Lồng ngực & Tim mạch",
+            "next_node": {
+                "question": "Bạn cảm thấy khó chịu nhiều nhất ở ngực hay hô hấp?",
+                "options": [
+                    {
+                        "label": "Ngực",
+                        "next_node": {
+                            "question": "Đau ngực có đặc điểm như thế nào?",
+                            "options": [
+                                {
+                                    "label": "Đau nhói ngực trái, lan ra vai/tay, hồi hộp",
+                                    "next_node": {
+                                        "question": "Bạn có ra mồ hôi lạnh hoặc chóng mặt không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Tim mạch",
+                                                "department_id": "K_TIMMACH"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Tim mạch",
+                                                "department_id": "K_TIMMACH"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Đau tức ngực khi gắng sức hoặc khi nghỉ ngơi",
+                                    "result": "Khoa Tim mạch",
+                                    "department_id": "K_TIMMACH"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Hô hấp",
+                        "next_node": {
+                            "question": "Triệu chứng hô hấp của bạn là gì?",
+                            "options": [
+                                {
+                                    "label": "Ho kéo dài, khò khè, khó thở",
+                                    "next_node": {
+                                        "question": "Bạn có cảm thấy nặng ngực hoặc đờm xanh vàng không?",
+                                        "options": [
+                                            {
+                                                "label": "Có",
+                                                "result": "Khoa Hô hấp",
+                                                "department_id": "K_HOHAP"
+                                            },
+                                            {
+                                                "label": "Không",
+                                                "result": "Khoa Hô hấp",
+                                                "department_id": "K_HOHAP"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Thở nhanh, hụt hơi khi gắng sức",
+                                    "result": "Khoa Hô hấp",
+                                    "department_id": "K_HOHAP"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Trẻ em dưới 15 tuổi có triệu chứng bệnh",
+            "next_node": {
+                "question": "Bé đang gặp biểu hiện chính nào?",
+                "options": [
+                    {
+                        "label": "Sốt cao kèm ho, biếng ăn, quấy khóc",
+                        "next_node": {
+                            "question": "Bé có tiêu chảy hoặc nôn mửa không?",
+                            "options": [
+                                {
+                                    "label": "Có",
+                                    "next_node": {
+                                        "question": "Tình trạng mất nước của bé như thế nào?",
+                                        "options": [
+                                            {
+                                                "label": "Uống ít, miệng khô",
+                                                "result": "Khoa Nhi",
+                                                "department_id": "K_NHIKHOA"
+                                            },
+                                            {
+                                                "label": "Vẫn uống được nhưng mệt mỏi",
+                                                "result": "Khoa Nhi",
+                                                "department_id": "K_NHIKHOA"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Không, chỉ sốt và quấy khóc",
+                                    "result": "Khoa Nhi",
+                                    "department_id": "K_NHIKHOA"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Phát ban toàn thân kèm sốt",
+                        "next_node": {
+                            "question": "Phát ban có ngứa hoặc bỏng rát không?",
+                            "options": [
+                                {
+                                    "label": "Có",
+                                    "next_node": {
+                                        "question": "Phát ban lan nhanh hay chỉ ở một vùng?",
+                                        "options": [
+                                            {
+                                                "label": "Lan nhanh toàn thân",
+                                                "result": "Khoa Nhi",
+                                                "department_id": "K_NHIKHOA"
+                                            },
+                                            {
+                                                "label": "Chủ yếu ở mặt hoặc thân",
+                                                "result": "Khoa Nhi",
+                                                "department_id": "K_NHIKHOA"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Không, chỉ phát ban và sốt",
+                                    "result": "Khoa Nhi",
+                                    "department_id": "K_NHIKHOA"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Triệu chứng nhiễm trùng hoặc sốt cao dịch tễ",
+            "next_node": {
+                "question": "Dạng sốt hoặc nhiễm trùng bạn đang gặp là gì?",
+                "options": [
+                    {
+                        "label": "Sốt cao liên tục, nhức mỏi cơ xương khớp",
+                        "next_node": {
+                            "question": "Bạn có kèm ho, đau họng hoặc tiêu chảy không?",
+                            "options": [
+                                {
+                                    "label": "Có ho hoặc đau họng",
+                                    "result": "Khoa Truyền nhiễm",
+                                    "department_id": "K_TRUYENNHEM"
+                                },
+                                {
+                                    "label": "Có tiêu chảy",
+                                    "result": "Khoa Truyền nhiễm",
+                                    "department_id": "K_TRUYENNHEM"
+                                },
+                                {
+                                    "label": "Chỉ sốt và mệt mỏi",
+                                    "result": "Khoa Truyền nhiễm",
+                                    "department_id": "K_TRUYENNHEM"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Phát ban nghi sởi, thủy đậu hoặc sốt xuất huyết",
+                        "next_node": {
+                            "question": "Phát ban có kèm chảy máu, đau đầu hoặc đau bụng không?",
+                            "options": [
+                                {
+                                    "label": "Có chảy máu hoặc đau bụng dữ dội",
+                                    "result": "Khoa Truyền nhiễm",
+                                    "department_id": "K_TRUYENNHEM"
+                                },
+                                {
+                                    "label": "Chỉ phát ban và sốt",
+                                    "result": "Khoa Truyền nhiễm",
+                                    "department_id": "K_TRUYENNHEM"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
