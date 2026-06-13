@@ -33,7 +33,19 @@
       { "id": "P_T1_NHI", "name": "Nhà P - Nhi khoa & Điện quang", "x": 35, "y": 52, "z": 1, "type": "POI", "building": "P" },
       { "id": "P_T3_PHUSAN", "name": "Nhà P - Khoa Phụ Sản", "x": 35, "y": 52, "z": 3, "type": "POI", "building": "P" },
       { "id": "P_ELEV_1", "name": "Thang máy P Tầng 1", "x": 33, "y": 50, "z": 1, "type": "ELEVATOR", "building": "P" },
-      { "id": "P_ELEV_3", "name": "Thang máy P Tầng 3", "x": 33, "y": 50, "z": 3, "type": "ELEVATOR", "building": "P" }
+      { "id": "P_ELEV_3", "name": "Thang máy P Tầng 3", "x": 33, "y": 50, "z": 3, "type": "ELEVATOR", "building": "P" },
+      
+      { "id": "K2_STAIR_1", "name": "Thang bộ K2 Tầng 1", "x": 73, "y": 70, "z": 1, "type": "STAIRS", "building": "K2" },
+      { "id": "K2_STAIR_2", "name": "Thang bộ K2 Tầng 2", "x": 73, "y": 70, "z": 2, "type": "STAIRS", "building": "K2" },
+      { "id": "K2_STAIR_3", "name": "Thang bộ K2 Tầng 3", "x": 73, "y": 70, "z": 3, "type": "STAIRS", "building": "K2" },
+      { "id": "K1_STAIR_1", "name": "Thang bộ K1 Tầng 1", "x": 78, "y": 64, "z": 1, "type": "STAIRS", "building": "K1" },
+      { "id": "K1_STAIR_2", "name": "Thang bộ K1 Tầng 2", "x": 78, "y": 64, "z": 2, "type": "STAIRS", "building": "K1" },
+      { "id": "K1_STAIR_3", "name": "Thang bộ K1 Tầng 3", "x": 78, "y": 64, "z": 3, "type": "STAIRS", "building": "K1" },
+      { "id": "Q_STAIR_1", "name": "Thang bộ Q Tầng 1", "x": 51, "y": 48, "z": 1, "type": "STAIRS", "building": "Q" },
+      { "id": "Q_STAIR_7", "name": "Thang bộ Q Tầng 7", "x": 51, "y": 48, "z": 7, "type": "STAIRS", "building": "Q" },
+      { "id": "Q_STAIR_14", "name": "Thang bộ Q Tầng 14", "x": 51, "y": 48, "z": 14, "type": "STAIRS", "building": "Q" },
+      { "id": "P_STAIR_1", "name": "Thang bộ P Tầng 1", "x": 32, "y": 50, "z": 1, "type": "STAIRS", "building": "P" },
+      { "id": "P_STAIR_3", "name": "Thang bộ P Tầng 3", "x": 32, "y": 50, "z": 3, "type": "STAIRS", "building": "P" }
     ],
     "edges": [
       { "from": "GATE_4", "to": "K2_SANH_T1", "weight": 20, "type": "walk", "description": "Đi bộ từ cổng 4 vào K2" },
@@ -60,7 +72,28 @@
       { "from": "K1_ELEV_1", "to": "K1_ELEV_2", "weight": 20, "type": "elevator", "description": "Lên tầng 2 K1" },
       { "from": "Q_ELEV_1", "to": "Q_ELEV_7", "weight": 35, "type": "elevator", "description": "Nhà Q: Nhảy từ Tầng 1 lên Tầng 7" },
       { "from": "Q_ELEV_7", "to": "Q_ELEV_14", "weight": 35, "type": "elevator", "description": "Nhà Q: Nhảy từ Tầng 7 lên Tầng 14" },
-      { "from": "P_ELEV_1", "to": "P_ELEV_3", "weight": 25, "type": "elevator", "description": "Nhà P: Lên Tầng 3" }
+      { "from": "P_ELEV_1", "to": "P_ELEV_3", "weight": 25, "type": "elevator", "description": "Nhà P: Lên Tầng 3" },
+      
+      { "from": "K2_SANH_T1", "to": "K2_STAIR_1", "weight": 8, "type": "walk" },
+      { "from": "K2_STAIR_2", "to": "K2_T2_CXK", "weight": 10, "type": "walk" },
+      { "from": "K2_STAIR_3", "to": "K2_T3_NOIKHOA", "weight": 10, "type": "walk" },
+      { "from": "K2_STAIR_1", "to": "K2_STAIR_2", "weight": 30, "type": "stairs", "description": "Đi cầu thang bộ K2 Tầng 1 lên Tầng 2" },
+      { "from": "K2_STAIR_2", "to": "K2_STAIR_3", "weight": 30, "type": "stairs", "description": "Đi cầu thang bộ K2 Tầng 2 lên Tầng 3" },
+      
+      { "from": "K1_SANH_T1", "to": "K1_STAIR_1", "weight": 5, "type": "walk" },
+      { "from": "K1_STAIR_2", "to": "K1_T2_CLS", "weight": 12, "type": "walk" },
+      { "from": "K1_STAIR_1", "to": "K1_STAIR_2", "weight": 30, "type": "stairs", "description": "Đi cầu thang bộ K1 Tầng 1 lên Tầng 2" },
+      { "from": "K1_STAIR_2", "to": "K1_STAIR_3", "weight": 30, "type": "stairs", "description": "Đi cầu thang bộ K1 Tầng 2 lên Tầng 3" },
+      
+      { "from": "Q_SANH_T1", "to": "Q_STAIR_1", "weight": 5, "type": "walk" },
+      { "from": "Q_STAIR_7", "to": "Q_T7_CTCH", "weight": 15, "type": "walk" },
+      { "from": "Q_STAIR_14", "to": "Q_T14_HUYETHOC", "weight": 15, "type": "walk" },
+      { "from": "Q_STAIR_1", "to": "Q_STAIR_7", "weight": 75, "type": "stairs", "description": "Đi cầu thang bộ Nhà Q Tầng 1 lên Tầng 7" },
+      { "from": "Q_STAIR_7", "to": "Q_STAIR_14", "weight": 75, "type": "stairs", "description": "Đi cầu thang bộ Nhà Q Tầng 7 lên Tầng 14" },
+      
+      { "from": "P_SANH_T1", "to": "P_STAIR_1", "weight": 6, "type": "walk" },
+      { "from": "P_STAIR_3", "to": "P_T3_PHUSAN", "weight": 15, "type": "walk" },
+      { "from": "P_STAIR_1", "to": "P_STAIR_3", "weight": 50, "type": "stairs", "description": "Đi cầu thang bộ Nhà P Tầng 1 lên Tầng 3" }
     ]
   }
 }
