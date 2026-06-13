@@ -65,10 +65,10 @@ class PriorityQueue3D {
  * @param {Object} config - Các trọng số cấu hình thuật toán
  */
 function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
-    // 1. Các trọng số mặc định cho di chuyển dọc và đổi tầng
-    const C_FLOOR = config.c_floor || 15.0;       // Chi phí đi dọc giữa 2 tầng kề nhau
-    const W_ELEVATOR = config.w_elevator || 30.0; // Thời gian chờ thang máy (chỉ phạt khi đổi tầng)
-    const PENALTY_CONGESTED = config.penalty_congested || 7.0; // Chi phí phạt khi đi qua ô ùn tắc
+
+    // 1. Các trọng số mặc định cho di chuyển dọc và ô ùn tắc (khoảng cách quy đổi)
+    const C_FLOOR = config.c_floor || 15.0;       // Độ dài đường đi dọc giữa 2 tầng kề nhau (quy đổi ra mét)
+    const PENALTY_CONGESTED = config.penalty_congested || 7.0; // Chi phí quãng đường phạt khi qua ô ùn tắc
     const HEURISTIC_TYPE = config.heuristic || 'manhattan';    // 'manhattan' hoặc 'euclidean'
     const customHeuristic = config.customHeuristic;            // Hàm heuristic tự định nghĩa tùy biến từ bên ngoài
 
@@ -76,37 +76,81 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
     const CELL_WALKABLE = 0;
     const CELL_WALL = 1;
     const CELL_CONGESTED = 2;
-    const CELL_ELEVATOR = 4; // Ô thang máy
-    const CELL_STAIRS = 5;   // Ô thang bộ
+    const CELL_ELEVATOR = 4; // Ô chuyển tầng (thang máy)
+    const CELL_STAIRS = 5;   // Ô chuyển tầng (thang bộ)
 
-    // 2. Định nghĩa hàm Heuristic h(n) đa tầng
+    // Lập danh sách các ô thang máy/thang bộ trên lưới
+    const verticalNodes = [];
+    for (let zStr in multiFloorGrid) {
+        const z = parseInt(zStr);
+        const grid2D = multiFloorGrid[z];
+        for (let r = 0; r < grid2D.length; r++) {
+            for (let c = 0; c < grid2D[r].length; c++) {
+                if (grid2D[r][c] === CELL_ELEVATOR || grid2D[r][c] === CELL_STAIRS) {
+                    if (!verticalNodes.some(n => n.r === r && n.c === c)) {
+                        verticalNodes.push({ r, c });
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Định nghĩa hàm Heuristic h(n) đa tầng cải tiến (Elevator-Aware Heuristic)
     const heuristic = (state) => {
         // Nếu truyền vào hàm tùy biến từ bên ngoài, ưu tiên sử dụng
         if (typeof customHeuristic === 'function') {
             return customHeuristic(state, goal);
         }
 
-        // Khoảng cách hình chiếu 2D
-        let h2d = 0;
-        if (HEURISTIC_TYPE === 'manhattan') {
-            h2d = Math.abs(state.r - goal.r) + Math.abs(state.c - goal.c);
-        } else {
-            h2d = Math.sqrt(Math.pow(state.r - goal.r, 2) + Math.pow(state.c - goal.c, 2));
+        // Nếu cùng tầng, Heuristic bằng khoảng cách 2D trực tiếp tới đích
+        if (state.z === goal.z) {
+            if (HEURISTIC_TYPE === 'manhattan') {
+                return Math.abs(state.r - goal.r) + Math.abs(state.c - goal.c);
+            } else {
+                return Math.sqrt(Math.pow(state.r - goal.r, 2) + Math.pow(state.c - goal.c, 2));
+            }
         }
 
-        // Chi phí di chuyển thẳng đứng 3D
-        const deltaZ = Math.abs(state.z - goal.z);
-        const h3d = deltaZ * C_FLOOR + (state.z !== goal.z ? W_ELEVATOR : 0);
+        // Nếu khác tầng, tìm đường đi qua trạm trung chuyển (thang máy/thang bộ) tối ưu nhất
+        let minH = Infinity;
+        if (verticalNodes.length > 0) {
+            for (let i = 0; i < verticalNodes.length; i++) {
+                const e = verticalNodes[i];
+                let h2dToE = 0;
+                let h2dFromE = 0;
+                if (HEURISTIC_TYPE === 'manhattan') {
+                    h2dToE = Math.abs(state.r - e.r) + Math.abs(state.c - e.c);
+                    h2dFromE = Math.abs(e.r - goal.r) + Math.abs(e.c - goal.c);
+                } else {
+                    h2dToE = Math.sqrt(Math.pow(state.r - e.r, 2) + Math.pow(state.c - e.c, 2));
+                    h2dFromE = Math.sqrt(Math.pow(e.r - goal.r, 2) + Math.pow(e.c - goal.c, 2));
+                }
+                const hTotal = h2dToE + Math.abs(state.z - goal.z) * C_FLOOR + h2dFromE;
+                if (hTotal < minH) {
+                    minH = hTotal;
+                }
+            }
+        }
 
-        return h2d + h3d;
+        if (minH === Infinity) {
+            // Fallback nếu không có thang máy/thang bộ nào được cấu hình
+            let h2d = 0;
+            if (HEURISTIC_TYPE === 'manhattan') {
+                h2d = Math.abs(state.r - goal.r) + Math.abs(state.c - goal.c);
+            } else {
+                h2d = Math.sqrt(Math.pow(state.r - goal.r, 2) + Math.pow(state.c - goal.c, 2));
+            }
+            minH = h2d + Math.abs(state.z - goal.z) * C_FLOOR;
+        }
+
+        return minH;
     };
-
     // 3. Khởi tạo các cấu trúc dữ liệu A*
     const openSet = new PriorityQueue3D();
     const closedSet = new Set();
 
     // Lưu vết đường đi và chi phí: key format: "r,c,z"
-    const cellMeta = {}; 
+    const cellMeta = {};
     const makeKey = (s) => `${s.r},${s.c},${s.z}`;
 
     const startKey = makeKey(start);
@@ -185,32 +229,23 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
                 openSet.enqueue(nextState, cellMeta[nextKey].f);
             }
         }
-
         // --- NHÓM 2: LẤY CÁC Ô LIÊN KẾT DỌC (ĐỔI TẦNG QUA THANG MÁY/THANG BỘ) ---
         if (currentCellType === CELL_ELEVATOR || currentCellType === CELL_STAIRS) {
-            // Cho phép di chuyển lên tầng z+1 hoặc xuống tầng z-1 tại đúng tọa độ (r, c) này
-            const floorOffsets = [-1, 1];
-            
-            for (let offset of floorOffsets) {
-                const nextZ = curr.z + offset;
+            // Cho phép di chuyển trực tiếp đến các tầng khác tại cùng tọa độ này
+            for (let nextZStr in multiFloorGrid) {
+                const nextZ = parseInt(nextZStr);
+                if (nextZ === curr.z) continue; // Bỏ qua tầng hiện tại
+
                 const nextR = curr.r;
                 const nextC = curr.c;
-
-                // Kiểm tra tầng tiếp theo có tồn tại không
-                if (!multiFloorGrid[nextZ]) continue;
 
                 const targetCellType = multiFloorGrid[nextZ][nextR][nextC];
                 // Chỉ cho phép kết nối nếu tầng đích cũng có Elevator/Stairs tại vị trí tương ứng
                 if (targetCellType === CELL_WALL) continue;
 
-                // Chi phí đi thang máy/thang bộ:
-                // Nếu đi thang bộ thì mệt hơn (phạt nhiều hơn), thang máy thì nhanh hơn nhưng tốn thời gian chờ
-                let verticalCost = C_FLOOR;
-                if (currentCellType === CELL_ELEVATOR) {
-                    verticalCost += W_ELEVATOR; // Phạt thời gian chờ thang máy
-                } else {
-                    verticalCost += W_ELEVATOR * 0.5; // Thang bộ không phải chờ nhưng đi mệt hơn
-                }
+                // Chi phí dọc đổi tầng: chỉ tính quãng đường vật lý di chuyển dọc
+                const floorDiff = Math.abs(nextZ - curr.z);
+                const verticalCost = floorDiff * C_FLOOR;
 
                 const nextState = { r: nextR, c: nextC, z: nextZ };
                 const nextKey = makeKey(nextState);
@@ -230,84 +265,83 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
                 }
             }
         }
-    }
 
-    // 5. Kết xuất kết quả đường đi ngược từ đích về xuất phát
-    if (goalReached) {
-        const path = [];
-        let temp = goal;
-        while (temp !== null) {
-            path.push(temp);
-            const tempKey = makeKey(temp);
-            temp = cellMeta[tempKey].parent;
+        // 5. Kết xuất kết quả đường đi ngược từ đích về xuất phát
+        if (goalReached) {
+            const path = [];
+            let temp = goal;
+            while (temp !== null) {
+                path.push(temp);
+                const tempKey = makeKey(temp);
+                temp = cellMeta[tempKey].parent;
+            }
+            path.reverse();
+
+            return {
+                success: true,
+                path: path,
+                totalCost: cellMeta[makeKey(goal)].g,
+                exploredCount: exploredCount
+            };
         }
-        path.reverse();
 
         return {
-            success: true,
-            path: path,
-            totalCost: cellMeta[makeKey(goal)].g,
+            success: false,
+            path: [],
+            totalCost: Infinity,
             exploredCount: exploredCount
         };
     }
 
-    return {
-        success: false,
-        path: [],
-        totalCost: Infinity,
-        exploredCount: exploredCount
-    };
-}
+    // ==========================================
+    // THỬ NGHIỆM ĐỒ THỊ 3D GIẢ LẬP ĐỂ TEST THUẬT TOÁN
+    // ==========================================
+    if (typeof window === 'undefined') {
+        // Giả lập ma trận lưới 3 tầng (z = 0, 1, 2)
+        // Kích thước lưới mỗi tầng: 5 hàng x 5 cột
+        // Ký tự: 0 = Đi được, 1 = Tường, 2 = Ùn tắc, 4 = Thang máy
+        const mockGrids = {
+            0: [ // Tầng trệt
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 1, 4], // Thang máy ở (2, 4)
+                [0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
+            1: [ // Tầng 1
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 1, 4], // Thang máy kết nối ở (2, 4)
+                [0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0]
+            ],
+            2: [ // Tầng 2 (Đích đến nằm ở đây)
+                [0, 0, 0, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 1, 4], // Thang máy ở (2, 4)
+                [0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0]
+            ]
+        };
 
-// ==========================================
-// THỬ NGHIỆM ĐỒ THỊ 3D GIẢ LẬP ĐỂ TEST THUẬT TOÁN
-// ==========================================
-if (typeof window === 'undefined') {
-    // Giả lập ma trận lưới 3 tầng (z = 0, 1, 2)
-    // Kích thước lưới mỗi tầng: 5 hàng x 5 cột
-    // Ký tự: 0 = Đi được, 1 = Tường, 2 = Ùn tắc, 4 = Thang máy
-    const mockGrids = {
-        0: [ // Tầng trệt
-            [0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0],
-            [0, 0, 0, 1, 4], // Thang máy ở (2, 4)
-            [0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0]
-        ],
-        1: [ // Tầng 1
-            [0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0],
-            [0, 0, 0, 1, 4], // Thang máy kết nối ở (2, 4)
-            [0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0]
-        ],
-        2: [ // Tầng 2 (Đích đến nằm ở đây)
-            [0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 0],
-            [0, 0, 0, 1, 4], // Thang máy ở (2, 4)
-            [0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0]
-        ]
-    };
+        const startPoint = { r: 0, c: 0, z: 0 }; // Xuất phát: Tầng trệt, ô (0,0)
+        const goalPoint = { r: 4, c: 4, z: 2 };  // Đích đến: Tầng 2, ô (4,4)
 
-    const startPoint = { r: 0, c: 0, z: 0 }; // Xuất phát: Tầng trệt, ô (0,0)
-    const goalPoint = { r: 4, c: 4, z: 2 };  // Đích đến: Tầng 2, ô (4,4)
+        console.log("=== ĐANG CHẠY THỬ NGHIỆM TÌM ĐƯỜNG A* 3D ===");
+        console.log("Điểm bắt đầu:", startPoint);
+        console.log("Điểm kết thúc:", goalPoint);
 
-    console.log("=== ĐANG CHẠY THỬ NGHIỆM TÌM ĐƯỜNG A* 3D ===");
-    console.log("Điểm bắt đầu:", startPoint);
-    console.log("Điểm kết thúc:", goalPoint);
+        const result = executeAStar3D(startPoint, goalPoint, mockGrids);
 
-    const result = executeAStar3D(startPoint, goalPoint, mockGrids);
-    
-    if (result.success) {
-        console.log("Tìm đường thành công!");
-        console.log("Tổng chi phí (g):", result.totalCost);
-        console.log("Số ô đã duyệt qua:", result.exploredCount);
-        console.log("Lộ trình chi tiết:");
-        result.path.forEach((node, idx) => {
-            console.log(`Bước ${idx + 1}: Hàng ${node.r}, Cột ${node.c}, Tầng ${node.z}`);
-        });
-    } else {
-        console.log("Không tìm thấy đường đi.");
+        if (result.success) {
+            console.log("Tìm đường thành công!");
+            console.log("Tổng chi phí (g):", result.totalCost);
+            console.log("Số ô đã duyệt qua:", result.exploredCount);
+            console.log("Lộ trình chi tiết:");
+            result.path.forEach((node, idx) => {
+                console.log(`Bước ${idx + 1}: Hàng ${node.r}, Cột ${node.c}, Tầng ${node.z}`);
+            });
+        } else {
+            console.log("Không tìm thấy đường đi.");
+        }
     }
-}
