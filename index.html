@@ -207,6 +207,20 @@
             animation: pulse 2s infinite;
         }
 
+        .cell.elevator {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #818cf8 !important;
+            font-size: 11px;
+        }
+
+        .cell.stairs {
+            background-color: rgba(20, 184, 166, 0.2);
+            border-color: rgba(20, 184, 166, 0.4);
+            color: #2dd4bf !important;
+            font-size: 11px;
+        }
+
         .cell.path {
             background-color: #06b6d4;
             border-color: #0891b2;
@@ -385,31 +399,49 @@
                         <div>
                             <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
                                 <i class="fa-solid fa-map-marked-alt text-cyan-400"></i> Sơ đồ thiết kế mặt bằng số hóa
-                                nội
-                                khu (Khu liên hợp Tòa K)
+                                nội khu (Khu liên hợp Tòa K)
                             </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Phân bổ 5 chuyên khoa khu chức năng hình học thực
-                                tế
-                            </p>
+                            <p class="text-xs text-slate-400 mt-0.5 font-semibold" id="floorTitleLabel">Tầng 0 (Sảnh
+                                tiếp đón)</p>
                         </div>
 
                         <div
-                            class="flex gap-3 text-[10px] font-bold text-slate-300 bg-slate-950/50 p-2.5 rounded-xl border border-white/5 shadow-inner">
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-3 h-3 rounded-md bg-cyan-500 block shadow-glow"></span> Vị trí của bạn
+                            class="flex items-center gap-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/5 shadow-inner">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase px-2">Xem Tầng:</span>
+                            <button id="btn-floor-0" onclick="changeRenderFloor(0)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all">Tầng
+                                0</button>
+                            <button id="btn-floor-1" onclick="changeRenderFloor(1)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Tầng
+                                1</button>
+                            <button id="btn-floor-2" onclick="changeRenderFloor(2)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Tầng
+                                2</button>
+                            <button id="btn-floor-3" onclick="changeRenderFloor(3)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Tầng
+                                3</button>
+                        </div>
+
+                        <div
+                            class="flex gap-2.5 text-[9px] font-bold text-slate-300 bg-slate-950/50 p-2 rounded-xl border border-white/5 shadow-inner">
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-cyan-500 block shadow-glow"></span> Vị trí</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-red-500 block shadow-glow"></span> Đích</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-indigo-500/50 border border-indigo-400 flex items-center justify-center text-[7px] text-white">🛗</span>
+                                Thang máy</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-teal-500/50 border border-teal-400 flex items-center justify-center text-[7px] text-white">🪜</span>
+                                Thang bộ</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-amber-500/30 border border-amber-500 block"></span> Ùn
+                                tắc</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-[#1e293b] border border-slate-600 block"></span> Tường
                             </div>
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-3 h-3 rounded-md bg-red-500 block shadow-glow"></span> Phòng đích đến</div>
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-3 h-3 rounded-md bg-amber-500/30 border border-amber-500 block"></span>
-                                Hành
-                                lang ùn tắc</div>
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-3 h-3 rounded-md bg-[#1e293b] border border-slate-600 block"></span> Tường
-                                tòa
-                                nhà</div>
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-3 h-3 rounded-md bg-cyan-400 block"></span> Lộ trình tối ưu</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-cyan-400 block"></span> Lộ trình</div>
                         </div>
                     </div>
 
@@ -659,8 +691,8 @@
                 {
                     id: 'dept_thankinh', label: 'Khoa Thần Kinh', x: 720, y: 275, type: 'dept', icon: 'fa-stethoscope',
                     rooms: [
-                        { name: 'Phòng Khám Thần Kinh 301', gridX: 2, gridY: 10, patients: 7 },
-                        { name: 'Phòng Điện Não Đồ 303', gridX: 2, gridY: 13, patients: 2 }
+                        { name: 'Phòng Khám Thần Kinh 301', gridX: 18, gridY: 3, patients: 7 },
+                        { name: 'Phòng Điện Não Đồ 303', gridX: 19, gridY: 3, patients: 2 }
                     ]
                 },
 
@@ -671,8 +703,8 @@
                 {
                     id: 'dept_timmach', label: 'Khoa Tim Mạch', x: 720, y: 375, type: 'dept', icon: 'fa-user-md',
                     rooms: [
-                        { name: 'Phòng Điều Áp Tim Mạch 401', gridX: 2, gridY: 2, patients: 11 },
-                        { name: 'Phòng Siêu Âm Tim 405', gridX: 2, gridY: 5, patients: 5 }
+                        { name: 'Phòng Điều Áp Tim Mạch 401', gridX: 1, gridY: 2, patients: 11 },
+                        { name: 'Phòng Siêu Âm Tim 405', gridX: 1, gridY: 5, patients: 5 }
                     ]
                 },
 
@@ -682,7 +714,7 @@
                 {
                     id: 'dept_xuongkhop', label: 'Khoa Xương Khớp', x: 720, y: 450, type: 'dept', icon: 'fa-kit-medical',
                     rooms: [
-                        { name: 'Phòng Chấn Thương Chỉnh Hình 501', gridX: 9, gridY: 2, patients: 1 }
+                        { name: 'Phòng Chấn Thương Chỉnh Hình 501', gridX: 8, gridY: 2, patients: 1 }
                     ]
                 }
             ],
@@ -701,8 +733,9 @@
         };
 
         const GRID_ROWS = 15; const GRID_COLS = 20;
-        let gridMatrix = [];
-        let startPos = { r: 1, c: 1 };
+        let multiFloorGrid = { 0: [], 1: [], 2: [], 3: [] };
+        let currentRenderFloor = 0;
+        let startPos = { r: 1, c: 1, z: 0 };
         let targetPos = null;
         let isMouseDown = false;
         let isShiftPressed = false;
@@ -721,11 +754,21 @@
             "18,5": "Khu Nội Soi Tiêu Hóa (Phòng 105)",
             "18,11": "Khoa Hô Hấp (Phòng 204)",
             "18,13": "Khu Đo Chức Năng Phổi",
-            "2,10": "Khoa Thần Kinh (Phòng 301)",
-            "2,13": "Phòng Điện Não Đồ 303",
-            "2,2": "Phòng Điều Áp Tim Mạch 401",
-            "2,5": "Phòng Siêu Âm Tim 405",
-            "9,2": "Phòng Chấn Thương Chỉnh Hình 501"
+            "18,3": "Khoa Thần Kinh (Phòng 301)",
+            "19,3": "Phòng Điện Não Đồ 303",
+            "1,2": "Phòng Điều Áp Tim Mạch 401",
+            "1,5": "Phòng Siêu Âm Tim 405",
+            "8,2": "Phòng Chấn Thương Chỉnh Hình 501",
+
+            // Nhãn vị trí Thang máy & Thang bộ liên tòa
+            "2,2": "Thang máy Tòa P",
+            "3,2": "Thang bộ Tòa P",
+            "9,2": "Thang máy Tòa Q",
+            "6,2": "Thang bộ Tòa Q",
+            "17,2": "Thang máy Tòa K2",
+            "16,2": "Thang bộ Tòa K2",
+            "17,12": "Thang máy Tòa K1",
+            "16,12": "Thang bộ Tòa K1"
         };
 
         const symptomContainer = document.getElementById('symptomContainer');
@@ -989,26 +1032,123 @@
          * 3. KIẾN TRÚC BLUEPRINT MẶT BẰNG PHÂN BỔ 5 KHU VỰC
          *******************************************************/
         function buildRealisticHospitalBlueprint() {
-            gridMatrix = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
+            // Khởi tạo tất cả các ô là tường (1) trước để thiết lập kết cấu chuẩn
+            for (let z = 0; z <= 3; z++) {
+                multiFloorGrid[z] = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(1));
+            }
 
-            // Xây dựng lõi tường kết cấu tòa nhà cố định
+            // --- CẤU HÌNH TẦNG 0 (NGOÀI TRỜI / MẶT ĐẤT) ---
+            // Tầng 0 chỉ có các trục hành lang đi bộ tự do kết nối các sảnh tòa nhà
             for (let r = 0; r < GRID_ROWS; r++) {
                 for (let c = 0; c < GRID_COLS; c++) {
-                    if (c === 4 && r > 0 && r < 12) gridMatrix[r][c] = 1;
-                    if (c === 15 && r >= 0 && r < 14) gridMatrix[r][c] = 1;
-                    if (r === 8 && c > 4 && c < 15) gridMatrix[r][c] = 1;
-
-                    // Thiết lập các điểm cửa ngõ thông phòng chức năng công cộng
-                    if ((c === 4 && r === 3) || (c === 4 && r === 10) || (c === 15 && r === 4) || (c === 15 && r === 12) || (r === 8 && c === 9)) {
-                        gridMatrix[r][c] = 0;
+                    // Trục đường ngang chính liên kết
+                    if (r === 2 || r === 6 || r === 8 || r === 12) {
+                        multiFloorGrid[0][r][c] = 0;
                     }
+                    // Trục đường dọc chính liên kết
+                    if (c === 2 || c === 9 || c === 17) {
+                        multiFloorGrid[0][r][c] = 0;
+                    }
+                }
+            }
+            // Đảm bảo các điểm xuất phát mặc định luôn walkable và được kết nối
+            multiFloorGrid[0][1][1] = 0;   // Sảnh tiếp đón K1
+            multiFloorGrid[0][2][1] = 0;   // Kết nối sảnh
+            multiFloorGrid[0][1][13] = 0;  // Cổng Giải Phóng
+            multiFloorGrid[0][2][13] = 0;  // Kết nối cổng
+            multiFloorGrid[0][13][7] = 0;  // Quầy cấp phát thuốc
+            multiFloorGrid[0][12][7] = 0;  // Kết nối quầy thuốc
 
-                    // Đồng bộ định vị vùng 5 chuyên khoa phòng khám thực tế
-                    if (c > 15 && r >= 1 && r <= 6) gridMatrix[r][c] = 3;  // Khu Tiêu Hóa
-                    if (c > 15 && r >= 10 && r <= 14) gridMatrix[r][c] = 3; // Khu Hô Hấp
-                    if (c < 4 && r >= 9 && r <= 14) gridMatrix[r][c] = 3;   // Khu Thần Kinh
-                    if (c < 4 && r >= 1 && r <= 6) gridMatrix[r][c] = 3;    // Khu Tim Mạch
-                    if (c >= 6 && c <= 12 && r >= 1 && r <= 3) gridMatrix[r][c] = 3; // Khu Xương Khớp
+            // --- CẤU HÌNH TẦNG 1 (HÀNH LANG LIÊN THÔNG TOÀN VIỆN) ---
+            // Tầng 1 cho phép di chuyển tự do giữa các tòa thông qua hành lang trung tâm
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    // Hành lang kết nối liên tòa nhà
+                    if (r === 7 || r === 8 || c === 5 || c === 14) {
+                        multiFloorGrid[1][r][c] = 0;
+                    }
+                    // Hành lang nội bộ của các khu vực
+                    if (r === 2 || r === 12 || c === 2 || c === 9 || c === 17) {
+                        multiFloorGrid[1][r][c] = 0;
+                    }
+                }
+            }
+
+            // --- CẤU HÌNH TẦNG 2 & TẦNG 3 (HÀNH LANG BỊ CÔ LẬP GIỮA CÁC TÒA) ---
+            // Trên các tầng cao, hành lang liên thông chung bị bịt kín (tường 1),
+            // người bệnh chỉ có thể đi lại trong phạm vi nội bộ tòa nhà và dùng thang máy đi xuống
+            for (let z of [2, 3]) {
+                for (let r = 0; r < GRID_ROWS; r++) {
+                    for (let c = 0; c < GRID_COLS; c++) {
+                        // Tòa P (Top-Left): c < 4, r <= 6 (Chỉ active ở Tầng 3)
+                        if (z === 3 && c === 2 && r <= 6) multiFloorGrid[z][r][c] = 0;
+                        if (z === 3 && r === 2 && c <= 3) multiFloorGrid[z][r][c] = 0;
+
+                        // Tòa Q (Top-Middle): c >= 6 && c <= 12, r <= 3 (Active ở Tầng 2 & 3)
+                        if (c === 9 && r <= 3) multiFloorGrid[z][r][c] = 0;
+                        if (r === 2 && c >= 6 && c <= 12) multiFloorGrid[z][r][c] = 0;
+
+                        // Tòa K2 (Top-Right): c > 15, r <= 6 (Active ở Tầng 2 & 3)
+                        if (c === 17 && r <= 6) multiFloorGrid[z][r][c] = 0;
+                        if (r === 2 && c >= 16) multiFloorGrid[z][r][c] = 0;
+
+                        // Tòa K1 (Bottom-Right): c > 15, r >= 10 (Active ở Tầng 2 & 3)
+                        if (c === 17 && r >= 10) multiFloorGrid[z][r][c] = 0;
+                        if (r === 12 && c >= 16) multiFloorGrid[z][r][c] = 0;
+                    }
+                }
+            }
+
+            // --- THIẾT LẬP VÙNG PHÒNG KHÁM (CHUYÊN KHOA) ---
+            // Tầng 1: Tiêu hóa (K2) và Tim mạch (P)
+            for (let r = 1; r <= 5; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[1][r][c] = 3;
+                for (let c = 0; c < 2; c++) multiFloorGrid[1][r][c] = 3;
+            }
+            // Tầng 1: Cấp cứu A9 (Bottom-Left)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 0; c < 2; c++) multiFloorGrid[1][r][c] = 3;
+            }
+
+            // Tầng 2: Hô hấp (K1) và Xương khớp (Q)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[2][r][c] = 3;
+            }
+            for (let r = 1; r <= 2; r++) {
+                for (let c = 7; c <= 11; c++) multiFloorGrid[2][r][c] = 3;
+            }
+
+            // Tầng 3: Thần kinh (K2) và Phụ sản (P)
+            for (let r = 1; r <= 5; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[3][r][c] = 3;
+                for (let c = 0; c < 2; c++) multiFloorGrid[3][r][c] = 3;
+            }
+            // Tầng 3: Nội Nhi (K1)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[3][r][c] = 3;
+            }
+
+            // --- THIẾT LẬP THANG MÁY CHO CÁC KHU TÒA ---
+            for (let z = 0; z <= 3; z++) {
+                // Thang máy Tòa P (Active ở Tầng 0, 1, 3)
+                if (z === 0 || z === 1 || z === 3) {
+                    multiFloorGrid[z][2][2] = 4;
+                }
+                // Thang máy Tòa Q (Active ở tất cả các tầng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][2][9] = 4;
+                }
+                // Thang máy Tòa K2 (Active ở tất cả các tầng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][2][17] = 4;
+                }
+                // Thang máy Tòa K1 (Active ở tất cả các tầng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][12][17] = 4;
+                }
+                // Lối vào trung chuyển A9 (Active ở Tầng 0 và 1)
+                if (z === 0 || z === 1) {
+                    multiFloorGrid[z][12][2] = 4;
                 }
             }
         }
@@ -1017,34 +1157,49 @@
             gridMapEl.innerHTML = '';
             gridMapEl.style.gridTemplateColumns = `repeat(${GRID_COLS}, 26px)`;
 
+            const currentGrid = multiFloorGrid[currentRenderFloor];
+
             for (let r = 0; r < GRID_ROWS; r++) {
                 for (let c = 0; c < GRID_COLS; c++) {
                     const cell = document.createElement('div');
                     cell.className = 'cell border-[0.5px] border-white/5';
                     cell.id = `cell-${r}-${c}`;
 
-                    if (gridMatrix[r][c] === 1) cell.classList.add('architectural-wall');
-                    if (gridMatrix[r][c] === 2) cell.classList.add('congested');
-                    if (gridMatrix[r][c] === 3) {
+                    const type = currentGrid[r][c];
+
+                    if (type === 1) cell.classList.add('architectural-wall');
+                    if (type === 2) cell.classList.add('congested');
+                    if (type === 3) {
                         cell.classList.add('room-zone');
                         if ((r + c) % 5 === 0) cell.textContent = '★';
                     }
+                    if (type === 4) {
+                        cell.classList.add('elevator');
+                        cell.innerHTML = '<i class="fa-solid fa-elevator text-[10px]"></i>';
+                    }
+                    if (type === 5) {
+                        cell.classList.add('stairs');
+                        cell.innerHTML = '<i class="fa-solid fa-stairs text-[10px]"></i>';
+                    }
 
-                    if (r === startPos.r && c === startPos.c) {
+                    if (r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) {
                         cell.className = 'cell start';
                         cell.innerHTML = '<i class="fa-solid fa-street-view text-xs"></i>';
                     }
-                    if (targetPos && r === targetPos.r && c === targetPos.c) {
+                    if (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) {
                         cell.className = 'cell end';
                         cell.innerHTML = '<i class="fa-solid fa-location-dot text-xs"></i>';
                     }
 
                     cell.addEventListener('mousedown', (e) => {
                         e.preventDefault();
-                        if ((r === startPos.r && c === startPos.c) || (targetPos && r === targetPos.r && c === targetPos.c) || gridMatrix[r][c] === 1) return;
+                        if ((r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) ||
+                            (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) ||
+                            type === 1 || type === 4 || type === 5) return;
+
                         isMouseDown = true;
                         if (isShiftPressed) {
-                            dragMode = (gridMatrix[r][c] === 2) ? 'clear-congest' : 'set-congest';
+                            dragMode = (type === 2) ? 'clear-congest' : 'set-congest';
                         }
                         updateCellWeight(r, c, dragMode);
                     });
@@ -1056,76 +1211,197 @@
         }
 
         function updateCellWeight(r, c, mode) {
-            if ((r === startPos.r && c === startPos.c) || (targetPos && r === targetPos.r && c === targetPos.c) || gridMatrix[r][c] === 1) return;
+            const type = multiFloorGrid[currentRenderFloor][r][c];
+            if ((r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) ||
+                (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) ||
+                type === 1 || type === 4 || type === 5) return;
+
             const el = document.getElementById(`cell-${r}-${c}`);
 
             if (mode === 'set-congest') {
-                gridMatrix[r][c] = 2; el.className = 'cell congested';
+                multiFloorGrid[currentRenderFloor][r][c] = 2; el.className = 'cell congested';
             } else if (mode === 'clear-congest') {
-                gridMatrix[r][c] = (REAL_WORLD_MAP_LABELS[`${c},${r}`] || gridMatrix[r][c] === 3) ? 3 : 0;
-                el.className = gridMatrix[r][c] === 3 ? 'cell room-zone' : 'cell border-[0.5px] border-white/5';
+                const isRoom = (currentRenderFloor === 1 && ((c > 15 && r >= 1 && r <= 6) || (c < 4 && r >= 1 && r <= 6))) ||
+                    (currentRenderFloor === 2 && ((c > 15 && r >= 10 && r <= 14) || (c >= 6 && c <= 12 && r >= 1 && r <= 3))) ||
+                    (currentRenderFloor === 3 && ((c > 15 && r >= 1 && r <= 6) || (c < 4 && r >= 1 && r <= 6) || (c > 15 && r >= 10 && r <= 14)));
+
+                multiFloorGrid[currentRenderFloor][r][c] = isRoom ? 3 : 0;
+                el.className = isRoom ? 'cell room-zone' : 'cell border-[0.5px] border-white/5';
+                if (isRoom && (r + c) % 5 === 0) el.textContent = '★';
+                else el.textContent = '';
             }
             executeAStarRoutingEngine();
         }
+
+        let active3DPath = [];
 
         function executeAStarRoutingEngine() {
             if (!targetPos) return;
             const startTime = performance.now();
 
-            document.querySelectorAll('.cell').forEach(el => el.classList.remove('path'));
+            // Xóa đánh dấu đường đi cũ trên UI
+            document.querySelectorAll('.cell').forEach(el => {
+                el.classList.remove('path');
+                const r = parseInt(el.id.split('-')[1]);
+                const c = parseInt(el.id.split('-')[2]);
+                const type = multiFloorGrid[currentRenderFloor][r][c];
+                if (type === 4) {
+                    el.innerHTML = '<i class="fa-solid fa-elevator text-[10px]"></i>';
+                } else if (type === 5) {
+                    el.innerHTML = '<i class="fa-solid fa-stairs text-[10px]"></i>';
+                } else if (r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) {
+                    el.innerHTML = '<i class="fa-solid fa-street-view text-xs"></i>';
+                } else if (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) {
+                    el.innerHTML = '<i class="fa-solid fa-location-dot text-xs"></i>';
+                } else if (type === 3) {
+                    if ((r + c) % 5 === 0) el.textContent = '★';
+                    else el.textContent = '';
+                } else {
+                    el.textContent = '';
+                }
+            });
 
+            const C_FLOOR = 15.0;
+            const PENALTY_CONGESTED = 7.0;
             const heuristicType = heuristicSelect.value;
-            const calculateHeuristic = (r, c) => {
-                return (heuristicType === 'manhattan') ?
-                    (Math.abs(r - targetPos.r) + Math.abs(c - targetPos.c)) :
-                    Math.sqrt(Math.pow(r - targetPos.r, 2) + Math.pow(c - targetPos.c, 2));
+
+            // Thu thập các tọa độ trung chuyển dọc (thang máy/thang bộ)
+            const verticalNodes = [];
+            for (let z = 0; z <= 3; z++) {
+                for (let r = 0; r < GRID_ROWS; r++) {
+                    for (let c = 0; c < GRID_COLS; c++) {
+                        const type = multiFloorGrid[z][r][c];
+                        if (type === 4 || type === 5) {
+                            if (!verticalNodes.some(n => n.r === r && n.c === c)) {
+                                verticalNodes.push({ r, c });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Hàm Heuristic 3D Elevator-Aware
+            const calculateHeuristic = (s) => {
+                if (s.z === targetPos.z) {
+                    return (heuristicType === 'manhattan') ?
+                        (Math.abs(s.r - targetPos.r) + Math.abs(s.c - targetPos.c)) :
+                        Math.sqrt(Math.pow(s.r - targetPos.r, 2) + Math.pow(s.c - targetPos.c, 2));
+                }
+
+                let minH = Infinity;
+                for (let i = 0; i < verticalNodes.length; i++) {
+                    const e = verticalNodes[i];
+                    let h2dToE = 0;
+                    let h2dFromE = 0;
+                    if (heuristicType === 'manhattan') {
+                        h2dToE = Math.abs(s.r - e.r) + Math.abs(s.c - e.c);
+                        h2dFromE = Math.abs(e.r - targetPos.r) + Math.abs(e.c - targetPos.c);
+                    } else {
+                        h2dToE = Math.sqrt(Math.pow(s.r - e.r, 2) + Math.pow(s.c - e.c, 2));
+                        h2dFromE = Math.sqrt(Math.pow(e.r - targetPos.r, 2) + Math.pow(e.c - targetPos.c, 2));
+                    }
+                    const hTotal = h2dToE + Math.abs(s.z - targetPos.z) * C_FLOOR + h2dFromE;
+                    if (hTotal < minH) {
+                        minH = hTotal;
+                    }
+                }
+                return minH;
             };
 
             const openHeap = new PriorityMinHeap();
             const closedSet = new Set();
             const openTracker = new Set();
 
-            const cellMeta = Array.from({ length: GRID_ROWS }, () =>
-                Array(GRID_COLS).fill(null).map(() => ({ f: Infinity, g: Infinity, h: Infinity, pR: -1, pC: -1 }))
-            );
+            const makeKey = (s) => `${s.r},${s.c},${s.z}`;
 
-            cellMeta[startPos.r][startPos.c] = { f: 0, g: 0, h: calculateHeuristic(startPos.r, startPos.c), pR: startPos.r, pC: startPos.c };
-            openHeap.push({ r: startPos.r, c: startPos.c, f: 0 });
-            openTracker.add(`${startPos.r},${startPos.c}`);
+            const cellMeta = {};
+            const startKey = makeKey(startPos);
+            cellMeta[startKey] = { f: 0, g: 0, h: calculateHeuristic(startPos), pR: -1, pC: -1, pZ: -1 };
 
-            let targetFound = false; let exploredNodesCount = 0;
+            openHeap.push({ r: startPos.r, c: startPos.c, z: startPos.z, f: cellMeta[startKey].h });
+            openTracker.add(startKey);
+
+            let targetFound = false;
+            let exploredNodesCount = 0;
             const dRow = [-1, 1, 0, 0, -1, -1, 1, 1];
             const dCol = [0, 0, -1, 1, -1, 1, -1, 1];
+            const moveCosts = [1.0, 1.0, 1.0, 1.0, 1.414, 1.414, 1.414, 1.414];
 
             while (!openHeap.isEmpty()) {
                 const current = openHeap.pop();
-                const currKey = `${current.r},${current.c}`;
+                const currKey = makeKey(current);
 
                 if (closedSet.has(currKey)) continue;
-                openTracker.delete(currKey); closedSet.add(currKey);
+                openTracker.delete(currKey);
+                closedSet.add(currKey);
                 exploredNodesCount++;
 
-                if (current.r === targetPos.r && current.c === targetPos.c) { targetFound = true; break; }
+                if (current.r === targetPos.r && current.c === targetPos.c && current.z === targetPos.z) {
+                    targetFound = true;
+                    break;
+                }
 
+                const currentCellType = multiFloorGrid[current.z][current.r][current.c];
+
+                // 1. Tìm kiếm trên cùng mặt sàn (8 hướng)
                 for (let i = 0; i < 8; i++) {
-                    const nR = current.r + dRow[i]; const nC = current.c + dCol[i];
+                    const nR = current.r + dRow[i];
+                    const nC = current.c + dCol[i];
+                    const nZ = current.z;
 
                     if (nR < 0 || nR >= GRID_ROWS || nC < 0 || nC >= GRID_COLS) continue;
-                    if (gridMatrix[nR][nC] === 1 || closedSet.has(`${nR},${nC}`)) continue;
 
-                    if (i >= 4) { if (gridMatrix[current.r][nC] === 1 || gridMatrix[nR][current.c] === 1) continue; }
+                    const nextCellType = multiFloorGrid[nZ][nR][nC];
+                    if (nextCellType === 1) continue; // Bỏ qua tường
 
-                    let stepBaseCost = (i < 4) ? 1.0 : 1.414;
-                    if (gridMatrix[nR][nC] === 2) stepBaseCost += 7.0;
+                    const nextKey = makeKey({ r: nR, c: nC, z: nZ });
+                    if (closedSet.has(nextKey)) continue;
 
-                    const potentialG = cellMeta[current.r][current.c].g + stepBaseCost;
-                    const hCost = calculateHeuristic(nR, nC);
+                    // Tránh đi chéo cắt góc tường
+                    if (i >= 4) {
+                        if (multiFloorGrid[nZ][current.r][nC] === 1 || multiFloorGrid[nZ][nR][current.c] === 1) continue;
+                    }
+
+                    let stepCost = moveCosts[i];
+                    if (nextCellType === 2) stepCost += PENALTY_CONGESTED; // Phạt ùn tắc
+
+                    const potentialG = cellMeta[currKey].g + stepCost;
+                    const hCost = calculateHeuristic({ r: nR, c: nC, z: nZ });
                     const fCost = potentialG + hCost;
 
-                    if (fCost < cellMeta[nR][nC].f) {
-                        cellMeta[nR][nC] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c };
-                        if (!openTracker.has(`${nR},${nC}`)) {
-                            openHeap.push({ r: nR, c: nC, f: fCost }); openTracker.add(`${nR},${nC}`);
+                    if (!cellMeta[nextKey] || fCost < cellMeta[nextKey].f) {
+                        cellMeta[nextKey] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c, pZ: current.z };
+                        if (!openTracker.has(nextKey)) {
+                            openHeap.push({ r: nR, c: nC, z: nZ, f: fCost });
+                            openTracker.add(nextKey);
+                        }
+                    }
+                }
+
+                // 2. Tìm kiếm liên kết thẳng đứng (Chuyển tầng)
+                if (currentCellType === 4 || currentCellType === 5) {
+                    for (let nZ = 0; nZ <= 3; nZ++) {
+                        if (nZ === current.z) continue;
+
+                        const targetCellType = multiFloorGrid[nZ][current.r][current.c];
+                        if (targetCellType === 1) continue; // Bỏ qua nếu tầng kia bị tường bịt kín
+
+                        const nextKey = makeKey({ r: current.r, c: current.c, z: nZ });
+                        if (closedSet.has(nextKey)) continue;
+
+                        const floorDiff = Math.abs(nZ - current.z);
+                        const verticalCost = floorDiff * C_FLOOR; // Chi phí di chuyển thẳng đứng vật lý
+
+                        const potentialG = cellMeta[currKey].g + verticalCost;
+                        const hCost = calculateHeuristic({ r: current.r, c: current.c, z: nZ });
+                        const fCost = potentialG + hCost;
+
+                        if (!cellMeta[nextKey] || fCost < cellMeta[nextKey].f) {
+                            cellMeta[nextKey] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c, pZ: current.z };
+                            if (!openTracker.has(nextKey)) {
+                                openHeap.push({ r: current.r, c: current.c, z: nZ, f: fCost });
+                                openTracker.add(nextKey);
+                            }
                         }
                     }
                 }
@@ -1136,28 +1412,37 @@
             document.getElementById('metricExplored').textContent = exploredNodesCount;
 
             if (targetFound) {
-                let nodePath = []; let traceR = targetPos.r, traceC = targetPos.c;
-                const totalCost = cellMeta[traceR][traceC].f;
+                active3DPath = [];
+                let trace = { r: targetPos.r, c: targetPos.c, z: targetPos.z };
+                const totalCost = cellMeta[makeKey(trace)].g;
 
-                while (!(cellMeta[traceR][traceC].pR === traceR && cellMeta[traceR][traceC].pC === traceC)) {
-                    nodePath.push({ r: traceR, c: traceC });
-                    let tmpR = cellMeta[traceR][traceC].pR; let tmpC = cellMeta[traceR][traceC].pC;
-                    traceR = tmpR; traceC = tmpC;
+                while (trace.r !== -1) {
+                    active3DPath.push({ r: trace.r, c: trace.c, z: trace.z });
+                    const meta = cellMeta[makeKey(trace)];
+                    trace = { r: meta.pR, c: meta.pC, z: meta.pZ };
                 }
-                nodePath.push({ r: startPos.r, c: startPos.c });
-                nodePath.reverse();
+                active3DPath.reverse();
 
-                document.getElementById('metricSteps').textContent = `${(nodePath.length - 1) * 2} mét`;
+                document.getElementById('metricSteps').textContent = `${(active3DPath.length - 1) * 2} mét`;
                 document.getElementById('metricCost').textContent = totalCost.toFixed(1);
 
-                nodePath.forEach(pt => {
-                    if (!(pt.r === startPos.r && pt.c === startPos.c) && !(pt.r === targetPos.r && pt.c === targetPos.c)) {
-                        document.getElementById(`cell-${pt.r}-${pt.c}`).classList.add('path');
+                // Tô màu đường đi trên giao diện tầng đang xem
+                active3DPath.forEach(pt => {
+                    if (pt.z === currentRenderFloor) {
+                        const isStart = (pt.r === startPos.r && pt.c === startPos.c && pt.z === startPos.z);
+                        const isEnd = (pt.r === targetPos.r && pt.c === targetPos.c && pt.z === targetPos.z);
+                        if (!isStart && !isEnd) {
+                            const cellEl = document.getElementById(`cell-${pt.r}-${pt.c}`);
+                            if (cellEl) {
+                                cellEl.classList.add('path');
+                            }
+                        }
                     }
                 });
 
-                generateHumanReadableDirections(nodePath);
+                generateHumanReadableDirections(active3DPath);
             } else {
+                active3DPath = [];
                 document.getElementById('metricSteps').textContent = 'N/A';
                 document.getElementById('metricCost').textContent = 'N/A';
                 stepDirectionsList.innerHTML = `<div class="text-rose-400 text-center font-semibold mt-4"><i class="fa-solid fa-triangle-exclamation"></i> Không có lối đi, tuyến đường bị cô lập!</div>`;
@@ -1170,15 +1455,36 @@
 
             directions.push({
                 icon: 'fa-play-circle text-cyan-400',
-                text: `Khởi hành tại <strong class="text-white">${REAL_WORLD_MAP_LABELS[`${startPos.c},${startPos.r}`] || "Điểm dừng trước"}</strong>.`
+                text: `Khởi hành tại <strong class="text-white">${REAL_WORLD_MAP_LABELS[`${startPos.c},${startPos.r}`] || "Điểm xuất phát"}</strong> (Tầng ${startPos.z}).`
             });
 
             let currentSegmentLength = 0;
             let lastDirection = null;
 
             for (let i = 0; i < path.length - 1; i++) {
-                let curr = path[i]; let next = path[i + 1];
-                let dr = next.r - curr.r; let dc = next.c - curr.c;
+                let curr = path[i];
+                let next = path[i + 1];
+
+                if (curr.z !== next.z) {
+                    if (currentSegmentLength > 0) {
+                        directions.push({
+                            icon: 'fa-arrow-turn-up text-cyan-300',
+                            text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                        });
+                        currentSegmentLength = 0;
+                        lastDirection = null;
+                    }
+                    const type = multiFloorGrid[curr.z][curr.r][curr.c];
+                    const transName = (type === 4) ? "Thang máy" : "Thang bộ";
+                    directions.push({
+                        icon: 'fa-elevator text-indigo-400 animate-pulse',
+                        text: `Đi vào <strong class="text-white">${transName}</strong>, di chuyển từ <strong class="text-cyan-300">Tầng ${curr.z}</strong> lên/xuống <strong class="text-cyan-300">Tầng ${next.z}</strong>.`
+                    });
+                    continue;
+                }
+
+                let dr = next.r - curr.r;
+                let dc = next.c - curr.c;
                 let currentDirection = "";
 
                 if (dr === -1 && dc === 0) currentDirection = "Đi thẳng theo hành lang hướng Bắc";
@@ -1188,23 +1494,31 @@
                 else currentDirection = "Di chuyển chéo xuyên sảnh tòa nhà";
 
                 if (lastDirection === null) {
-                    lastDirection = currentDirection; currentSegmentLength = 2;
+                    lastDirection = currentDirection;
+                    currentSegmentLength = 2;
                 } else if (currentDirection === lastDirection) {
                     currentSegmentLength += 2;
                 } else {
-                    directions.push({ icon: 'fa-arrow-turn-up text-cyan-300', text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.` });
-                    lastDirection = currentDirection; currentSegmentLength = 2;
+                    directions.push({
+                        icon: 'fa-arrow-turn-up text-cyan-300',
+                        text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                    });
+                    lastDirection = currentDirection;
+                    currentSegmentLength = 2;
                 }
             }
 
-            if (lastDirection !== null) {
-                directions.push({ icon: 'fa-arrow-trend-up text-cyan-300', text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.` });
+            if (currentSegmentLength > 0 && lastDirection !== null) {
+                directions.push({
+                    icon: 'fa-arrow-trend-up text-cyan-300',
+                    text: `Tiến bước thêm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                });
             }
 
             const endStop = medicalItinerary[currentItineraryIndex];
             directions.push({
                 icon: 'fa-flag-checkered text-rose-500 animate-pulse',
-                text: `Đến đích: Di chuyển thẳng vào bên trong <strong class="text-emerald-400">${endStop.roomName}</strong>.`
+                text: `Đến đích: Di chuyển thẳng vào bên trong <strong class="text-emerald-400">${endStop.roomName}</strong> (Tầng ${targetPos.z}).`
             });
 
             directions.forEach(dir => {
@@ -1218,11 +1532,63 @@
             });
         }
 
+        function changeRenderFloor(z) {
+            currentRenderFloor = z;
+
+            const floorLabels = {
+                0: "Tầng 0 (Sảnh tiếp đón)",
+                1: "Tầng 1 (Khoa Tiêu Hóa & Tim Mạch)",
+                2: "Tầng 2 (Khoa Hô Hấp & Xương Khớp)",
+                3: "Tầng 3 (Khoa Thần Kinh)"
+            };
+            document.getElementById('floorTitleLabel').textContent = floorLabels[z] || `Tầng ${z}`;
+
+            for (let i = 0; i <= 3; i++) {
+                const btn = document.getElementById(`btn-floor-${i}`);
+                if (btn) {
+                    if (i === z) {
+                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                    } else {
+                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                    }
+                }
+            }
+
+            renderHospitalArchitectureMap();
+
+            // Vẽ lại path nếu có
+            if (active3DPath && active3DPath.length > 0) {
+                active3DPath.forEach(pt => {
+                    if (pt.z === currentRenderFloor) {
+                        const isStart = (pt.r === startPos.r && pt.c === startPos.c && pt.z === startPos.z);
+                        const isEnd = (pt.r === targetPos.r && pt.c === targetPos.c && pt.z === targetPos.z);
+                        if (!isStart && !isEnd) {
+                            const cellEl = document.getElementById(`cell-${pt.r}-${pt.c}`);
+                            if (cellEl) {
+                                cellEl.classList.add('path');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
         function setupNavigationSegment() {
             if (medicalItinerary.length === 0) return;
 
             const stop = medicalItinerary[currentItineraryIndex];
-            targetPos = { r: stop.y, c: stop.x };
+
+            // Map Chuyên khoa với tầng cụ thể
+            let targetZ = 0;
+            if (stop.deptLabel.includes("Tiêu Hóa") || stop.deptLabel.includes("Tim Mạch")) {
+                targetZ = 1;
+            } else if (stop.deptLabel.includes("Hô Hấp") || stop.deptLabel.includes("Xương Khớp")) {
+                targetZ = 2;
+            } else if (stop.deptLabel.includes("Thần Kinh")) {
+                targetZ = 3;
+            }
+
+            targetPos = { r: stop.y, c: stop.x, z: targetZ };
 
             document.getElementById('currentNavTargetLabel').textContent = `${stop.deptLabel} - ${stop.roomName}`;
             document.getElementById('itineraryCounterBadge').textContent = `Chặng ${currentItineraryIndex + 1} / ${medicalItinerary.length}`;
@@ -1238,7 +1604,7 @@
                 nextStopBtn.className = "w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-extrabold text-white rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-cyan-900/20 mb-4 shrink-0";
             }
 
-            renderHospitalArchitectureMap();
+            changeRenderFloor(startPos.z);
             executeAStarRoutingEngine();
         }
 
@@ -1247,6 +1613,7 @@
 
             document.getElementById('proceedToNavBtn').addEventListener('click', () => {
                 currentItineraryIndex = 0;
+                startPos = { r: 1, c: 1, z: 0 }; // Khởi phát tại sảnh K1 tầng 0
                 const p1 = document.getElementById('phase1'); const p2 = document.getElementById('phase2');
                 p1.classList.add('-translate-x-full', 'opacity-0', 'pointer-events-none');
                 p2.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none'); p2.classList.add('translate-x-0');
@@ -1263,7 +1630,15 @@
             nextStopBtn.addEventListener('click', () => {
                 if (currentItineraryIndex < medicalItinerary.length - 1) {
                     const prevStop = medicalItinerary[currentItineraryIndex];
-                    startPos = { r: prevStop.y, c: prevStop.x };
+                    let prevZ = 0;
+                    if (prevStop.deptLabel.includes("Tiêu Hóa") || prevStop.deptLabel.includes("Tim Mạch")) {
+                        prevZ = 1;
+                    } else if (prevStop.deptLabel.includes("Hô Hấp") || prevStop.deptLabel.includes("Xương Khớp")) {
+                        prevZ = 2;
+                    } else if (prevStop.deptLabel.includes("Thần Kinh")) {
+                        prevZ = 3;
+                    }
+                    startPos = { r: prevStop.y, c: prevStop.x, z: prevZ };
                     currentItineraryIndex++;
                     setupNavigationSegment();
                 } else {
@@ -1292,8 +1667,9 @@
 
             document.getElementById('startSelect').addEventListener('change', (e) => {
                 const [c, r] = e.target.value.split(',').map(Number);
-                startPos = { r, c };
-                renderHospitalArchitectureMap(); executeAStarRoutingEngine();
+                startPos = { r, c, z: 0 };
+                changeRenderFloor(0);
+                executeAStarRoutingEngine();
             });
             heuristicSelect.addEventListener('change', executeAStarRoutingEngine);
         }
