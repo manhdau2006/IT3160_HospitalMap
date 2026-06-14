@@ -6,17 +6,17 @@ from diagnose_dfs import load_data, dfs_diagnose
 # Các ID này lấy từ file symptoms.json của TV1.
 # Tọa độ (r, c, z) bạn phải tự tùy chỉnh cho khớp với ma trận đồ thị thực tế của bạn.
 DEPARTMENT_MAP = {
-    "K_TIEUHOA":      {"r": 1, "c": 2, "z": 0},
-    "K_NGOAITONGHOP": {"r": 3, "c": 3, "z": 0},
-    "K_NHIKHOA":      {"r": 0, "c": 0, "z": 0},
-    
-    "K_THANKINH":     {"r": 2, "c": 1, "z": 1},
-    "K_MAT":          {"r": 0, "c": 4, "z": 1},
-    "K_TAIMUIHONG":   {"r": 4, "c": 0, "z": 1},
-    
-    "K_TIMMACH":      {"r": 1, "c": 1, "z": 2},
-    "K_HOHAP":        {"r": 3, "c": 2, "z": 2},
-    "K_TRUYENNHEM":   {"r": 4, "c": 4, "z": 2}
+    "K_TIEUHOA":      {"r": 12, "c": 16, "z": 2},
+    "K_NGOAITONGHOP": {"r": 5,  "c": 20, "z": 1},
+    "K_NHIKHOA":      {"r": 5,  "c": 22, "z": 3},
+
+    "K_THANKINH":     {"r": 12, "c": 16, "z": 3},
+    "K_MAT":          {"r": 12, "c": 16, "z": 1},
+    "K_TAIMUIHONG":   {"r": 10, "c": 14, "z": 1},
+
+    "K_TIMMACH":      {"r": 12, "c": 20, "z": 2},
+    "K_HOHAP":        {"r": 12, "c": 20, "z": 2},
+    "K_TRUYENNHEM":   {"r": 12, "c": 3,  "z": 2}
 }
 
 def get_goal_coordinate(department_id):
