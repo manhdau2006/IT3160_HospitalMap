@@ -380,122 +380,13 @@
         },
         {
             "label": "Trẻ em dưới 15 tuổi có triệu chứng bệnh",
-            "next_node": {
-                "question": "Bé đang gặp biểu hiện chính nào?",
-                "options": [
-                    {
-                        "label": "Sốt cao kèm ho, biếng ăn, quấy khóc",
-                        "next_node": {
-                            "question": "Bé có tiêu chảy hoặc nôn mửa không?",
-                            "options": [
-                                {
-                                    "label": "Có",
-                                    "next_node": {
-                                        "question": "Tình trạng mất nước của bé như thế nào?",
-                                        "options": [
-                                            {
-                                                "label": "Uống ít, miệng khô",
-                                                "result": "Khoa Nhi",
-                                                "department_id": "K_NHIKHOA"
-                                            },
-                                            {
-                                                "label": "Vẫn uống được nhưng mệt mỏi",
-                                                "result": "Khoa Nhi",
-                                                "department_id": "K_NHIKHOA"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "label": "Không, chỉ sốt và quấy khóc",
-                                    "result": "Khoa Nhi",
-                                    "department_id": "K_NHIKHOA"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "label": "Phát ban toàn thân kèm sốt",
-                        "next_node": {
-                            "question": "Phát ban có ngứa hoặc bỏng rát không?",
-                            "options": [
-                                {
-                                    "label": "Có",
-                                    "next_node": {
-                                        "question": "Phát ban lan nhanh hay chỉ ở một vùng?",
-                                        "options": [
-                                            {
-                                                "label": "Lan nhanh toàn thân",
-                                                "result": "Khoa Nhi",
-                                                "department_id": "K_NHIKHOA"
-                                            },
-                                            {
-                                                "label": "Chủ yếu ở mặt hoặc thân",
-                                                "result": "Khoa Nhi",
-                                                "department_id": "K_NHIKHOA"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "label": "Không, chỉ phát ban và sốt",
-                                    "result": "Khoa Nhi",
-                                    "department_id": "K_NHIKHOA"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
+            "result": "Khoa Nhi",
+            "department_id": "K_NHIKHOA"
         },
         {
             "label": "Triệu chứng nhiễm trùng hoặc sốt cao dịch tễ",
-            "next_node": {
-                "question": "Dạng sốt hoặc nhiễm trùng bạn đang gặp là gì?",
-                "options": [
-                    {
-                        "label": "Sốt cao liên tục, nhức mỏi cơ xương khớp",
-                        "next_node": {
-                            "question": "Bạn có kèm ho, đau họng hoặc tiêu chảy không?",
-                            "options": [
-                                {
-                                    "label": "Có ho hoặc đau họng",
-                                    "result": "Khoa Truyền nhiễm",
-                                    "department_id": "K_TRUYENNHEM"
-                                },
-                                {
-                                    "label": "Có tiêu chảy",
-                                    "result": "Khoa Truyền nhiễm",
-                                    "department_id": "K_TRUYENNHEM"
-                                },
-                                {
-                                    "label": "Chỉ sốt và mệt mỏi",
-                                    "result": "Khoa Truyền nhiễm",
-                                    "department_id": "K_TRUYENNHEM"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "label": "Phát ban nghi sởi, thủy đậu hoặc sốt xuất huyết",
-                        "next_node": {
-                            "question": "Phát ban có kèm chảy máu, đau đầu hoặc đau bụng không?",
-                            "options": [
-                                {
-                                    "label": "Có chảy máu hoặc đau bụng dữ dội",
-                                    "result": "Khoa Truyền nhiễm",
-                                    "department_id": "K_TRUYENNHEM"
-                                },
-                                {
-                                    "label": "Chỉ phát ban và sốt",
-                                    "result": "Khoa Truyền nhiễm",
-                                    "department_id": "K_TRUYENNHEM"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
+            "result": "Khoa Truyền nhiễm",
+            "department_id": "K_TRUYENNHEM"
         }
     ]
 }

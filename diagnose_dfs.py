@@ -2,70 +2,120 @@ import json
 import os
 
 def load_data():
-    """Hàm đọc dữ liệu từ file JSON"""
+    """Hàm đọc dữ liệu từ file JSON, thử nhiều đường dẫn để tăng độ tương thích"""
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_dir, '..', 'data', 'symptoms.json')
+    possible_paths = [
+        os.path.join(current_dir, 'symptoms.json'),
+        os.path.join(current_dir, 'data', 'symptoms.json'),
+        os.path.join(current_dir, '..', 'data', 'symptoms.json'),
+    ]
     
-    with open(file_path, 'r', encoding='utf-8') as file:
+    for path in possible_paths:
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8-sig') as file:
+                return json.load(file)
+                
+    # Fallback to default path if none exists (to let it raise standard FileNotFoundError)
+    file_path = os.path.join(current_dir, '..', 'data', 'symptoms.json')
+    with open(file_path, 'r', encoding='utf-8-sig') as file:
         return json.load(file)
 
-def dfs_diagnose(node):
+def _dfs_diagnose_internal(node, is_root=False):
     """
-    Thuật toán DFS duyệt cây quyết định theo phân cấp (Cascading).
-    Nhận vào một node (dict), in ra câu hỏi và các lựa chọn.
+    Thuật toán Multi-DFS duyệt cây quyết định (Đồ thị VÀ/HOẶC) nội bộ.
+    Luôn trả về một list các ID khoa.
     """
-    # 1. Nếu node hiện tại bản thân nó đã là kết quả (Nút lá)
     if "result" in node:
         print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {node['result']}")
-        return node['department_id']
+        return [node['department_id']]
     
-    # 2. In ra câu hỏi của node hiện tại
     print(f"\n[HỆ THỐNG]: {node['question']}")
     
     options = node.get('options', [])
-    
-    # 3. In ra danh sách các lựa chọn (Đánh số 1, 2, 3...)
     for i, option in enumerate(options):
         print(f"   {i + 1}. {option['label']}")
         
-    # 4. Vòng lặp lấy input của người dùng (Xử lý lỗi nhập sai)
+    collected_results = []
+    
     while True:
         try:
-            choice = int(input(">> Nhập số thứ tự lựa chọn của bạn: "))
-            
-            # Kiểm tra xem số nhập vào có nằm trong danh sách không
-            if 1 <= choice <= len(options):
-                selected_option = options[choice - 1]
+            if is_root:
+                # Nút gốc (Nút VÀ): Cho phép chọn nhiều nhánh (Multi-DFS)
+                choices_str = input("\n>> Nhập các số thứ tự triệu chứng của bạn (cách nhau bởi dấu phẩy, VD: 1, 3): ")
+                choices = [int(x.strip()) for x in choices_str.split(',') if x.strip().isdigit()]
                 
-                # CHUYỂN TRẠNG THÁI (ACTION): 
-                # Nếu lựa chọn này dẫn đến một câu hỏi tiếp theo (next_node) -> Đệ quy đi sâu xuống
-                if "next_node" in selected_option:
-                    return dfs_diagnose(selected_option["next_node"])
+                if not choices:
+                    print("Lỗi: Vui lòng nhập ít nhất một số.")
+                    continue
+                    
+                valid = True
+                for choice in choices:
+                    if not (1 <= choice <= len(options)):
+                        print(f"Lỗi: Số {choice} không hợp lệ. Vui lòng nhập số từ 1 đến {len(options)}.")
+                        valid = False
+                        break
                 
-                # Nếu lựa chọn này là kết quả cuối cùng -> Trả về kết quả
-                elif "result" in selected_option:
-                    print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {selected_option['result']}")
-                    return selected_option['department_id']
+                if not valid:
+                    continue
+                    
+                # Chạy Multi-DFS trên từng nhánh được chọn theo mô hình Problem Reduction
+                for choice in choices:
+                    selected_option = options[choice - 1]
+                    print(f"\n--- Đang phân tích nhánh: {selected_option['label'].upper()} ---")
+                    
+                    if "next_node" in selected_option:
+                        res = _dfs_diagnose_internal(selected_option["next_node"], is_root=False)
+                        collected_results.extend(res)
+                    elif "result" in selected_option:
+                        print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {selected_option['result']}")
+                        collected_results.append(selected_option['department_id'])
+                        
+                return collected_results
+                
             else:
-                print(f"Lỗi: Vui lòng nhập số từ 1 đến {len(options)}.")
+                # Các nút sâu hơn (Nút HOẶC): Chọn 1 nhánh duy nhất
+                choice = int(input("\n>> Nhập số thứ tự lựa chọn của bạn: "))
                 
+                if 1 <= choice <= len(options):
+                    selected_option = options[choice - 1]
+                    
+                    if "next_node" in selected_option:
+                        return _dfs_diagnose_internal(selected_option["next_node"], is_root=False)
+                    elif "result" in selected_option:
+                        print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {selected_option['result']}")
+                        return [selected_option['department_id']]
+                else:
+                    print(f"Lỗi: Vui lòng nhập số từ 1 đến {len(options)}.")
+                    
         except ValueError:
-            print("Lỗi: Vui lòng chỉ nhập số nguyên (VD: 1, 2).")
+            print("Lỗi: Vui lòng nhập đúng định dạng.")
+
+def dfs_diagnose(node, is_root=False):
+    """
+    Thuật toán Multi-DFS duyệt cây quyết định (Đồ thị VÀ/HOẶC).
+    Nếu is_root=True: Trả về danh sách các phòng khám (list of strings).
+    Nếu is_root=False: Trả về duy nhất một phòng khám (string) để tương thích ngược với Module 3.
+    """
+    results = _dfs_diagnose_internal(node, is_root)
+    if is_root:
+        return results
+    else:
+        return results[0] if results else None
 
 # ==========================================
-# KHỐI LỆNH CHẠY CHÍNH (MAIN ENTRY POINT)
+# KHỐI LỆNH CHẠY CHÍNH
 # ==========================================
 if __name__ == "__main__":
     print("="*50)
-    print(" HỆ THỐNG AI ĐIỀU PHỐI KHÁM BỆNH - MODULE 1 (DFS)")
+    print(" HỆ THỐNG AI ĐIỀU PHỐI KHÁM BỆNH - MODULE 1 (MULTI-DFS)")
     print("="*50)
     
-    # Tải đồ thị tri thức (Cây quyết định)
     tree_data = load_data()
+    target_departments = dfs_diagnose(tree_data, is_root=True)
     
-    # Bắt đầu chạy thuật toán từ Nút gốc (Root)
-    target_department_id = dfs_diagnose(tree_data)
+    # Loại bỏ trùng lặp kết quả
+    unique_depts = list(set(target_departments))
     
     print("\n" + "="*50)
-    print(f"[DỮ LIỆU ĐẦU RA]: Đã lưu ID '{target_department_id}' để gửi cho Module Chỉ đường A*.")
+    print(f"[DỮ LIỆU ĐẦU RA]: Danh sách phòng khám: {unique_depts}")
     print("="*50)
