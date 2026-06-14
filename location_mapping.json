@@ -34,6 +34,16 @@
       { "id": "P_T3_PHUSAN", "name": "Nhà P - Khoa Phụ Sản", "x": 35, "y": 52, "z": 3, "type": "POI", "building": "P" },
       { "id": "P_ELEV_1", "name": "Thang máy P Tầng 1", "x": 33, "y": 50, "z": 1, "type": "ELEVATOR", "building": "P" },
       { "id": "P_ELEV_3", "name": "Thang máy P Tầng 3", "x": 33, "y": 50, "z": 3, "type": "ELEVATOR", "building": "P" }
+      ,
+      { "id": "K_TIEUHOA", "name": "Khoa Tiêu hóa", "x": 76, "y": 72, "z": 2, "type": "POI", "building": "K2" },
+      { "id": "K_NGOAITONGHOP", "name": "Khoa Ngoại Tổng hợp", "x": 80, "y": 65, "z": 1, "type": "POI", "building": "K1" },
+      { "id": "K_NHIKHOA", "name": "Khoa Nhi", "x": 82, "y": 65, "z": 3, "type": "POI", "building": "K1" },
+      { "id": "K_THANKINH", "name": "Khoa Thần kinh", "x": 76, "y": 72, "z": 3, "type": "POI", "building": "K2" },
+      { "id": "K_MAT", "name": "Khoa Mắt", "x": 76, "y": 72, "z": 1, "type": "POI", "building": "K2" },
+      { "id": "K_TAIMUIHONG", "name": "Khoa Tai Mũi Họng", "x": 74, "y": 70, "z": 1, "type": "POI", "building": "K2" },
+      { "id": "K_TIMMACH", "name": "Khoa Tim Mạch", "x": 50, "y": 52, "z": 2, "type": "POI", "building": "Q" },
+      { "id": "K_HOHAP", "name": "Khoa Hô Hấp", "x": 50, "y": 52, "z": 2, "type": "POI", "building": "Q" },
+      { "id": "K_TRUYENNHEM", "name": "Khoa Truyền Nhiễm", "x": 33, "y": 52, "z": 2, "type": "POI", "building": "P" }
     ],
     "edges": [
       { "from": "GATE_4", "to": "K2_SANH_T1", "weight": 20, "type": "walk", "description": "Đi bộ từ cổng 4 vào K2" },
