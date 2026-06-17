@@ -2,26 +2,31 @@ import json
 import sys
 from diagnose_dfs import load_data, dfs_diagnose
 
-# 1. TỪ ĐIỂN ÁNH XẠ (MAPPING DATABASE)
-# Các ID này lấy từ file symptoms.json của TV1.
-# Tọa độ (r, c, z) bạn phải tự tùy chỉnh cho khớp với ma trận đồ thị thực tế của bạn.
-DEPARTMENT_MAP = {
-    "K_TIEUHOA":      {"r": 12, "c": 16, "z": 2},
-    "K_NGOAITONGHOP": {"r": 5,  "c": 20, "z": 1},
-    "K_NHIKHOA":      {"r": 5,  "c": 22, "z": 3},
+DEFAULT_LOCATION_MAPPING_FILE = "location_mapping.json"
 
-    "K_THANKINH":     {"r": 12, "c": 16, "z": 3},
-    "K_MAT":          {"r": 12, "c": 16, "z": 1},
-    "K_TAIMUIHONG":   {"r": 10, "c": 14, "z": 1},
+# 1. Nạp bản đồ location_mapping.json
+# file chứa các node với tọa độ x, y, z.
+# Với A* lưới, ta chuyển x -> c, y -> r.
+def load_location_mapping(file_path=DEFAULT_LOCATION_MAPPING_FILE):
+    with open(file_path, encoding="utf-8") as f:
+        data = json.load(f)
+    node_list = data.get("hospital_network", {}).get("nodes", [])
+    return {node.get("id"): node for node in node_list}
 
-    "K_TIMMACH":      {"r": 12, "c": 20, "z": 2},
-    "K_HOHAP":        {"r": 12, "c": 20, "z": 2},
-    "K_TRUYENNHEM":   {"r": 12, "c": 3,  "z": 2}
-}
 
-def get_goal_coordinate(department_id):
-    """Chuyển đổi ID Khoa thành tọa độ 3D"""
-    return DEPARTMENT_MAP.get(department_id, None)
+def get_goal_coordinate(department_id, location_map):
+    """Tìm node trong location_map theo ID và trả về {r, c, z}."""
+    node = location_map.get(department_id)
+    if not node:
+        return None
+
+    if "r" in node and "c" in node:
+        return {"r": int(node["r"]), "c": int(node["c"]), "z": int(node["z"])}
+
+    if "x" in node and "y" in node:
+        return {"r": int(node["y"]), "c": int(node["x"]), "z": int(node["z"])}
+
+    return None
 
 def main():
     print("=== HỆ THỐNG SMART HOSPITAL NAVIGATOR ===")
@@ -33,11 +38,12 @@ def main():
     if not target_department_id:
         sys.exit("Lỗi: Không nhận được ID Khoa từ module chẩn đoán.")
 
-    # 3. CHUYỂN ĐỔI DỮ LIỆU (TV3 - ROLE CỦA BẠN)
-    goal_coord = get_goal_coordinate(target_department_id)
+    # 3. NẠP file location_mapping.json và tìm tọa độ đích
+    location_map = load_location_mapping("location_mapping.json")
+    goal_coord = get_goal_coordinate(target_department_id, location_map)
     
     if not goal_coord:
-        sys.exit(f"Lỗi: ID '{target_department_id}' chưa được khai báo tọa độ trên bản đồ!")
+        sys.exit(f"Lỗi: ID '{target_department_id}' chưa tìm thấy trong location_mapping.json hoặc thiếu tọa độ!")
 
     # 4. ĐÓNG GÓI PAYLOAD CHO THUẬT TOÁN A* (TV2)
     # Cấu trúc này khớp chuẩn với object { r, c, z } trong hàm executeAStar3D của astar_3d.js
