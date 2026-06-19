@@ -2,28 +2,17 @@ import json
 import os
 
 def load_data():
-    """Hàm đọc dữ liệu từ file JSON, thử nhiều đường dẫn để tăng độ tương thích"""
+    """Hàm đọc dữ liệu từ file JSON"""
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    possible_paths = [
-        os.path.join(current_dir, 'symptoms.json'),
-        os.path.join(current_dir, 'data', 'symptoms.json'),
-        os.path.join(current_dir, '..', 'data', 'symptoms.json'),
-    ]
-    
-    for path in possible_paths:
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8-sig') as file:
-                return json.load(file)
-                
-    # Fallback to default path if none exists (to let it raise standard FileNotFoundError)
     file_path = os.path.join(current_dir, '..', 'data', 'symptoms.json')
-    with open(file_path, 'r', encoding='utf-8-sig') as file:
+    
+    with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
-def _dfs_diagnose_internal(node, is_root=False):
+def dfs_diagnose(node, is_root=False):
     """
-    Thuật toán Multi-DFS duyệt cây quyết định (Đồ thị VÀ/HOẶC) nội bộ.
-    Luôn trả về một list các ID khoa.
+    Thuật toán Multi-DFS duyệt cây quyết định (Đồ thị VÀ/HOẶC).
+    Nhận vào một node (dict), in ra câu hỏi và các lựa chọn.
     """
     if "result" in node:
         print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {node['result']}")
@@ -64,7 +53,7 @@ def _dfs_diagnose_internal(node, is_root=False):
                     print(f"\n--- Đang phân tích nhánh: {selected_option['label'].upper()} ---")
                     
                     if "next_node" in selected_option:
-                        res = _dfs_diagnose_internal(selected_option["next_node"], is_root=False)
+                        res = dfs_diagnose(selected_option["next_node"], is_root=False)
                         collected_results.extend(res)
                     elif "result" in selected_option:
                         print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {selected_option['result']}")
@@ -80,7 +69,7 @@ def _dfs_diagnose_internal(node, is_root=False):
                     selected_option = options[choice - 1]
                     
                     if "next_node" in selected_option:
-                        return _dfs_diagnose_internal(selected_option["next_node"], is_root=False)
+                        return dfs_diagnose(selected_option["next_node"], is_root=False)
                     elif "result" in selected_option:
                         print(f"\n[AI CHẨN ĐOÁN] => Dựa trên triệu chứng, bạn nên đến: {selected_option['result']}")
                         return [selected_option['department_id']]
@@ -89,18 +78,6 @@ def _dfs_diagnose_internal(node, is_root=False):
                     
         except ValueError:
             print("Lỗi: Vui lòng nhập đúng định dạng.")
-
-def dfs_diagnose(node, is_root=False):
-    """
-    Thuật toán Multi-DFS duyệt cây quyết định (Đồ thị VÀ/HOẶC).
-    Nếu is_root=True: Trả về danh sách các phòng khám (list of strings).
-    Nếu is_root=False: Trả về duy nhất một phòng khám (string) để tương thích ngược với Module 3.
-    """
-    results = _dfs_diagnose_internal(node, is_root)
-    if is_root:
-        return results
-    else:
-        return results[0] if results else None
 
 # ==========================================
 # KHỐI LỆNH CHẠY CHÍNH

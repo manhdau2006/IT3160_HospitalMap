@@ -1,53 +1,53 @@
-{
+﻿window.SYMPTOMS_DATA = {
     "id": "root",
-    "question": "V??ng c?? th??? ho???c tri???u ch???ng ch??nh b???n ??ang g???p ph???i?",
+    "question": "Vùng cơ thể hoặc triệu chứng chính bạn đang gặp phải?",
     "options": [
         {
-            "label": "??au/Kh?? ch???u v??ng b???ng",
+            "label": "Đau/Khó chịu vùng bụng",
             "next_node": {
-                "question": "V??? tr?? b???ng b???n ??ang b??? ???nh h?????ng l?? ??? ????u?",
+                "question": "Vị trí bụng bạn đang bị ảnh hưởng là ở đâu?",
                 "options": [
                     {
-                        "label": "V??ng th?????ng v??? (tr??n r???n)",
+                        "label": "Vùng thượng vị (trên rốn)",
                         "next_node": {
-                            "question": "B???n c?? k??m c??c tri???u ch???ng sau kh??ng?",
+                            "question": "Bạn có kèm các triệu chứng sau không?",
                             "options": [
                                 {
-                                    "label": "??? chua, ??? n??ng, ?????y h??i",
+                                    "label": "Ợ chua, ợ nóng, đầy hơi",
                                     "next_node": {
-                                        "question": "Tri???u ch???ng k??o d??i bao l??u?",
+                                        "question": "Triệu chứng kéo dài bao lâu?",
                                         "options": [
                                             {
-                                                "label": "V??i ng??y ?????n v??i tu???n",
+                                                "label": "Vài ngày đến vài tuần",
                                                 "next_node": {
-                                                    "question": "M???c ????? ??au nh?? th??? n??o?",
+                                                    "question": "Mức độ đau như thế nào?",
                                                     "options": [
                                                         {
-                                                            "label": "??au ??m ???, kh?? ch???u",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Đau âm ỉ, khó chịu",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         },
                                                         {
-                                                            "label": "??au d??? d???i, kh??ng gi???m",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Đau dữ dội, không giảm",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         }
                                                     ]
                                                 }
                                             },
                                             {
-                                                "label": "M???i xu???t hi???n g???n ????y",
+                                                "label": "Mới xuất hiện gần đây",
                                                 "next_node": {
-                                                    "question": "B???n c?? n??n ??i ho???c ch??n ??n kh??ng?",
+                                                    "question": "Bạn có nôn ói hoặc chán ăn không?",
                                                     "options": [
                                                         {
-                                                            "label": "C??",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Có",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         },
                                                         {
-                                                            "label": "Kh??ng",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Không",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         }
                                                     ]
@@ -57,18 +57,18 @@
                                     }
                                 },
                                 {
-                                    "label": "??au lan ra l??ng, n??n ??i",
+                                    "label": "Đau lan ra lưng, nôn ói",
                                     "next_node": {
-                                        "question": "B???n c?? s???t ho???c v??ng da kh??ng?",
+                                        "question": "Bạn có sốt hoặc vàng da không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Có",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Không",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             }
                                         ]
@@ -78,54 +78,54 @@
                         }
                     },
                     {
-                        "label": "B???ng d?????i b??n ph???i",
+                        "label": "Bụng dưới bên phải",
                         "next_node": {
-                            "question": "C??n ??au c?? t??ng khi ho, ??i l???i ho???c ???n v??o kh??ng?",
+                            "question": "Cơn đau có tăng khi ho, đi lại hoặc ấn vào không?",
                             "options": [
                                 {
-                                    "label": "C??, ??au t??ng d???n",
+                                    "label": "Có, đau tăng dần",
                                     "next_node": {
-                                        "question": "B???n c?? bu???n n??n ho???c s???t nh??? kh??ng?",
+                                        "question": "Bạn có buồn nôn hoặc sốt nhẹ không?",
                                         "options": [
                                             {
-                                                "label": "C??",
+                                                "label": "Có",
                                                 "next_node": {
-                                                    "question": "B???n c?? ch??n ??n kh??ng?",
+                                                    "question": "Bạn có chán ăn không?",
                                                     "options": [
                                                         {
-                                                            "label": "C??",
-                                                            "result": "Khoa Ngo???i T???ng h???p",
+                                                            "label": "Có",
+                                                            "result": "Khoa Ngoại Tổng hợp",
                                                             "department_id": "K_NGOAITONGHOP"
                                                         },
                                                         {
-                                                            "label": "Kh??ng",
-                                                            "result": "Khoa Ngo???i T???ng h???p",
+                                                            "label": "Không",
+                                                            "result": "Khoa Ngoại Tổng hợp",
                                                             "department_id": "K_NGOAITONGHOP"
                                                         }
                                                     ]
                                                 }
                                             },
                                             {
-                                                "label": "Kh??ng, ch??? ??au khi ???n ho???c c??? ?????ng",
-                                                "result": "Khoa Ngo???i T???ng h???p",
+                                                "label": "Không, chỉ đau khi ấn hoặc cử động",
+                                                "result": "Khoa Ngoại Tổng hợp",
                                                 "department_id": "K_NGOAITONGHOP"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "Kh??ng, ??au ??m ??? ho???c ?????y b???ng",
+                                    "label": "Không, đau âm ỉ hoặc đầy bụng",
                                     "next_node": {
-                                        "question": "B???n c?? ti??u ch???y ho???c t??o b??n kh??ng?",
+                                        "question": "Bạn có tiêu chảy hoặc táo bón không?",
                                         "options": [
                                             {
-                                                "label": "Ti??u ch???y",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Tiêu chảy",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             },
                                             {
-                                                "label": "T??o b??n",
-                                                "result": "Khoa Ngo???i T???ng h???p",
+                                                "label": "Táo bón",
+                                                "result": "Khoa Ngoại Tổng hợp",
                                                 "department_id": "K_NGOAITONGHOP"
                                             }
                                         ]
@@ -135,54 +135,54 @@
                         }
                     },
                     {
-                        "label": "B???ng d?????i b??n tr??i ho???c quanh r???n",
+                        "label": "Bụng dưới bên trái hoặc quanh rốn",
                         "next_node": {
-                            "question": "B???n c?? k??m ti??u ch???y ho???c bu???n n??n kh??ng?",
+                            "question": "Bạn có kèm tiêu chảy hoặc buồn nôn không?",
                             "options": [
                                 {
-                                    "label": "C??, ti??u ch???y v?? bu???n n??n",
+                                    "label": "Có, tiêu chảy và buồn nôn",
                                     "next_node": {
-                                        "question": "??au c?? qu???n t???ng c??n kh??ng?",
+                                        "question": "Đau có quặn từng cơn không?",
                                         "options": [
                                             {
-                                                "label": "C??",
+                                                "label": "Có",
                                                 "next_node": {
-                                                    "question": "B???n c?? s???t kh??ng?",
+                                                    "question": "Bạn có sốt không?",
                                                     "options": [
                                                         {
-                                                            "label": "C??",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Có",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         },
                                                         {
-                                                            "label": "Kh??ng",
-                                                            "result": "Khoa Ti??u h??a",
+                                                            "label": "Không",
+                                                            "result": "Khoa Tiêu hóa",
                                                             "department_id": "K_TIEUHOA"
                                                         }
                                                     ]
                                                 }
                                             },
                                             {
-                                                "label": "Kh??ng, ??au ??m ???",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Không, đau âm ỉ",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "Ch??? ??au ??m ???, c???m gi??c ?????y h??i",
+                                    "label": "Chỉ đau âm ỉ, cảm giác đầy hơi",
                                     "next_node": {
-                                        "question": "B???n c?? th???y n???ng b???ng sau ??n kh??ng?",
+                                        "question": "Bạn có thấy nặng bụng sau ăn không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Có",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa Ti??u h??a",
+                                                "label": "Không",
+                                                "result": "Khoa Tiêu hóa",
                                                 "department_id": "K_TIEUHOA"
                                             }
                                         ]
@@ -195,46 +195,46 @@
             }
         },
         {
-            "label": "Tri???u ch???ng ??? v??ng ?????u - M???t - C???",
+            "label": "Triệu chứng ở vùng Đầu - Mặt - Cổ",
             "next_node": {
-                "question": "B???n ??ang g???p tri???u ch???ng ??? ?????u, m???t, c??? hay m???t?",
+                "question": "Bạn đang gặp triệu chứng ở đầu, mặt, cổ hay mắt?",
                 "options": [
                     {
-                        "label": "?????u",
+                        "label": "Đầu",
                         "next_node": {
-                            "question": "Lo???i ??au ?????u b???n g???p l?? g???",
+                            "question": "Loại đau đầu bạn gặp là gì?",
                             "options": [
                                 {
-                                    "label": "??au ?????u d??? d???i, bu???n n??n, s??? ??nh s??ng",
+                                    "label": "Đau đầu dữ dội, buồn nôn, sợ ánh sáng",
                                     "next_node": {
-                                        "question": "Tri???u ch???ng n??y xu???t hi???n nh?? th??? n??o?",
+                                        "question": "Triệu chứng này xuất hiện như thế nào?",
                                         "options": [
                                             {
-                                                "label": "T??i ph??t nhi???u l???n",
-                                                "result": "Khoa Th???n kinh",
+                                                "label": "Tái phát nhiều lần",
+                                                "result": "Khoa Thần kinh",
                                                 "department_id": "K_THANKINH"
                                             },
                                             {
-                                                "label": "M???i xu???t hi???n g???n ????y",
-                                                "result": "Khoa Th???n kinh",
+                                                "label": "Mới xuất hiện gần đây",
+                                                "result": "Khoa Thần kinh",
                                                 "department_id": "K_THANKINH"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "??au ?????u ?? ???m, c??ng c?? c???",
+                                    "label": "Đau đầu ê ẩm, căng cơ cổ",
                                     "next_node": {
-                                        "question": "B???n c?? k??m c??? c???ng ho???c ch??ng m???t kh??ng?",
+                                        "question": "Bạn có kèm cổ cứng hoặc chóng mặt không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa Th???n kinh",
+                                                "label": "Có",
+                                                "result": "Khoa Thần kinh",
                                                 "department_id": "K_THANKINH"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa Th???n kinh",
+                                                "label": "Không",
+                                                "result": "Khoa Thần kinh",
                                                 "department_id": "K_THANKINH"
                                             }
                                         ]
@@ -244,62 +244,62 @@
                         }
                     },
                     {
-                        "label": "M???t",
+                        "label": "Mắt",
                         "next_node": {
-                            "question": "Tri???u ch???ng ??? m???t c??? th??? l?? g???",
+                            "question": "Triệu chứng ở mắt cụ thể là gì?",
                             "options": [
                                 {
-                                    "label": "????? m???t, x???n m???t, ch???y n?????c nhi???u",
+                                    "label": "Đỏ mắt, xốn mắt, chảy nước nhiều",
                                     "next_node": {
-                                        "question": "B???n c?? th???y m??? m???t ho???c nh???c m???t kh??ng?",
+                                        "question": "Bạn có thấy mờ mắt hoặc nhức mắt không?",
                                         "options": [
                                             {
-                                                "label": "C?? m??? m???t",
-                                                "result": "Khoa M???t",
+                                                "label": "Có mờ mắt",
+                                                "result": "Khoa Mắt",
                                                 "department_id": "K_MAT"
                                             },
                                             {
-                                                "label": "Ch??? ????? v?? ch???y n?????c",
-                                                "result": "Khoa M???t",
+                                                "label": "Chỉ đỏ và chảy nước",
+                                                "result": "Khoa Mắt",
                                                 "department_id": "K_MAT"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "M??? m???t, nh??n kh?? kh??n",
-                                    "result": "Khoa M???t",
+                                    "label": "Mờ mắt, nhìn khó khăn",
+                                    "result": "Khoa Mắt",
                                     "department_id": "K_MAT"
                                 }
                             ]
                         }
                     },
                     {
-                        "label": "H???ng ho???c m??i",
+                        "label": "Họng hoặc mũi",
                         "next_node": {
-                            "question": "Tri???u ch???ng ch??? y???u ??? ????u?",
+                            "question": "Triệu chứng chủ yếu ở đâu?",
                             "options": [
                                 {
-                                    "label": "??au h???ng, kh???n ti???ng, kh?? nu???t",
+                                    "label": "Đau họng, khản tiếng, khó nuốt",
                                     "next_node": {
-                                        "question": "B???n c?? k??m s???t ho???c n???i h???ch c??? kh??ng?",
+                                        "question": "Bạn có kèm sốt hoặc nổi hạch cổ không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa Tai M??i H???ng",
+                                                "label": "Có",
+                                                "result": "Khoa Tai Mũi Họng",
                                                 "department_id": "K_TAIMUIHONG"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa Tai M??i H???ng",
+                                                "label": "Không",
+                                                "result": "Khoa Tai Mũi Họng",
                                                 "department_id": "K_TAIMUIHONG"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "Ngh???t m??i, ch???y n?????c m??i, h???t h??i li??n t???c",
-                                    "result": "Khoa Tai M??i H???ng",
+                                    "label": "Nghẹt mũi, chảy nước mũi, hắt hơi liên tục",
+                                    "result": "Khoa Tai Mũi Họng",
                                     "department_id": "K_TAIMUIHONG"
                                 }
                             ]
@@ -309,67 +309,67 @@
             }
         },
         {
-            "label": "Tri???u ch???ng H?? h???p, L???ng ng???c & Tim m???ch",
+            "label": "Triệu chứng Hô hấp, Lồng ngực & Tim mạch",
             "next_node": {
-                "question": "B???n c???m th???y kh?? ch???u nhi???u nh???t ??? ng???c hay h?? h???p?",
+                "question": "Bạn cảm thấy khó chịu nhiều nhất ở ngực hay hô hấp?",
                 "options": [
                     {
-                        "label": "Ng???c",
+                        "label": "Ngực",
                         "next_node": {
-                            "question": "??au ng???c c?? ?????c ??i???m nh?? th??? n??o?",
+                            "question": "Đau ngực có đặc điểm như thế nào?",
                             "options": [
                                 {
-                                    "label": "??au nh??i ng???c tr??i, lan ra vai/tay, h???i h???p",
+                                    "label": "Đau nhói ngực trái, lan ra vai/tay, hồi hộp",
                                     "next_node": {
-                                        "question": "B???n c?? ra m??? h??i l???nh ho???c ch??ng m???t kh??ng?",
+                                        "question": "Bạn có ra mồ hôi lạnh hoặc chóng mặt không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa Tim m???ch",
+                                                "label": "Có",
+                                                "result": "Khoa Tim mạch",
                                                 "department_id": "K_TIMMACH"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa Tim m???ch",
+                                                "label": "Không",
+                                                "result": "Khoa Tim mạch",
                                                 "department_id": "K_TIMMACH"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "??au t???c ng???c khi g???ng s???c ho???c khi ngh??? ng??i",
-                                    "result": "Khoa Tim m???ch",
+                                    "label": "Đau tức ngực khi gắng sức hoặc khi nghỉ ngơi",
+                                    "result": "Khoa Tim mạch",
                                     "department_id": "K_TIMMACH"
                                 }
                             ]
                         }
                     },
                     {
-                        "label": "H?? h???p",
+                        "label": "Hô hấp",
                         "next_node": {
-                            "question": "Tri???u ch???ng h?? h???p c???a b???n l?? g???",
+                            "question": "Triệu chứng hô hấp của bạn là gì?",
                             "options": [
                                 {
-                                    "label": "Ho k??o d??i, kh?? kh??, kh?? th???",
+                                    "label": "Ho kéo dài, khò khè, khó thở",
                                     "next_node": {
-                                        "question": "B???n c?? c???m th???y n???ng ng???c ho???c ?????m xanh v??ng kh??ng?",
+                                        "question": "Bạn có cảm thấy nặng ngực hoặc đờm xanh vàng không?",
                                         "options": [
                                             {
-                                                "label": "C??",
-                                                "result": "Khoa H?? h???p",
+                                                "label": "Có",
+                                                "result": "Khoa Hô hấp",
                                                 "department_id": "K_HOHAP"
                                             },
                                             {
-                                                "label": "Kh??ng",
-                                                "result": "Khoa H?? h???p",
+                                                "label": "Không",
+                                                "result": "Khoa Hô hấp",
                                                 "department_id": "K_HOHAP"
                                             }
                                         ]
                                     }
                                 },
                                 {
-                                    "label": "Th??? nhanh, h???t h??i khi g???ng s???c",
-                                    "result": "Khoa H?? h???p",
+                                    "label": "Thở nhanh, hụt hơi khi gắng sức",
+                                    "result": "Khoa Hô hấp",
                                     "department_id": "K_HOHAP"
                                 }
                             ]
@@ -379,15 +379,15 @@
             }
         },
         {
-            "label": "Tr??? em d?????i 15 tu???i c?? tri???u ch???ng b???nh",
+            "label": "Trẻ em dưới 15 tuổi có triệu chứng bệnh",
             "result": "Khoa Nhi",
             "department_id": "K_NHIKHOA"
         },
         {
-            "label": "Tri???u ch???ng nhi???m tr??ng ho???c s???t cao d???ch t???",
-            "result": "Khoa Truy???n nhi???m",
+            "label": "Triệu chứng nhiễm trùng hoặc sốt cao dịch tễ",
+            "result": "Khoa Truyền nhiễm",
             "department_id": "K_TRUYENNHEM"
         }
     ]
 }
-
+;
