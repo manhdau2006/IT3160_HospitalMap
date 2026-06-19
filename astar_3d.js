@@ -68,7 +68,7 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
 
     // 1. Các trọng số mặc định cho di chuyển dọc và ô ùn tắc (khoảng cách quy đổi)
     const C_FLOOR = config.c_floor || 15.0;       // Độ dài đường đi dọc giữa 2 tầng kề nhau (quy đổi ra mét)
-    const PENALTY_CONGESTED = config.penalty_congested || 7.0; // Chi phí quãng đường phạt khi qua ô ùn tắc
+    const PENALTY_CONGESTED = config.penalty_congested || 3.0; // Chi phí quãng đường phạt khi qua ô ùn tắc
     const HEURISTIC_TYPE = config.heuristic || 'manhattan';    // 'manhattan' hoặc 'euclidean'
     const customHeuristic = config.customHeuristic;            // Hàm heuristic tự định nghĩa tùy biến từ bên ngoài
 
@@ -77,16 +77,14 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
     const CELL_WALL = 1;
     const CELL_CONGESTED = 2;
     const CELL_ELEVATOR = 4; // Ô chuyển tầng (thang máy)
-    const CELL_STAIRS = 5;   // Ô chuyển tầng (thang bộ)
-
-    // Lập danh sách các ô thang máy/thang bộ trên lưới
+    // Lập danh sách các ô thang máy trên lưới
     const verticalNodes = [];
     for (let zStr in multiFloorGrid) {
         const z = parseInt(zStr);
         const grid2D = multiFloorGrid[z];
         for (let r = 0; r < grid2D.length; r++) {
             for (let c = 0; c < grid2D[r].length; c++) {
-                if (grid2D[r][c] === CELL_ELEVATOR || grid2D[r][c] === CELL_STAIRS) {
+                if (grid2D[r][c] === CELL_ELEVATOR) {
                     if (!verticalNodes.some(n => n.r === r && n.c === c)) {
                         verticalNodes.push({ r, c });
                     }
@@ -229,8 +227,8 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
                 openSet.enqueue(nextState, cellMeta[nextKey].f);
             }
         }
-        // --- NHÓM 2: LẤY CÁC Ô LIÊN KẾT DỌC (ĐỔI TẦNG QUA THANG MÁY/THANG BỘ) ---
-        if (currentCellType === CELL_ELEVATOR || currentCellType === CELL_STAIRS) {
+        // --- NHÓM 2: LẤY CÁC Ô LIÊN KẾT DỌC (ĐỔI TẦNG QUA THANG MÁY) ---
+        if (currentCellType === CELL_ELEVATOR) {
             // Cho phép di chuyển trực tiếp đến các tầng khác tại cùng tọa độ này
             for (let nextZStr in multiFloorGrid) {
                 const nextZ = parseInt(nextZStr);
@@ -240,7 +238,7 @@ function executeAStar3D(start, goal, multiFloorGrid, config = {}) {
                 const nextC = curr.c;
 
                 const targetCellType = multiFloorGrid[nextZ][nextR][nextC];
-                // Chỉ cho phép kết nối nếu tầng đích cũng có Elevator/Stairs tại vị trí tương ứng
+                // Chỉ cho phép kết nối nếu tầng đích cũng có Elevator tại vị trí tương ứng
                 if (targetCellType === CELL_WALL) continue;
 
                 // Chi phí dọc đổi tầng: chỉ tính quãng đường vật lý di chuyển dọc

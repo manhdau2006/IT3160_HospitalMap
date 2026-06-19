@@ -126,7 +126,7 @@ class MultiFloorMap:
         manh = abs(r1-r2) + abs(c1-c2)
         return manh + abs(z1-z2) * floor_cost
 
-    def astar_3d(self, start, goal, penalty_congested=7.0):
+    def astar_3d(self, start, goal, penalty_congested=3.0):
         # start/goal: dicts or tuples; normalize to tuples
         def as_tuple(s):
             if isinstance(s, dict):
