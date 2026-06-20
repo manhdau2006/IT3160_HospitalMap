@@ -10,7 +10,7 @@ class TriageEngine:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(current_dir, filename)
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, 'r', encoding='utf-8-sig') as f:
                 return json.load(f)
         except Exception as e:
             print(f"[Warning] Failed to load {filename}: {e}")

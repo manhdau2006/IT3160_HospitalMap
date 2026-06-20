@@ -8,8 +8,8 @@ let targetCoordinates = null;
 let targetDepartmentId = null;
 
 // Grid configuration for map drawing (Assuming 20 rows x 30 cols)
-const GRID_ROWS = 25;
-const GRID_COLS = 20;
+let GRID_ROWS = 23;
+let GRID_COLS = 10;
 
 // Convention for Grid Data:
 // 1 = Walkable (Normal speed)
@@ -42,12 +42,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     // button btn-route removed, routing is triggered per result item
 });
 
+let rawMapData = null;
+
 async function fetchMapData() {
     try {
         const response = await fetch('/api/map');
         const data = await response.json();
         if (data.status === "success") {
-            hospitalGrid = data.grid;
+            rawMapData = data.map_data;
+            GRID_ROWS = rawMapData.metadata.rows;
+            GRID_COLS = rawMapData.metadata.cols;
+            
+            // Build hospitalGrid (0 for walkable, 1 for obstacle) for routing
+            hospitalGrid = [];
+            for (let r = 0; r < GRID_ROWS; r++) {
+                let row = [];
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const cell = rawMapData.floor_1[r][c];
+                    if (cell.type === "wall") {
+                        row.push(1);
+                    } else {
+                        row.push(0);
+                    }
+                }
+                hospitalGrid.push(row);
+            }
         } else {
             console.error("Failed to load map data");
         }
@@ -176,6 +195,29 @@ function handleTriageResponse(data) {
     }
 }
 
+// BFS: find the nearest walkable corridor cell adjacent to a room/obstacle
+function findNearestWalkable(grid, goalR, goalC) {
+    const rows = grid.length, cols = grid[0].length;
+    // If goal is already walkable, return it directly
+    if (grid[goalR]?.[goalC] === 0) return [goalR, goalC];
+    const visited = new Set([`${goalR},${goalC}`]);
+    const queue = [[goalR, goalC]];
+    const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    while (queue.length) {
+        const [r, c] = queue.shift();
+        for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            const key = `${nr},${nc}`;
+            if (!visited.has(key) && nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                visited.add(key);
+                if (grid[nr][nc] === 0) return [nr, nc]; // found walkable neighbor
+                queue.push([nr, nc]);
+            }
+        }
+    }
+    return [goalR, goalC]; // fallback (should not happen)
+}
+
 async function handleRoutingRequest(btnElement) {
     if (!targetCoordinates) return;
     const startInput = document.getElementById("input-start").value;
@@ -194,20 +236,72 @@ async function handleRoutingRequest(btnElement) {
     btnElement.disabled = true;
 
     try {
-        const payload = {
-            start: startCoords,
-            goal: goalCoords,
-            grid: {}
+        // Build obstacle grid: only path / gate / elevator / stairs are walkable (0)
+        // room-normal and room-wc are obstacles (1) — path must go AROUND them
+        // Build obstacle grid: only path / gate / elevator / stairs are walkable (0)
+        // room-normal, room-wc, and any cell covered by a CELL_SPAN are obstacles (1)
+        const getGridArray = (floorName, z) => {
+            if (!rawMapData || !rawMapData[floorName]) {
+                return Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(1));
+            }
+            
+            // Build a set of all cells that are part of a merged room
+            const spans = CELL_SPANS[z] || {};
+            const roomCells = new Set();
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const key = `${r}_${c}`;
+                    if (spans[key]) {
+                        for (let i = 0; i < spans[key].rs; i++) {
+                            for (let j = 0; j < spans[key].cs; j++) {
+                                roomCells.add(`${r + i}_${c + j}`);
+                            }
+                        }
+                    }
+                }
+            }
+
+            let arr = [];
+            for (let r = 0; r < GRID_ROWS; r++) {
+                let row = [];
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const cell = rawMapData[floorName][r][c];
+                    if (roomCells.has(`${r}_${c}`)) {
+                        row.push(1); // Covered by a room span -> obstacle
+                    } else if (cell.type === 'elevator') {
+                        row.push(4); // Elevator must be 4 for backend A* 3D transitions
+                    } else {
+                        const walkable = ['path', 'gate', 'stairs'].includes(cell.type);
+                        row.push(walkable ? 0 : 1);
+                    }
+                }
+                arr.push(row);
+            }
+            return arr;
         };
-        
-        // Cấp phát ma trận bản đồ cho tất cả các tầng trung gian từ tầng xuất phát tới tầng đích
-        // Nếu hospitalGrid chưa tải được, fallback về mảng toàn 1
-        const gridData = hospitalGrid || Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(1));
+
         const minZ = Math.min(startCoords[2], goalCoords[2]);
         const maxZ = Math.max(startCoords[2], goalCoords[2]);
+        const grids = {};
         for (let z = minZ; z <= maxZ; z++) {
-            payload.grid[z] = gridData;
+            grids[z] = getGridArray(z === 0 ? 'floor_1' : 'floor_2', z);
         }
+
+        // Goal cell is a room (obstacle) — find the nearest walkable corridor cell next to it
+        const goalGrid = grids[goalCoords[2]];
+        const [adjGoalR, adjGoalC] = findNearestWalkable(goalGrid, goalCoords[0], goalCoords[1]);
+        const routingGoal = [adjGoalR, adjGoalC, goalCoords[2]];
+
+        // Do the same for start cell in case user clicked inside a room
+        const startGrid = grids[startCoords[2]];
+        const [adjStartR, adjStartC] = findNearestWalkable(startGrid, startCoords[0], startCoords[1]);
+        const routingStart = [adjStartR, adjStartC, startCoords[2]];
+
+        const payload = {
+            start: routingStart,
+            goal: routingGoal,   // route to corridor cell adjacent to room
+            grid: grids
+        };
 
         const response = await fetch('/api/route', {
             method: 'POST',
@@ -224,6 +318,7 @@ async function handleRoutingRequest(btnElement) {
         document.getElementById("stat-latency").innerText = `${data.latency_ms} ms`;
         
         showToast("Đã tìm thấy lộ trình!", "success");
+        // Visual goal stays at the original room position (red dot + dashed line drawn by drawFloor)
         drawMapCanvas(data.path, targetCoordinates, startCoords);
 
     } catch (error) {
@@ -234,8 +329,79 @@ async function handleRoutingRequest(btnElement) {
     }
 }
 
+// ── Cell-span table: mirrors Excel merged cells exactly ──────────────────────
+// Key format: 'row_col'  →  { rs: rowspan, cs: colspan }
+// Derived from merged cell ranges in "Bản đồ bệnh viện_tầng 1/2.xlsx"
+const CELL_SPANS = {
+    0: { // Floor 1
+        // B2:B3 Nhà vệ sinh (2 rows), C2:C4 Quầy thuốc (3 rows), G2:G4 Khoa cấp cứu (3 rows)
+        '2_2':  { rs: 2, cs: 1 }, '2_3':  { rs: 3, cs: 1 }, '2_7':  { rs: 3, cs: 1 },
+        // G5, G6 are SEPARATE Thang máy cells (not merged in Excel)
+        // B6 Thang bộ, C6 Thang máy (single rows)
+        // B7:B9 Khoa truyền nhiễm (3 rows), C7:C9 Quầy tiếp đón (3 rows)
+        '7_2':  { rs: 3, cs: 1 }, '7_3':  { rs: 3, cs: 1 },
+        // E7:E15 Ghế chờ (9 rows!), G7:G9 Phòng nghỉ (3 rows)
+        '7_5':  { rs: 9, cs: 1 }, '7_7':  { rs: 3, cs: 1 },
+        // G10:G11 Thang bộ (2 rows), G12 Nhà vệ sinh (1 row)
+        '10_7': { rs: 2, cs: 1 },
+        // B13:B15 Khoa mắt (3 rows), C13:C15 Khoa Răng (3 rows), G13:G15 Phòng chụp (3 rows)
+        '13_2': { rs: 3, cs: 1 }, '13_3': { rs: 3, cs: 1 }, '13_7': { rs: 3, cs: 1 },
+        // B18:B20 Khoa TMH (3 rows), C18:C20 Phòng lấy mẫu (3 rows)
+        // F18:F20 Thang máy (3 rows), G18:G20 Quầy tiếp đón (3 rows)
+        '18_2': { rs: 3, cs: 1 }, '18_3': { rs: 3, cs: 1 },
+        '18_6': { rs: 3, cs: 1 }, '18_7': { rs: 3, cs: 1 },
+    },
+    1: { // Floor 2
+        // B2:B4 Khoa Hô hấp (3 rows), C2:C4 Phòng đo (3 rows)
+        // D2:E4 Ghế chờ (3 rows × 2 cols!), F2:G4 Khoa Nhi (3 rows × 2 cols!)
+        '2_2':  { rs: 3, cs: 1 }, '2_3':  { rs: 3, cs: 1 },
+        '2_4':  { rs: 3, cs: 2 }, '2_6':  { rs: 3, cs: 2 },
+        // G5, G6 SEPARATE Thang máy cells. B6 Thang bộ, C6 Thang máy (single rows)
+        // B7:B8 Nhà vệ sinh (2 rows)
+        '7_2':  { rs: 2, cs: 1 },
+        // C7:C9 Phòng XN hóa sinh (3 rows), G7:G9 Phòng siêu âm (3 rows)
+        '7_3':  { rs: 3, cs: 1 }, '7_7':  { rs: 3, cs: 1 },
+        // E9:E12 Ghế chờ (4 rows!), G10:G11 Thang bộ (2 rows)
+        '9_5':  { rs: 4, cs: 1 }, '10_7': { rs: 2, cs: 1 },
+        // B13:B15 Khoa ngoại (3 rows), C13:C15 Khoa Tim (3 rows)
+        // F13:F15 Phòng khử trùng (3 rows), G13:G15 Phòng dụng cụ (3 rows)
+        '13_2': { rs: 3, cs: 1 }, '13_3': { rs: 3, cs: 1 },
+        '13_6': { rs: 3, cs: 1 }, '13_7': { rs: 3, cs: 1 },
+        // B18:B20 Khoa Tiêu hóa (3 rows), C18:C20 Phòng nội soi (3 rows)
+        // D18:D20 Ghế chờ (3 rows), E18:E20 Khoa thần kinh (3 rows)
+        // F18:F20 Thang máy (3 rows), G18:G20 Nhà vệ sinh (3 rows)
+        '18_2': { rs: 3, cs: 1 }, '18_3': { rs: 3, cs: 1 }, '18_4': { rs: 3, cs: 1 },
+        '18_5': { rs: 3, cs: 1 }, '18_6': { rs: 3, cs: 1 }, '18_7': { rs: 3, cs: 1 },
+    }
+};
+
+// Helper: draw text with word-wrap centered in (cx, cy)
+function wrapText(ctx, text, cx, cy, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    const lines = [];
+    let line = '';
+    for (const word of words) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
+            lines.push(line);
+            line = word;
+        } else {
+            line = test;
+        }
+    }
+    if (line) lines.push(line);
+    const startY = cy - (lines.length - 1) * lineHeight / 2;
+    lines.forEach((l, i) => ctx.fillText(l, cx, startY + i * lineHeight));
+}
+
 function drawMapCanvas(path, goalObj, startArr = null) {
-    const canvas = document.getElementById("map-canvas");
+    drawFloor(0, "map-canvas-0", path, goalObj, startArr);
+    drawFloor(1, "map-canvas-1", path, goalObj, startArr);
+}
+
+function drawFloor(floorIndex, canvasId, path, goalObj, startArr = null) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     
     // Set internal resolution
@@ -257,50 +423,104 @@ function drawMapCanvas(path, goalObj, startArr = null) {
         ctx.beginPath(); ctx.moveTo(c * cellWidth, 0); ctx.lineTo(c * cellWidth, canvas.height); ctx.stroke();
     }
 
-    // Draw Obstacles (Buildings) based on Excel colors
-    if (hospitalGrid) {
-        const COLOR_MAP = {
-            1: "#e7e6e6",
-            2: "#a5a5a5",
-            3: "#5b9bd5",
-            4: "#44546a"
-        };
-        for (let r = 0; r < GRID_ROWS; r++) {
-            for (let c = 0; c < GRID_COLS; c++) {
-                const val = hospitalGrid[r][c];
-                if (val > 0) { // Obstacle
-                    ctx.fillStyle = COLOR_MAP[val] || "#e2e8f0";
-                    ctx.fillRect(c * cellWidth, r * cellHeight, cellWidth + 1, cellHeight + 1);
+    // Draw Map using rawMapData (with merged-cell support)
+    if (rawMapData) {
+        const floorData = floorIndex === 1 ? rawMapData.floor_2 : rawMapData.floor_1;
+        const spans = CELL_SPANS[floorIndex] || {};
+
+        // Build the set of cells that are "covered" by a spanning cell above/left
+        const skipSet = new Set();
+        for (const key in spans) {
+            const [r, c] = key.split('_').map(Number);
+            const { rs, cs } = spans[key];
+            for (let dr = 0; dr < rs; dr++) {
+                for (let dc = 0; dc < cs; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    skipSet.add(`${r + dr}_${c + dc}`);
                 }
             }
         }
-    }
 
-    // Draw Labels for Buildings/Rooms
-    const MAP_LABELS = [
-        {"text": "Cổng 1", "r": 0.5, "c": 9.5}, 
-        {"text": "Sảnh đón", "r": 6.5, "c": 8.5}, 
-        {"text": "Quầy phát thuốc", "r": 13.5, "c": 3.5}, 
-        {"text": "Khu hành chính", "r": 13.5, "c": 15.5}, 
-        {"text": "Sảnh chính", "r": 15.5, "c": 9.5}, 
-        {"text": "Thang máy", "r": 21.5, "c": 3.5}, 
-        {"text": "Thang máy", "r": 21.5, "c": 18.5}
-    ];
-    
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 14px 'Inter', sans-serif";
-    
-    for (let label of MAP_LABELS) {
-        const x = label.c * cellWidth;
-        const y = label.r * cellHeight;
-        
-        // Add a small white background badge for visibility
-        const textWidth = ctx.measureText(label.text).width;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-        ctx.fillRect(x - textWidth/2 - 6, y - 10, textWidth + 12, 20);
-        ctx.fillStyle = "#b91c1c"; // red-700
-        ctx.fillText(label.text, x, y);
+        // ── Pass 1: Draw room fills ──────────────────────────────────────────
+        for (let r = 0; r < GRID_ROWS; r++) {
+            for (let c = 0; c < GRID_COLS; c++) {
+                if (skipSet.has(`${r}_${c}`)) continue;
+                const cell = floorData[r][c];
+                const x = c * cellWidth;
+                const y = r * cellHeight;
+                const sp = spans[`${r}_${c}`] || { rs: 1, cs: 1 };
+                const dW = cellWidth  * sp.cs + 1;
+                const dH = cellHeight * sp.rs + 1;
+
+                if (cell.type === 'wall') {
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillRect(x, y, dW, dH);
+                } else if (cell.type === 'room-normal') {
+                    ctx.fillStyle = '#dbeafe';
+                    ctx.fillRect(x, y, dW, dH);
+                    ctx.strokeStyle = 'rgba(99,102,241,0.18)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x + 0.5, y + 0.5, dW - 1, dH - 1);
+                } else if (cell.type === 'room-wc') {
+                    ctx.fillStyle = '#ffedd5';
+                    ctx.fillRect(x, y, dW, dH);
+                    ctx.strokeStyle = 'rgba(234,88,12,0.18)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x + 0.5, y + 0.5, dW - 1, dH - 1);
+                } else if (cell.type === 'elevator' || cell.type === 'stairs') {
+                    ctx.fillStyle = '#e0e7ff';
+                    ctx.fillRect(x, y, dW, dH);
+                    ctx.strokeStyle = 'rgba(99,102,241,0.18)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x + 0.5, y + 0.5, dW - 1, dH - 1);
+                }
+                // path / gate → transparent (no fill)
+            }
+        }
+
+        // ── Pass 2: Draw labels ──────────────────────────────────────────────
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        for (let r = 0; r < GRID_ROWS; r++) {
+            for (let c = 0; c < GRID_COLS; c++) {
+                if (skipSet.has(`${r}_${c}`)) continue;
+                const cell = floorData[r][c];
+                if (!cell.text || cell.type === 'wall' || cell.type === 'path') continue;
+
+                const sp = spans[`${r}_${c}`] || { rs: 1, cs: 1 };
+                const dW = cellWidth  * sp.cs;
+                const dH = cellHeight * sp.rs;
+                const cx = c * cellWidth + dW / 2;
+                const cy = r * cellHeight + dH / 2;
+
+                const isGate  = cell.type === 'gate';
+                const fSize   = isGate ? 10 : (sp.rs >= 2 ? 12 : 11);
+                const lineH   = fSize + 4;
+                const maxTxtW = dW - 10;
+
+                ctx.font = `bold ${fSize}px 'Inter', sans-serif`;
+
+                if (!isGate) {
+                    // Estimate background rect size before drawing text
+                    const words   = cell.text.split(' ');
+                    let line = '', lines = [];
+                    for (const w of words) {
+                        const test = line ? line + ' ' + w : w;
+                        if (ctx.measureText(test).width > maxTxtW && line) { lines.push(line); line = w; }
+                        else line = test;
+                    }
+                    if (line) lines.push(line);
+                    const bgW = Math.min(Math.max(...lines.map(l => ctx.measureText(l).width)) + 12, dW - 4);
+                    const bgH = lines.length * lineH + 6;
+                    ctx.fillStyle = 'rgba(255,255,255,0.90)';
+                    ctx.fillRect(cx - bgW / 2, cy - bgH / 2, bgW, bgH);
+                }
+
+                ctx.fillStyle = isGate ? '#475569' : '#1e3a8a';
+                wrapText(ctx, cell.text, cx, cy, maxTxtW, lineH);
+            }
+        }
     }
 
     // Draw Path
@@ -308,13 +528,24 @@ function drawMapCanvas(path, goalObj, startArr = null) {
         ctx.beginPath();
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
+        let isFirst = true;
+        let lastNodeOnFloor = null;
+
         for (let i = 0; i < path.length; i++) {
-            const r = path[i].r;
-            const c = path[i].c;
-            const x = c * cellWidth + cellWidth / 2;
-            const y = r * cellHeight + cellHeight / 2;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+            const node = path[i];
+            if (node.z === floorIndex) {
+                const x = node.c * cellWidth + cellWidth / 2;
+                const y = node.r * cellHeight + cellHeight / 2;
+                if (isFirst) { 
+                    ctx.moveTo(x, y); 
+                    isFirst = false; 
+                } else { 
+                    ctx.lineTo(x, y); 
+                }
+                lastNodeOnFloor = node;
+            } else {
+                isFirst = true;
+            }
         }
         
         // Glow effect
@@ -328,45 +559,60 @@ function drawMapCanvas(path, goalObj, startArr = null) {
         // Reset shadow
         ctx.shadowBlur = 0;
 
-        // Draw Start Node
-        const startR = path[0].r;
-        const startC = path[0].c;
-        ctx.beginPath();
-        ctx.arc(startC * cellWidth + cellWidth / 2, startR * cellHeight + cellHeight / 2, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "#22c55e"; // green-500
-        ctx.fill();
+        // Draw Start Node if on this floor
+        if (startArr && startArr[2] === floorIndex) {
+            ctx.beginPath();
+            ctx.arc(startArr[1] * cellWidth + cellWidth / 2, startArr[0] * cellHeight + cellHeight / 2, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#22c55e"; // green-500
+            ctx.fill();
+        }
 
-        // Draw End Node (Visual Goal)
-        const vEndR = goalObj.vr || goalObj.r;
-        const vEndC = goalObj.vc || goalObj.c;
-        const vEndX = goalObj.vc ? vEndC * cellWidth : vEndC * cellWidth + cellWidth / 2;
-        const vEndY = goalObj.vr ? vEndR * cellHeight : vEndR * cellHeight + cellHeight / 2;
-        
-        // Dashed line from entrance to building interior
-        const pathEndR = path[path.length - 1].r;
-        const pathEndC = path[path.length - 1].c;
-        ctx.beginPath();
-        ctx.setLineDash([4, 4]);
-        ctx.moveTo(pathEndC * cellWidth + cellWidth / 2, pathEndR * cellHeight + cellHeight / 2);
-        ctx.lineTo(vEndX, vEndY);
-        ctx.strokeStyle = "#ef4444"; // red dashed
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.setLineDash([]); // Reset
-        
-        ctx.beginPath();
-        ctx.arc(vEndX, vEndY - 15, 6, 0, Math.PI * 2); // Slightly above the label
-        ctx.fillStyle = "#ef4444"; // red-500
-        ctx.fill();
-        
-        // Draw Entrance Node
-        ctx.beginPath();
-        ctx.arc(pathEndC * cellWidth + cellWidth / 2, pathEndR * cellHeight + cellHeight / 2, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "#f59e0b"; // amber-500 for elevator/entrance
-        ctx.fill();
+        // Draw End Node if on this floor
+        if (goalObj && goalObj.z === floorIndex) {
+            const vEndR = goalObj.vr || goalObj.r;
+            const vEndC = goalObj.vc || goalObj.c;
+            const vEndX = goalObj.vc ? vEndC * cellWidth : vEndC * cellWidth + cellWidth / 2;
+            const vEndY = goalObj.vr ? vEndR * cellHeight : vEndR * cellHeight + cellHeight / 2;
+            
+            // If the path reached this floor, draw dashed line to room
+            if (lastNodeOnFloor) {
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(lastNodeOnFloor.c * cellWidth + cellWidth / 2, lastNodeOnFloor.r * cellHeight + cellHeight / 2);
+                ctx.lineTo(vEndX, vEndY);
+                ctx.strokeStyle = "#ef4444"; // red dashed
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset
+                
+                // Draw Entrance Node
+                ctx.beginPath();
+                ctx.arc(lastNodeOnFloor.c * cellWidth + cellWidth / 2, lastNodeOnFloor.r * cellHeight + cellHeight / 2, 4, 0, Math.PI * 2);
+                ctx.fillStyle = "#f59e0b"; // amber-500
+                ctx.fill();
+            }
+            
+            ctx.beginPath();
+            ctx.arc(vEndX, vEndY - 15, 6, 0, Math.PI * 2); // Slightly above the label
+            ctx.fillStyle = "#ef4444"; // red-500
+            ctx.fill();
+        } else if (lastNodeOnFloor && lastNodeOnFloor !== path[path.length - 1]) {
+            // Draw transition node (elevator/stairs) if path leaves this floor
+            ctx.beginPath();
+            ctx.arc(lastNodeOnFloor.c * cellWidth + cellWidth / 2, lastNodeOnFloor.r * cellHeight + cellHeight / 2, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#8b5cf6"; // purple-500 for floor transition
+            ctx.fill();
+            
+            // Draw transition label
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(lastNodeOnFloor.c * cellWidth - 10, lastNodeOnFloor.r * cellHeight - 20, 30, 16);
+            ctx.fillStyle = "#6d28d9";
+            ctx.font = "bold 10px 'Inter', sans-serif";
+            ctx.fillText(floorIndex === 0 ? "Lên ↑" : "Xuống ↓", lastNodeOnFloor.c * cellWidth + cellWidth / 2, lastNodeOnFloor.r * cellHeight - 12);
+        }
     } else {
-        // Draw Goal if path not generated yet
-        if (goalObj) {
+        // Draw Goal if path not generated yet and goal is on this floor
+        if (goalObj && goalObj.z === floorIndex) {
             const vEndR = goalObj.vr || goalObj.r;
             const vEndC = goalObj.vc || goalObj.c;
             const vEndX = goalObj.vc ? vEndC * cellWidth : vEndC * cellWidth + cellWidth / 2;
@@ -378,8 +624,8 @@ function drawMapCanvas(path, goalObj, startArr = null) {
             ctx.fill();
         }
 
-        // Draw Start if path not generated yet
-        if (startArr) {
+        // Draw Start if path not generated yet and start is on this floor
+        if (startArr && startArr[2] === floorIndex) {
             ctx.fillStyle = "#22c55e"; // Green
             ctx.beginPath();
             ctx.arc(startArr[1] * cellWidth + cellWidth / 2, startArr[0] * cellHeight + cellHeight / 2, 6, 0, Math.PI * 2);

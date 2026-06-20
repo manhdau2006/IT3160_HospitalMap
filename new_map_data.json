@@ -1,0 +1,1942 @@
+{
+  "metadata": {
+    "rows": 23,
+    "cols": 10
+  },
+  "floor_1": [
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "gate",
+        "text": "Cổng 1"
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-wc",
+        "text": "Nhà vệ sinh"
+      },
+      {
+        "type": "room-normal",
+        "text": "Quầy thuốc bệnh viện"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa cấp cứu"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "stairs",
+        "text": "Thang bộ"
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa truyền nhiễm"
+      },
+      {
+        "type": "room-normal",
+        "text": "Quầy tiếp đón"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Ghế chờ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng nghỉ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "stairs",
+        "text": "Thang bộ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-wc",
+        "text": "Nhà vệ sinh"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa mắt"
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Răng Hàm Mặt"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng chụp X-Quang"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "gate",
+        "text": "Cổng 3"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "gate",
+        "text": "Cổng 4"
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Tai Mũi Họng"
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng lấy mẫu"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "room-normal",
+        "text": "Quầy tiếp đón"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "gate",
+        "text": "Cổng 2"
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ]
+  ],
+  "floor_2": [
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Hô hấp"
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng đo chức năng"
+      },
+      {
+        "type": "room-normal",
+        "text": "Ghế chờ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Nhi"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "stairs",
+        "text": "Thang bộ"
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-wc",
+        "text": "Nhà vệ sinh"
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng xét nghiệm hóa sinh"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng siêu âm"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Ghế chờ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "stairs",
+        "text": "Thang bộ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-wc",
+        "text": "Nhà vệ sinh"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa ngoại tổng hợp"
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Tim mạch"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng khử trùng"
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng dụng cụ"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa Tiêu hóa"
+      },
+      {
+        "type": "room-normal",
+        "text": "Phòng nội soi"
+      },
+      {
+        "type": "room-normal",
+        "text": "Ghế chờ"
+      },
+      {
+        "type": "room-normal",
+        "text": "Khoa thần kinh"
+      },
+      {
+        "type": "elevator",
+        "text": "Thang máy"
+      },
+      {
+        "type": "room-wc",
+        "text": "Nhà vệ sinh"
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "path",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ],
+    [
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      }
+    ]
+  ]
+}
