@@ -1,0 +1,7 @@
+Flask
+Flask-CORS
+numpy
+python-dotenv
+Werkzeug
+Jinja2
+gunicorn
