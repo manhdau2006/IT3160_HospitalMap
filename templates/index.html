@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Hospital Navigator</title>
+    <!-- TailwindCSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Background Elements for Premium Feel -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <main class="container mx-auto max-w-7xl px-4 py-4 min-h-screen flex flex-col justify-center items-center">
+        
+        <!-- Header -->
+        <header class="text-center mb-10 fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-4 tracking-tight">Smart Hospital Navigator</h1>
+            <p class="text-lg text-gray-600 font-medium max-w-2xl mx-auto">Hệ thống AI điều phối khám bệnh và dẫn đường thông minh</p>
+        </header>
+
+        <!-- Phase 1: Symptom Triage -->
+        <section id="phase-triage" class="w-full max-w-2xl glass-panel rounded-3xl p-8 shadow-2xl transition-all duration-500 ease-in-out relative overflow-hidden fade-in-up" style="animation-delay: 0.1s;">
+            <!-- Loading Overlay -->
+            <div id="triage-loader" class="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center hidden">
+                <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h2 id="question-text" class="text-2xl font-bold text-gray-800">Đang tải dữ liệu...</h2>
+                </div>
+                
+                <div id="options-container" class="space-y-4">
+                    <!-- Options injected here by JS -->
+                </div>
+            </div>
+
+            <!-- Path Breadcrumbs -->
+            <div class="mt-6 pt-6 border-t border-gray-200/50 flex justify-between items-center">
+                <div class="text-sm text-gray-500 font-medium">Tiến trình chẩn đoán</div>
+                <button id="btn-reset" class="text-sm text-red-500 hover:text-red-700 font-medium transition-colors hidden">
+                    Làm lại từ đầu
+                </button>
+            </div>
+        </section>
+
+        <!-- Phase 2: Result & Map Routing -->
+        <section id="phase-routing" class="w-full glass-panel rounded-3xl p-6 shadow-2xl transition-all duration-500 ease-in-out hidden flex flex-col md:flex-row gap-4 fade-in-up" style="height: 92vh;">
+            
+            <!-- Sidebar Info -->
+            <div class="w-full md:w-1/5 flex flex-col gap-4" style="min-width:220px; max-width:260px;">
+                <div class="bg-white/60 p-4 rounded-2xl shadow-sm border border-white/40 flex-1 flex flex-col min-h-0">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Kết quả chẩn đoán</h3>
+                    <div id="results-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
+                        <!-- Results injected by JS -->
+                        <div class="text-gray-500 text-sm">Đang tải...</div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 p-4 rounded-2xl shadow-sm border border-white/40">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Vị trí hiện tại</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <select id="input-start" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                                <option value="">Đang tải địa điểm...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-6 mb-4">Điểm đến (Tùy chọn)</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-2">
+                            <select id="input-custom-dest" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                                <option value="">-- Chọn điểm đến --</option>
+                            </select>
+                            <button id="btn-custom-route" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors shadow-sm whitespace-nowrap flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                                Đi
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-5 mb-4">Thuật toán dẫn đường</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <select id="input-algorithm" class="w-full bg-white/80 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="astar">A* (Đề xuất)</option>
+                                <option value="dijkstra">Dijkstra</option>
+                                <option value="dfs">DFS (Chiều sâu)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="route-stats" class="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Độ dài quãng đường:</span>
+                            <span id="stat-cost" class="font-bold text-indigo-700">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Số ô đã duyệt:</span>
+                            <span id="stat-nodes-expanded" class="font-bold text-indigo-700">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="btn-back" class="text-sm text-gray-500 hover:text-gray-800 font-medium text-left transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Quay lại chẩn đoán
+                </button>
+            </div>
+
+            <!-- Map View -->
+            <div class="w-full flex-1 h-full bg-[#f8fafc] rounded-2xl shadow-inner relative overflow-hidden border border-gray-200 group flex flex-col md:flex-row">
+                <!-- Grid Map Canvas Floor 1 -->
+                <div class="w-full md:w-1/2 h-1/2 md:h-full relative border-b md:border-b-0 md:border-r border-gray-200">
+                    <div class="absolute top-2 left-2 bg-white/90 shadow-sm border border-gray-200 text-gray-700 font-bold text-xs px-2 py-1 rounded-md z-10">Tầng 1</div>
+                    <canvas id="map-canvas-0" class="absolute inset-0 w-full h-full object-contain"></canvas>
+                </div>
+                <!-- Grid Map Canvas Floor 2 -->
+                <div class="w-full md:w-1/2 h-1/2 md:h-full relative">
+                    <div class="absolute top-2 left-2 bg-white/90 shadow-sm border border-gray-200 text-gray-700 font-bold text-xs px-2 py-1 rounded-md z-10">Tầng 2</div>
+                    <canvas id="map-canvas-1" class="absolute inset-0 w-full h-full object-contain"></canvas>
+                </div>
+                
+                <div class="absolute bottom-4 right-4 flex gap-2 z-20">
+                    <div class="bg-white/90 shadow-sm border border-gray-200 text-gray-700 font-medium text-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div> Bắt đầu
+                    </div>
+                    <div class="bg-white/90 shadow-sm border border-gray-200 text-gray-700 font-medium text-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div> Đích
+                    </div>
+                    <div class="bg-white/90 shadow-sm border border-gray-200 text-gray-700 font-medium text-xs px-3 py-1.5 rounded-lg flex items-center gap-2">
+                        <div class="w-3 h-3 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div> Lộ trình
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Map Hover Tooltip -->
+        <div id="map-tooltip" class="fixed opacity-0 pointer-events-none transition-opacity duration-200 z-50 bg-gray-900 text-white text-xs font-bold px-3 py-2 rounded shadow-lg transform -translate-x-1/2 -translate-y-full mt-[-10px]">
+        </div>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
