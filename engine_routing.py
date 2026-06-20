@@ -1,21 +1,24 @@
 import heapq
 import time
 import math
+import itertools
 
 class RoutingEngine:
     def __init__(self):
         pass
 
-    def find_path(self, start, goal, grid_matrix, hospital_map=None):
+    def find_path(self, start, goal, grid_matrix, algorithm="astar", hospital_map=None):
         """
-        Execute A* 3D search algorithm matching the logic of astar_3d.js exactly.
+        Execute 3D search algorithm (A*, Dijkstra, or DFS).
         start: [r, c, z]
         goal: [r, c, z]
         grid_matrix: { "0": [[...], ...], "1": [...] }
+        algorithm: "astar", "dijkstra", or "dfs"
         hospital_map: HospitalMap instance (if any)
         Returns: path array of {r, c, z}, cost, latency_ms
         """
         start_time = time.time()
+        dfs_counter = itertools.count()
 
         start_tuple = tuple(start)
         goal_tuple = tuple(goal)
@@ -67,9 +70,16 @@ class RoutingEngine:
 
             return min_h
 
-        # 4. Initialize A* structures
+        # 4. Initialize search structures
         open_set = [] # Min-Heap of (f_score, state)
-        heapq.heappush(open_set, (calculate_heuristic(start_tuple), start_tuple))
+        if algorithm == "dijkstra":
+            start_f = 0.0
+        elif algorithm == "dfs":
+            start_f = -next(dfs_counter)
+        else:
+            start_f = calculate_heuristic(start_tuple)
+            
+        heapq.heappush(open_set, (start_f, start_tuple))
 
         came_from = {}
         g_score = {start_tuple: 0.0}
@@ -135,11 +145,22 @@ class RoutingEngine:
                         continue
 
                     tentative_g = g_score[current] + step_cost
-                    if neighbor not in g_score or tentative_g < g_score[neighbor]:
-                        came_from[neighbor] = current
-                        g_score[neighbor] = tentative_g
-                        f_score = tentative_g + calculate_heuristic(neighbor)
-                        heapq.heappush(open_set, (f_score, neighbor))
+                    if algorithm == "dfs":
+                        if neighbor not in g_score:
+                            came_from[neighbor] = current
+                            g_score[neighbor] = tentative_g
+                            heapq.heappush(open_set, (-next(dfs_counter), neighbor))
+                    else:
+                        if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                            came_from[neighbor] = current
+                            g_score[neighbor] = tentative_g
+                            
+                            if algorithm == "dijkstra":
+                                f_score = tentative_g
+                            else: # "astar"
+                                f_score = tentative_g + calculate_heuristic(neighbor)
+                                
+                            heapq.heappush(open_set, (f_score, neighbor))
 
             # --- GROUP 2: VERTICAL LINKS (ELEVATOR MOVES) ---
             if current_cell_type == CELL_ELEVATOR:
@@ -158,16 +179,27 @@ class RoutingEngine:
                         floor_diff = abs(next_z - curr_z)
                         vertical_cost = floor_diff * C_FLOOR
 
-                        neighbor = (curr_r, curr_c, next_z)
-                        if neighbor in closed_set:
+                        target_node = (curr_r, curr_c, next_z)
+                        if target_node in closed_set:
                             continue
 
                         tentative_g = g_score[current] + vertical_cost
-                        if neighbor not in g_score or tentative_g < g_score[neighbor]:
-                            came_from[neighbor] = current
-                            g_score[neighbor] = tentative_g
-                            f_score = tentative_g + calculate_heuristic(neighbor)
-                            heapq.heappush(open_set, (f_score, neighbor))
+                        if algorithm == "dfs":
+                            if target_node not in g_score:
+                                came_from[target_node] = current
+                                g_score[target_node] = tentative_g
+                                heapq.heappush(open_set, (-next(dfs_counter), target_node))
+                        else:
+                            if target_node not in g_score or tentative_g < g_score[target_node]:
+                                came_from[target_node] = current
+                                g_score[target_node] = tentative_g
+                                
+                                if algorithm == "dijkstra":
+                                    f_score = tentative_g
+                                else: # "astar"
+                                    f_score = tentative_g + calculate_heuristic(target_node)
+                                    
+                                heapq.heappush(open_set, (f_score, target_node))
 
         exec_time = (time.time() - start_time) * 1000
 

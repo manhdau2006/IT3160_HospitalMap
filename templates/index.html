@@ -85,6 +85,17 @@
                         </div>
                     </div>
 
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-5 mb-4">Thuật toán dẫn đường</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <select id="input-algorithm" class="w-full bg-white/80 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="astar">A* (Đề xuất)</option>
+                                <option value="dijkstra">Dijkstra</option>
+                                <option value="dfs">DFS (Chiều sâu)</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div id="route-stats" class="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 hidden">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600">Độ dài quãng đường:</span>
@@ -131,6 +142,9 @@
 
         </section>
 
+        <!-- Map Hover Tooltip -->
+        <div id="map-tooltip" class="fixed opacity-0 pointer-events-none transition-opacity duration-200 z-50 bg-gray-900 text-white text-xs font-bold px-3 py-2 rounded shadow-lg transform -translate-x-1/2 -translate-y-full mt-[-10px]">
+        </div>
     </main>
 
     <script src="/static/js/app.js"></script>

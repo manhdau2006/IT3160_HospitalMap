@@ -86,8 +86,11 @@ def api_route():
             for z in range(min_z, max_z + 1):
                 grid[str(z)] = hospital_map.get_grid_for_floor(z).tolist()
             
+        algorithm = data.get("algorithm", "astar")
+
         # Also pass hospital_map reference to routing engine to check elevators
-        result = routing_engine.find_path(start, goal, grid, hospital_map)
+        hospital_map = HospitalMap()
+        result = routing_engine.find_path(start, goal, grid, algorithm, hospital_map)
         
         if result["status"] == "blocked":
             return jsonify(result), 422

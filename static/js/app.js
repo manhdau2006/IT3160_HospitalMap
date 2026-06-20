@@ -18,10 +18,18 @@ let GRID_COLS = 10;
 // Global map data from backend
 let hospitalGrid = null;
 
+// Animation State
+let currentPathProgress = 0;
+let animationReqId = null;
+let currentPath = [];
+let currentGoalObj = null;
+let currentStartArr = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Fetch map first
     await fetchMapData();
     initTriage();
+    initHoverTooltips();
 
     document.getElementById("btn-reset").addEventListener("click", () => {
         triageState = { root_selections: [], sub_paths: {} };
@@ -300,7 +308,8 @@ async function handleRoutingRequest(btnElement) {
         const payload = {
             start: routingStart,
             goal: routingGoal,   // route to corridor cell adjacent to room
-            grid: grids
+            grid: grids,
+            algorithm: document.getElementById("input-algorithm").value
         };
 
         const response = await fetch('/api/route', {
@@ -318,8 +327,26 @@ async function handleRoutingRequest(btnElement) {
         document.getElementById("stat-latency").innerText = `${data.latency_ms} ms`;
         
         showToast("Đã tìm thấy lộ trình!", "success");
-        // Visual goal stays at the original room position (red dot + dashed line drawn by drawFloor)
-        drawMapCanvas(data.path, targetCoordinates, startCoords);
+        // Start Animation
+        currentPathProgress = 0;
+        currentPath = data.path;
+        currentGoalObj = targetCoordinates;
+        currentStartArr = startCoords;
+        if (animationReqId) {
+            clearTimeout(animationReqId);
+            cancelAnimationFrame(animationReqId);
+        }
+        
+        function animatePath() {
+            currentPathProgress += 1; // Draw 1 node per frame
+            drawMapCanvas(currentPath, currentGoalObj, currentStartArr);
+            if (currentPathProgress < currentPath.length) {
+                animationReqId = setTimeout(() => {
+                    requestAnimationFrame(animatePath);
+                }, 80); // Chậm lại: 80ms mỗi bước để cô giáo dễ quan sát
+            }
+        }
+        animatePath();
 
     } catch (error) {
         showToast(error.message, "error");
@@ -531,7 +558,9 @@ function drawFloor(floorIndex, canvasId, path, goalObj, startArr = null) {
         let isFirst = true;
         let lastNodeOnFloor = null;
 
-        for (let i = 0; i < path.length; i++) {
+        const maxNodes = Math.min(path.length, currentPathProgress || path.length);
+
+        for (let i = 0; i < maxNodes; i++) {
             const node = path[i];
             if (node.z === floorIndex) {
                 const x = node.c * cellWidth + cellWidth / 2;
@@ -668,7 +697,72 @@ function showToast(message, type = "info") {
 // Handle window resize for canvas redraw
 window.addEventListener('resize', () => {
     if (!document.getElementById("phase-routing").classList.contains("hidden")) {
-        // Redraw with current known path (if saved in state, but here we just redraw goal for now)
-        drawMapCanvas([], targetCoordinates);
+        drawMapCanvas(currentPath, currentGoalObj, currentStartArr);
     }
 });
+
+// Add hover event listeners for tooltips
+function initHoverTooltips() {
+    const tooltip = document.getElementById("map-tooltip");
+    
+    function handleMouseMove(e, floorIndex, canvasId) {
+        if (!rawMapData) return;
+        const canvas = document.getElementById(canvasId);
+        const rect = canvas.getBoundingClientRect();
+        
+        // Calculate cell size
+        const cellWidth = canvas.width / GRID_COLS;
+        const cellHeight = canvas.height / GRID_ROWS;
+        
+        // Calculate mouse position relative to canvas internal resolution
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top) * scaleY;
+        
+        const c = Math.floor(mouseX / cellWidth);
+        const r = Math.floor(mouseY / cellHeight);
+        
+        if (r >= 0 && r < GRID_ROWS && c >= 0 && c < GRID_COLS) {
+            const floorData = floorIndex === 1 ? rawMapData.floor_2 : rawMapData.floor_1;
+            
+            // Check if cell is covered by a span
+            let cell = floorData[r][c];
+            let textToShow = cell.text;
+            
+            if (!textToShow) {
+                // Find parent span
+                const spans = CELL_SPANS[floorIndex] || {};
+                for (const key in spans) {
+                    const [sr, sc] = key.split('_').map(Number);
+                    const { rs, cs } = spans[key];
+                    if (r >= sr && r < sr + rs && c >= sc && c < sc + cs) {
+                        textToShow = floorData[sr][sc].text;
+                        break;
+                    }
+                }
+            }
+
+            if (textToShow && !['path', 'gate', 'wall'].includes(cell.type)) {
+                tooltip.innerText = textToShow;
+                tooltip.style.left = `${e.clientX}px`;
+                tooltip.style.top = `${e.clientY - 15}px`; // slightly above
+                tooltip.style.opacity = '1';
+                return;
+            }
+        }
+        tooltip.style.opacity = '0';
+    }
+
+    const c0 = document.getElementById("map-canvas-0");
+    const c1 = document.getElementById("map-canvas-1");
+    
+    if (c0) {
+        c0.addEventListener('mousemove', (e) => handleMouseMove(e, 0, "map-canvas-0"));
+        c0.addEventListener('mouseleave', () => tooltip.style.opacity = '0');
+    }
+    if (c1) {
+        c1.addEventListener('mousemove', (e) => handleMouseMove(e, 1, "map-canvas-1"));
+        c1.addEventListener('mouseleave', () => tooltip.style.opacity = '0');
+    }
+}
