@@ -1,0 +1,1969 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Hospital Navigator - Premium Enterprise Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #0284c7, #1e3a8a, #0f172a);
+        }
+
+        /* Hiá»‡u á»©ng Glassmorphism Cao cáº¥p */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card-interactive {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card-interactive:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Nav link active state */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #22d3ee;
+            transition: width 0.3s;
+        }
+
+        .nav-link.active::after,
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.active {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+
+        .page-section {
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .page-section.active-page {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Cáº¥u trÃºc Äá»“ thá»‹ Tri thá»©c */
+        .tree-container {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            overflow: auto;
+        }
+
+        .tree-node {
+            position: absolute;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.85rem;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .tree-node i {
+            font-size: 16px;
+            color: #0ea5e9;
+        }
+
+        .tree-node.visited {
+            border-color: #0ea5e9;
+            color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.15);
+        }
+
+        .tree-node.active-path {
+            border-color: #06b6d4;
+            color: #06b6d4;
+            background: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .tree-node.target {
+            border-color: #22d3ee;
+            color: white;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Ká»¹ thuáº­t hiá»‡u á»©ng Ä‘Æ°á»ng truyá»n SVG Pulse */
+        @keyframes stroke-flow {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .svg-active-edge {
+            stroke: #06b6d4 !important;
+            stroke-width: 3px !important;
+            stroke-dasharray: 6, 4;
+            animation: stroke-flow 0.8s linear infinite;
+            filter: drop-shadow(0 0 5px #06b6d4);
+        }
+
+        .svg-visited-edge {
+            stroke: rgba(14, 165, 233, 0.5) !important;
+            stroke-width: 2px !important;
+        }
+
+        /* SÆ¡ Ä‘á»“ kiáº¿n trÃºc máº·t báº±ng thá»±c táº¿ */
+        #gridMap {
+            display: grid;
+            gap: 1px;
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 12px;
+            width: fit-content;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .cell {
+            width: 26px;
+            height: 26px;
+            background-color: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: transparent;
+        }
+
+        .cell.architectural-wall {
+            background-color: #1e293b;
+            border-color: #334155;
+            cursor: not-allowed;
+        }
+
+        .cell.room-zone {
+            background-color: rgba(14, 165, 233, 0.08);
+            border: 1px dashed rgba(14, 165, 233, 0.3);
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .cell.congested {
+            background-color: rgba(245, 158, 11, 0.25);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .cell.start {
+            background-color: #0ea5e9;
+            border-radius: 6px;
+            color: white !important;
+            box-shadow: 0 0 12px #0ea5e9;
+            z-index: 10;
+        }
+
+        .cell.end {
+            background-color: #ef4444;
+            border-radius: 6px;
+            color: white !important;
+            box-shadow: 0 0 12px #ef4444;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .cell.elevator {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #818cf8 !important;
+            font-size: 11px;
+        }
+
+        .cell.stairs {
+            background-color: rgba(20, 184, 166, 0.2);
+            border-color: rgba(20, 184, 166, 0.4);
+            color: #2dd4bf !important;
+            font-size: 11px;
+        }
+
+        .cell.path {
+            background-color: #06b6d4;
+            border-color: #0891b2;
+            color: white;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+            z-index: 5;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="text-slate-200 h-screen flex flex-col overflow-hidden antialiased">
+
+    <nav
+        class="glass-panel border-b border-white/10 px-8 py-4 flex justify-between items-center shrink-0 z-30 shadow-xl relative">
+        <div class="flex items-center gap-4">
+            <div
+                class="bg-gradient-to-tr from-cyan-500 to-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-cyan-500/30">
+                <i class="fa-solid fa-hospital text-xl animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-3">
+                    Smart Hospital Navigator <span
+                        class="text-[10px] tracking-widest uppercase bg-cyan-500/20 text-cyan-300 font-bold px-2.5 py-1 rounded-full border border-cyan-500/30">Enterprise
+                        v3.5</span>
+                </h1>
+                <p class="text-xs text-slate-300 font-medium mt-0.5">Há»‡ thá»‘ng Ä‘iá»u phá»‘i Ä‘a cháº·ng & Báº£n Ä‘á»“ sá»‘ hÃ³a liÃªn
+                    káº¿t SVG</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <a href="#" id="nav-home" onclick="MapsToPage('home', this)"
+                class="nav-link active relative px-3 py-2 text-sm font-bold text-white transition-all">Trang Chá»§</a>
+            <a href="#" id="nav-ai" onclick="MapsToPage('ai_diagnose', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">PhÃ²ng
+                Cháº©n ÄoÃ¡n AI</a>
+            <a href="#" onclick="MapsToPage('support', this)"
+                class="nav-link relative px-3 py-2 text-sm font-bold text-cyan-100 hover:text-white transition-all">Há»—
+                Trá»£</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-[10px] uppercase font-bold text-cyan-200 tracking-wider">Trá»±c ban Ä‘iá»u phá»‘i</p>
+                <p class="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 justify-end"><span
+                        class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span> AI Engine Active</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 overflow-hidden relative" id="mainContent">
+
+        <!-- PAGE: Trang Chá»§ -->
+        <div id="page-home" class="page-section absolute inset-0 flex items-center justify-center p-6 active-page">
+            <div class="text-center glass-panel p-12 rounded-3xl max-w-3xl shadow-2xl border border-cyan-500/20">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-2xl mb-6 shadow-lg shadow-cyan-500/40">
+                    <i class="fa-solid fa-hospital text-4xl text-white"></i>
+                </div>
+                <h2 class="text-4xl font-extrabold text-white mb-4 tracking-tight">Há»‡ Thá»‘ng TrÃ­ Tuá»‡ NhÃ¢n Táº¡o <br><span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Smart Hospital
+                        Navigator</span></h2>
+                <p class="text-cyan-100 text-lg mb-8 leading-relaxed">Ná»n táº£ng sá»‘ hÃ³a máº·t báº±ng y táº¿ vÃ  thuáº­t toÃ¡n Ä‘á»‹nh
+                    tuyáº¿n Ä‘a cháº·ng tá»‘i Æ°u A*. Há»— trá»£ tá»± Ä‘á»™ng phÃ¢n tÃ­ch Ä‘á»“ thá»‹ tri thá»©c lÃ¢m sÃ ng.</p>
+                <button onclick="MapsToPage('ai_diagnose', document.getElementById('nav-ai'))"
+                    class="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl text-white font-bold text-lg hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/50 transition-all">
+                    <i class="fa-solid fa-stethoscope mr-2"></i> Khá»Ÿi Äá»™ng PhÃ²ng Cháº©n ÄoÃ¡n
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE: AI Diagnose -->
+        <div id="page-ai_diagnose" class="page-section absolute inset-0">
+            <div id="phase1" class="absolute inset-0 flex p-6 gap-6 transition-all duration-500 ease-in-out justify-center">
+                <div class="w-full max-w-5xl flex flex-col gap-4 h-full">
+                    <div class="glass-panel p-8 rounded-2xl shadow-2xl flex flex-col flex-1 overflow-hidden relative">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6 shrink-0">
+                            <div>
+                                <div class="flex items-center gap-3 text-cyan-400 font-bold text-sm uppercase tracking-widest mb-2">
+                                    <i class="fa-solid fa-notes-medical text-lg"></i> Khai bÃ¡o lÃ¢m sÃ ng Ä‘a triá»‡u chá»©ng
+                                </div>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    TrÃ¬nh hÆ°á»›ng dáº«n AI. HÃ£y tráº£ lá»i cÃ¡c cÃ¢u há»i dÆ°á»›i Ä‘Ã¢y Ä‘á»ƒ há»‡ thá»‘ng chuáº©n Ä‘oÃ¡n sÆ¡ bá»™ vÃ  xáº¿p lá»‹ch khÃ¡m phÃ¹ há»£p nháº¥t.
+                                </p>
+                            </div>
+                            <span id="triageStatus" class="text-[11px] font-mono font-bold text-slate-400 bg-slate-950/60 border border-white/5 px-3 py-1.5 rounded-md">
+                                Tráº¡ng thÃ¡i: Sáºµn sÃ ng
+                            </span>
+                        </div>
+
+                        <!-- Dynamic Questionnaire Container -->
+                        <div class="flex-1 overflow-y-auto pr-2 mb-6 space-y-6" id="symptomContainer">
+                            <!-- JS will populate questions here -->
+                        </div>
+
+                        <div class="border-t border-white/5 pt-6 shrink-0 flex gap-4">
+                            <button id="resetTriageBtn" onclick="resetQuestionnaire()"
+                                class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all border border-white/10">
+                                <i class="fa-solid fa-rotate-right mr-2"></i> LÃ m láº¡i
+                            </button>
+                            <button id="startTriageBtn"
+                                class="flex-1 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm rounded-xl shadow-xl shadow-cyan-600/30 transition-all disabled:opacity-30 disabled:pointer-events-none"
+                                disabled>
+                                ÄÃ£ hoÃ n táº¥t - Xem Lá»‹ch TrÃ¬nh KhÃ¡m Äá» Xuáº¥t
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Itinerary Panel (Initially hidden, shown when triage is done) -->
+                    <div id="itineraryPanel" class="glass-panel p-6 rounded-2xl border-l-4 border-cyan-500 shadow-2xl hidden flex-col shrink-0">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-rectangle-list"></i> HÃ nh trÃ¬nh khÃ¡m Ä‘á» xuáº¥t
+                            </span>
+                            <span class="text-xs font-mono font-bold bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full border border-cyan-500/30">
+                                AI Suggested Priority
+                            </span>
+                        </div>
+
+                        <div id="itineraryStepsList" class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2"></div>
+
+                        <button id="proceedToNavBtn"
+                            class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/30">
+                            XÃC NHáº¬N & Báº®T Äáº¦U ÄIá»€U HÆ¯á»šNG Tá»šI Báº¢N Äá»’
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="phase2"
+                class="absolute inset-0 flex p-6 gap-6 translate-x-full opacity-0 transition-all duration-500 ease-in-out pointer-events-none">
+                <div
+                    class="flex-1 glass-panel rounded-2xl shadow-2xl p-6 flex flex-col items-center justify-center overflow-auto relative">
+                    <div class="w-full flex justify-between items-center mb-4 shrink-0 border-b border-white/5 pb-4">
+                        <div>
+                            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-map-marked-alt text-cyan-400"></i> SÆ¡ Ä‘á»“ thiáº¿t káº¿ máº·t báº±ng sá»‘ hÃ³a
+                                ná»™i khu (Khu liÃªn há»£p TÃ²a K)
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5 font-semibold" id="floorTitleLabel">Táº§ng 0 (Sáº£nh
+                                tiáº¿p Ä‘Ã³n)</p>
+                        </div>
+
+                        <div
+                            class="flex items-center gap-1.5 bg-slate-950/60 p-1 rounded-xl border border-white/5 shadow-inner">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase px-2">Xem Táº§ng:</span>
+                            <button id="btn-floor-0" onclick="changeRenderFloor(0)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all">Táº§ng
+                                0</button>
+                            <button id="btn-floor-1" onclick="changeRenderFloor(1)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Táº§ng
+                                1</button>
+                            <button id="btn-floor-2" onclick="changeRenderFloor(2)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Táº§ng
+                                2</button>
+                            <button id="btn-floor-3" onclick="changeRenderFloor(3)"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all">Táº§ng
+                                3</button>
+                        </div>
+
+                        <div
+                            class="flex gap-2.5 text-[9px] font-bold text-slate-300 bg-slate-950/50 p-2 rounded-xl border border-white/5 shadow-inner">
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-cyan-500 block shadow-glow"></span> Vá»‹ trÃ­</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-red-500 block shadow-glow"></span> ÄÃ­ch</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-indigo-500/50 border border-indigo-400 flex items-center justify-center text-[7px] text-white">ðŸ›—</span>
+                                Thang mÃ¡y</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-teal-500/50 border border-teal-400 flex items-center justify-center text-[7px] text-white">ðŸªœ</span>
+                                Thang bá»™</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-amber-500/30 border border-amber-500 block"></span> Ã™n
+                                táº¯c</div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-[#1e293b] border border-slate-600 block"></span> TÆ°á»ng
+                            </div>
+                            <div class="flex items-center gap-1"><span
+                                    class="w-2.5 h-2.5 rounded bg-cyan-400 block"></span> Lá»™ trÃ¬nh</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex items-center justify-center w-full">
+                        <div id="gridMap"></div>
+                    </div>
+
+                    <div
+                        class="text-[11px] text-slate-400 mt-4 text-center bg-cyan-500/5 border border-cyan-500/10 text-cyan-300 px-4 py-2 rounded-xl max-w-2xl w-full">
+                        <i class="fa-solid fa-fingerprint text-cyan-400 mr-1.5"></i> <strong>TÆ°Æ¡ng tÃ¡c hiá»‡n
+                            trÆ°á»ng:</strong>
+                        Giá»¯ <strong>Shift + QuÃ©t chuá»™t</strong> Ä‘á»ƒ táº¡o vÃ¹ng <strong>ÄÃ´ng ÄÃºc (MÃ u cam)</strong> Ä‘á»ƒ thá»­
+                        nghiá»‡m báº» lÃ¡i giáº£i thuáº­t A*.
+                    </div>
+                </div>
+
+                <div class="w-96 flex flex-col gap-4 shrink-0 h-full">
+                    <div
+                        class="glass-panel p-6 rounded-2xl shadow-2xl flex flex-col justify-between h-full overflow-hidden">
+                        <div class="flex flex-col flex-1 overflow-hidden">
+
+                            <div class="flex justify-between items-center mb-4 border-b border-white/5 pb-3 shrink-0">
+                                <h2
+                                    class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fa-solid fa-compass text-cyan-400"></i> Äá»‹nh vá»‹ HÃ nh trÃ¬nh A*
+                                </h2>
+                                <button id="backToPhase1Btn"
+                                    class="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-arrow-left-long"></i>
+                                </button>
+                            </div>
+
+                            <div
+                                class="bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border border-cyan-500/20 p-4 rounded-xl mb-4 flex items-center gap-3 shrink-0 shadow-inner">
+                                <div class="bg-cyan-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shadow-md shadow-cyan-500/20"
+                                    id="currentStopBadge">
+                                    1
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-[9px] uppercase font-bold text-cyan-400 tracking-wider">Cháº·ng
+                                            hÃ nh
+                                            trÃ¬nh hiá»‡n táº¡i:</p>
+                                        <span id="itineraryCounterBadge"
+                                            class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-300">1
+                                            / 1</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-white mt-0.5" id="currentNavTargetLabel">...</p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex-1 flex flex-col overflow-hidden mb-4 bg-slate-950/40 border border-white/5 rounded-xl p-3">
+                                <p
+                                    class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 flex items-center gap-1.5 border-b border-white/5 pb-2 shrink-0">
+                                    <i class="fa-solid fa-walking text-cyan-400"></i> HÆ°á»›ng dáº«n di chuyá»ƒn thá»±c táº¿
+                                </p>
+                                <div id="stepDirectionsList" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+                                    <div class="text-slate-500 italic text-center pt-8">ChÆ°a cÃ³ lá»™ trÃ¬nh cá»¥ thá»ƒ...</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mb-3 shrink-0">
+                                <div>
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cá»•ng
+                                        xuáº¥t phÃ¡t:</label>
+                                    <select id="startSelect"
+                                        class="w-full border border-white/10 rounded-lg py-1.5 px-2 text-xs bg-slate-900 text-slate-200 font-medium focus:ring-1 focus:ring-cyan-500 outline-none">
+                                        <option value="1,1">Sáº£nh tiáº¿p Ä‘Ã³n K1 (1,1)</option>
+                                        <option value="13,1">Cá»•ng Giáº£i PhÃ³ng (13,1)</option>
+                                        <option value="7,13">Quáº§y cáº¥p phÃ¡t thuá»‘c (7,13)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">HÃ m
+                                        Heuristic h(n):</label>
+                                    <select id="heuristicSelect"
+                                        class="w-full border border-white/10 rounded-lg py-1.5 px-2 text-xs bg-slate-900 text-slate-200 font-medium focus:ring-1 focus:ring-cyan-500 outline-none">
+                                        <option value="manhattan">Manhattan</option>
+                                        <option value="euclidean">Euclidean</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="nextStopBtn"
+                            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-900/20 mb-4 shrink-0 hidden">
+                            <span>ÄÃ£ Ä‘áº¿n nÆ¡i - Tiáº¿p tá»¥c cháº·ng tiáº¿p theo</span>
+                            <i class="fa-solid fa-angles-right"></i>
+                        </button>
+
+                        <div
+                            class="bg-slate-950 border border-white/5 rounded-xl p-3.5 text-white shrink-0 shadow-inner">
+                            <div class="grid grid-cols-2 gap-2 text-center">
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Khoáº£ng cÃ¡ch
+                                        Ä‘i bá»™
+                                    </p>
+                                    <p class="text-xs font-bold font-mono text-white mt-0.5" id="metricSteps">0 m</p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Thá»i gian
+                                        tÃ­nh
+                                    </p>
+                                    <p class="text-xs font-bold font-mono text-emerald-400 mt-0.5"><span
+                                            id="metricTime">0</span> ms</p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Ã” kiá»ƒm Ä‘á»‹nh
+                                        (Explored)</p>
+                                    <p class="text-xs font-bold font-mono text-amber-400 mt-0.5" id="metricExplored">0
+                                    </p>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Chi phÃ­ HÃ nh
+                                        trÃ¬nh f(n)</p>
+                                    <p class="text-xs font-bold font-mono text-cyan-300 mt-0.5" id="metricCost">0.0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End page-ai_diagnose -->
+
+
+
+        <div id="page-support" class="page-section absolute inset-0 flex items-center justify-center p-6">
+            <div class="glass-panel p-10 rounded-3xl text-center max-w-2xl border border-cyan-500/20 shadow-2xl">
+                <i class="fa-solid fa-headset text-6xl text-cyan-400 mb-6"></i>
+                <h2 class="text-3xl font-bold text-white mb-4">Há»— Trá»£ Ká»¹ Thuáº­t</h2>
+                <p class="text-cyan-100 text-lg leading-relaxed">Vui lÃ²ng liÃªn há»‡ trá»±c ban Ä‘iá»u phá»‘i trung tÃ¢m hoáº·c Ä‘á»™i
+                    ngÅ© ká»¹ thuáº­t AI Engine qua tá»•ng Ä‘Ã i ná»™i bá»™.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /*******************************************************
+         * MAPS TO PAGE ENGINE (Chuyá»ƒn trang & Quáº£n lÃ½ Phase)
+         *******************************************************/
+        function MapsToPage(pageId, linkElement) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-white');
+                link.classList.add('text-cyan-100');
+            });
+            if (linkElement) {
+                linkElement.classList.add('active', 'text-white');
+                linkElement.classList.remove('text-cyan-100');
+            }
+
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active-page');
+            });
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+
+                if (pageId === 'ai_diagnose') {
+                    resetTriageFlow();
+                }
+            }
+        }
+
+        function resetTriageFlow() {
+            const p1 = document.getElementById('phase1');
+            const p2 = document.getElementById('phase2');
+
+            if (p1) {
+                p1.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+                p1.classList.add('translate-x-0', 'opacity-100');
+            }
+            if (p2) {
+                p2.classList.remove('translate-x-0', 'opacity-100');
+                p2.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+            }
+
+            resetQuestionnaire();
+            itineraryPanel.classList.add('hidden');
+            document.getElementById('triageStatus').textContent = "Tráº¡ng thÃ¡i: Sáºµn sÃ ng";
+            currentItineraryIndex = 0;
+            medicalItinerary = [];
+        }
+
+        const DEPARTMENT_CONFIG = {
+            "K_TIEUHOA": { label: "Khoa TiÃªu HÃ³a", severity: 2, rooms: [{ name: 'PhÃ²ng KhÃ¡m TiÃªu HÃ³a 102', gridX: 18, gridY: 2, patients: 9 }, { name: 'PhÃ²ng Ná»™i Soi 105', gridX: 18, gridY: 5, patients: 4 }] },
+            "K_NGOAITONGHOP": { label: "Khoa Ngoáº¡i Tá»•ng há»£p", severity: 3, rooms: [{ name: 'PhÃ²ng KhÃ¡m Ngoáº¡i 106', gridX: 18, gridY: 7, patients: 6 }] },
+            "K_THANKINH": { label: "Khoa Tháº§n Kinh", severity: 4, rooms: [{ name: 'PhÃ²ng KhÃ¡m Tháº§n Kinh 301', gridX: 18, gridY: 3, patients: 7 }, { name: 'PhÃ²ng Äiá»‡n NÃ£o Äá»“ 303', gridX: 19, gridY: 3, patients: 2 }] },
+            "K_MAT": { label: "Khoa Máº¯t", severity: 1, rooms: [{ name: 'PhÃ²ng KhÃ¡m Máº¯t 201', gridX: 5, gridY: 2, patients: 8 }] },
+            "K_TAIMUIHONG": { label: "Khoa Tai MÅ©i Há»ng", severity: 2, rooms: [{ name: 'PhÃ²ng KhÃ¡m TMH 202', gridX: 6, gridY: 2, patients: 5 }] },
+            "K_TIMMACH": { label: "Khoa Tim Máº¡ch", severity: 5, rooms: [{ name: 'PhÃ²ng Äiá»u Ãp Tim Máº¡ch 401', gridX: 1, gridY: 2, patients: 11 }, { name: 'PhÃ²ng SiÃªu Ã‚m Tim 405', gridX: 1, gridY: 5, patients: 5 }] },
+            "K_HOHAP": { label: "Khoa HÃ´ Háº¥p", severity: 4, rooms: [{ name: 'PhÃ²ng KhÃ¡m HÃ´ Háº¥p 204', gridX: 18, gridY: 11, patients: 3 }, { name: 'Khu Äo Chá»©c NÄƒng Phá»•i', gridX: 18, gridY: 13, patients: 14 }] },
+            "K_NHIKHOA": { label: "Khoa Nhi", severity: 3, rooms: [{ name: 'PhÃ²ng KhÃ¡m Nhi 101', gridX: 2, gridY: 8, patients: 15 }] },
+            "K_TRUYENNHEM": { label: "Khoa Truyá»n Nhiá»…m", severity: 5, rooms: [{ name: 'Khu CÃ¡ch Ly Truyá»n Nhiá»…m', gridX: 15, gridY: 10, patients: 2 }] }
+        };
+
+        const symptomContainer = document.getElementById('symptomContainer');
+        const startTriageBtn = document.getElementById('startTriageBtn');
+        const itineraryPanel = document.getElementById('itineraryPanel');
+        const itineraryStepsList = document.getElementById('itineraryStepsList');
+        const gridMapEl = document.getElementById('gridMap');
+        const heuristicSelect = document.getElementById('heuristicSelect');
+        const stepDirectionsList = document.getElementById('stepDirectionsList');
+        const nextStopBtn = document.getElementById('nextStopBtn');
+
+        let symptomsData = null;
+        let activeAnswers = {}; // map pathId to chosen option indices
+        let leafResults = [];
+
+        function initApp() {
+            buildRealisticHospitalBlueprint();
+            bindUserInteractions();
+            fetchSymptomsData();
+        }
+
+        function fetchSymptomsData() { symptomsData = {
+    "id": "root",
+    "question": "VÃ¹ng cÆ¡ thá»ƒ hoáº·c triá»‡u chá»©ng chÃ­nh báº¡n Ä‘ang gáº·p pháº£i?",
+    "options": [
+        {
+            "label": "Äau/KhÃ³ chá»‹u vÃ¹ng bá»¥ng",
+            "next_node": {
+                "question": "Vá»‹ trÃ­ bá»¥ng báº¡n Ä‘ang bá»‹ áº£nh hÆ°á»Ÿng lÃ  á»Ÿ Ä‘Ã¢u?",
+                "options": [
+                    {
+                        "label": "VÃ¹ng thÆ°á»£ng vá»‹ (trÃªn rá»‘n)",
+                        "next_node": {
+                            "question": "Báº¡n cÃ³ kÃ¨m cÃ¡c triá»‡u chá»©ng sau khÃ´ng?",
+                            "options": [
+                                {
+                                    "label": "á»¢ chua, á»£ nÃ³ng, Ä‘áº§y hÆ¡i",
+                                    "next_node": {
+                                        "question": "Triá»‡u chá»©ng kÃ©o dÃ i bao lÃ¢u?",
+                                        "options": [
+                                            {
+                                                "label": "VÃ i ngÃ y Ä‘áº¿n vÃ i tuáº§n",
+                                                "next_node": {
+                                                    "question": "Má»©c Ä‘á»™ Ä‘au nhÆ° tháº¿ nÃ o?",
+                                                    "options": [
+                                                        {
+                                                            "label": "Äau Ã¢m á»‰, khÃ³ chá»‹u",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "Äau dá»¯ dá»™i, khÃ´ng giáº£m",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "Má»›i xuáº¥t hiá»‡n gáº§n Ä‘Ã¢y",
+                                                "next_node": {
+                                                    "question": "Báº¡n cÃ³ nÃ´n Ã³i hoáº·c chÃ¡n Äƒn khÃ´ng?",
+                                                    "options": [
+                                                        {
+                                                            "label": "CÃ³",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "KhÃ´ng",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Äau lan ra lÆ°ng, nÃ´n Ã³i",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ sá»‘t hoáº·c vÃ ng da khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Bá»¥ng dÆ°á»›i bÃªn pháº£i",
+                        "next_node": {
+                            "question": "CÆ¡n Ä‘au cÃ³ tÄƒng khi ho, Ä‘i láº¡i hoáº·c áº¥n vÃ o khÃ´ng?",
+                            "options": [
+                                {
+                                    "label": "CÃ³, Ä‘au tÄƒng dáº§n",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ buá»“n nÃ´n hoáº·c sá»‘t nháº¹ khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "next_node": {
+                                                    "question": "Báº¡n cÃ³ chÃ¡n Äƒn khÃ´ng?",
+                                                    "options": [
+                                                        {
+                                                            "label": "CÃ³",
+                                                            "result": "Khoa Ngoáº¡i Tá»•ng há»£p",
+                                                            "department_id": "K_NGOAITONGHOP"
+                                                        },
+                                                        {
+                                                            "label": "KhÃ´ng",
+                                                            "result": "Khoa Ngoáº¡i Tá»•ng há»£p",
+                                                            "department_id": "K_NGOAITONGHOP"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "KhÃ´ng, chá»‰ Ä‘au khi áº¥n hoáº·c cá»­ Ä‘á»™ng",
+                                                "result": "Khoa Ngoáº¡i Tá»•ng há»£p",
+                                                "department_id": "K_NGOAITONGHOP"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "KhÃ´ng, Ä‘au Ã¢m á»‰ hoáº·c Ä‘áº§y bá»¥ng",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ tiÃªu cháº£y hoáº·c tÃ¡o bÃ³n khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "TiÃªu cháº£y",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "TÃ¡o bÃ³n",
+                                                "result": "Khoa Ngoáº¡i Tá»•ng há»£p",
+                                                "department_id": "K_NGOAITONGHOP"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Bá»¥ng dÆ°á»›i bÃªn trÃ¡i hoáº·c quanh rá»‘n",
+                        "next_node": {
+                            "question": "Báº¡n cÃ³ kÃ¨m tiÃªu cháº£y hoáº·c buá»“n nÃ´n khÃ´ng?",
+                            "options": [
+                                {
+                                    "label": "CÃ³, tiÃªu cháº£y vÃ  buá»“n nÃ´n",
+                                    "next_node": {
+                                        "question": "Äau cÃ³ quáº·n tá»«ng cÆ¡n khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "next_node": {
+                                                    "question": "Báº¡n cÃ³ sá»‘t khÃ´ng?",
+                                                    "options": [
+                                                        {
+                                                            "label": "CÃ³",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        },
+                                                        {
+                                                            "label": "KhÃ´ng",
+                                                            "result": "Khoa TiÃªu hÃ³a",
+                                                            "department_id": "K_TIEUHOA"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "label": "KhÃ´ng, Ä‘au Ã¢m á»‰",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Chá»‰ Ä‘au Ã¢m á»‰, cáº£m giÃ¡c Ä‘áº§y hÆ¡i",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ tháº¥y náº·ng bá»¥ng sau Äƒn khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa TiÃªu hÃ³a",
+                                                "department_id": "K_TIEUHOA"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Triá»‡u chá»©ng á»Ÿ vÃ¹ng Äáº§u - Máº·t - Cá»•",
+            "next_node": {
+                "question": "Báº¡n Ä‘ang gáº·p triá»‡u chá»©ng á»Ÿ Ä‘áº§u, máº·t, cá»• hay máº¯t?",
+                "options": [
+                    {
+                        "label": "Äáº§u",
+                        "next_node": {
+                            "question": "Loáº¡i Ä‘au Ä‘áº§u báº¡n gáº·p lÃ  gÃ¬?",
+                            "options": [
+                                {
+                                    "label": "Äau Ä‘áº§u dá»¯ dá»™i, buá»“n nÃ´n, sá»£ Ã¡nh sÃ¡ng",
+                                    "next_node": {
+                                        "question": "Triá»‡u chá»©ng nÃ y xuáº¥t hiá»‡n nhÆ° tháº¿ nÃ o?",
+                                        "options": [
+                                            {
+                                                "label": "TÃ¡i phÃ¡t nhiá»u láº§n",
+                                                "result": "Khoa Tháº§n kinh",
+                                                "department_id": "K_THANKINH"
+                                            },
+                                            {
+                                                "label": "Má»›i xuáº¥t hiá»‡n gáº§n Ä‘Ã¢y",
+                                                "result": "Khoa Tháº§n kinh",
+                                                "department_id": "K_THANKINH"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Äau Ä‘áº§u Ãª áº©m, cÄƒng cÆ¡ cá»•",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ kÃ¨m cá»• cá»©ng hoáº·c chÃ³ng máº·t khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa Tháº§n kinh",
+                                                "department_id": "K_THANKINH"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa Tháº§n kinh",
+                                                "department_id": "K_THANKINH"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Máº¯t",
+                        "next_node": {
+                            "question": "Triá»‡u chá»©ng á»Ÿ máº¯t cá»¥ thá»ƒ lÃ  gÃ¬?",
+                            "options": [
+                                {
+                                    "label": "Äá» máº¯t, xá»‘n máº¯t, cháº£y nÆ°á»›c nhiá»u",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ tháº¥y má» máº¯t hoáº·c nhá»©c máº¯t khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³ má» máº¯t",
+                                                "result": "Khoa Máº¯t",
+                                                "department_id": "K_MAT"
+                                            },
+                                            {
+                                                "label": "Chá»‰ Ä‘á» vÃ  cháº£y nÆ°á»›c",
+                                                "result": "Khoa Máº¯t",
+                                                "department_id": "K_MAT"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Má» máº¯t, nhÃ¬n khÃ³ khÄƒn",
+                                    "result": "Khoa Máº¯t",
+                                    "department_id": "K_MAT"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Há»ng hoáº·c mÅ©i",
+                        "next_node": {
+                            "question": "Triá»‡u chá»©ng chá»§ yáº¿u á»Ÿ Ä‘Ã¢u?",
+                            "options": [
+                                {
+                                    "label": "Äau há»ng, kháº£n tiáº¿ng, khÃ³ nuá»‘t",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ kÃ¨m sá»‘t hoáº·c ná»•i háº¡ch cá»• khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa Tai MÅ©i Há»ng",
+                                                "department_id": "K_TAIMUIHONG"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa Tai MÅ©i Há»ng",
+                                                "department_id": "K_TAIMUIHONG"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Ngháº¹t mÅ©i, cháº£y nÆ°á»›c mÅ©i, háº¯t hÆ¡i liÃªn tá»¥c",
+                                    "result": "Khoa Tai MÅ©i Há»ng",
+                                    "department_id": "K_TAIMUIHONG"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Triá»‡u chá»©ng HÃ´ háº¥p, Lá»“ng ngá»±c & Tim máº¡ch",
+            "next_node": {
+                "question": "Báº¡n cáº£m tháº¥y khÃ³ chá»‹u nhiá»u nháº¥t á»Ÿ ngá»±c hay hÃ´ háº¥p?",
+                "options": [
+                    {
+                        "label": "Ngá»±c",
+                        "next_node": {
+                            "question": "Äau ngá»±c cÃ³ Ä‘áº·c Ä‘iá»ƒm nhÆ° tháº¿ nÃ o?",
+                            "options": [
+                                {
+                                    "label": "Äau nhÃ³i ngá»±c trÃ¡i, lan ra vai/tay, há»“i há»™p",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ ra má»“ hÃ´i láº¡nh hoáº·c chÃ³ng máº·t khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa Tim máº¡ch",
+                                                "department_id": "K_TIMMACH"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa Tim máº¡ch",
+                                                "department_id": "K_TIMMACH"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Äau tá»©c ngá»±c khi gáº¯ng sá»©c hoáº·c khi nghá»‰ ngÆ¡i",
+                                    "result": "Khoa Tim máº¡ch",
+                                    "department_id": "K_TIMMACH"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "label": "HÃ´ háº¥p",
+                        "next_node": {
+                            "question": "Triá»‡u chá»©ng hÃ´ háº¥p cá»§a báº¡n lÃ  gÃ¬?",
+                            "options": [
+                                {
+                                    "label": "Ho kÃ©o dÃ i, khÃ² khÃ¨, khÃ³ thá»Ÿ",
+                                    "next_node": {
+                                        "question": "Báº¡n cÃ³ cáº£m tháº¥y náº·ng ngá»±c hoáº·c Ä‘á»m xanh vÃ ng khÃ´ng?",
+                                        "options": [
+                                            {
+                                                "label": "CÃ³",
+                                                "result": "Khoa HÃ´ háº¥p",
+                                                "department_id": "K_HOHAP"
+                                            },
+                                            {
+                                                "label": "KhÃ´ng",
+                                                "result": "Khoa HÃ´ háº¥p",
+                                                "department_id": "K_HOHAP"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "label": "Thá»Ÿ nhanh, há»¥t hÆ¡i khi gáº¯ng sá»©c",
+                                    "result": "Khoa HÃ´ háº¥p",
+                                    "department_id": "K_HOHAP"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Tráº» em dÆ°á»›i 15 tuá»•i cÃ³ triá»‡u chá»©ng bá»‡nh",
+            "result": "Khoa Nhi",
+            "department_id": "K_NHIKHOA"
+        },
+        {
+            "label": "Triá»‡u chá»©ng nhiá»…m trÃ¹ng hoáº·c sá»‘t cao dá»‹ch tá»…",
+            "result": "Khoa Truyá»n nhiá»…m",
+            "department_id": "K_TRUYENNHEM"
+        }
+    ]
+}
+; resetQuestionnaire(); }`);
+                symptomsData = await res.json();
+                resetQuestionnaire();
+            } catch(e) {
+                console.error("Lá»—i táº£i symptoms.json", e);
+                symptomsData = {
+                    id: "error",
+                    question: `Lá»—i táº£i dá»¯ liá»‡u: ${e.message}`,
+                    options: []
+                };
+                resetQuestionnaire();
+            }
+        }
+
+        function resetQuestionnaire() {
+            activeAnswers = {};
+            leafResults = [];
+            startTriageBtn.disabled = true;
+            renderQuestionnaire();
+        }
+
+        function renderQuestionnaire() {
+            if (!symptomsData) return;
+            symptomContainer.innerHTML = '';
+            leafResults = [];
+            
+            try {
+                // Render root
+                renderNode(symptomsData, 'root', true, symptomContainer);
+                
+                // Check if we have leaf results and all questions are answered
+                checkCompletion();
+            } catch (err) {
+                symptomContainer.innerHTML = `<div class="bg-red-900/50 text-red-300 p-4 rounded-xl font-mono text-xs overflow-auto">
+                    <strong>Lá»—i hiá»ƒn thá»‹:</strong> ${err.message}<br><br>${err.stack}
+                </div>`;
+            }
+        }
+
+        function renderNode(node, pathId, isRoot, container) {
+            const block = document.createElement('div');
+            block.className = 'bg-slate-900/50 border border-white/10 rounded-xl p-5 shadow-lg relative';
+            
+            const title = document.createElement('h4');
+            title.className = 'text-cyan-300 font-bold mb-4 text-sm flex items-center gap-2';
+            title.innerHTML = `<i class="fa-solid fa-circle-question text-cyan-500"></i> ${node.question}`;
+            block.appendChild(title);
+
+            const optionsGrid = document.createElement('div');
+            optionsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+            
+            const selections = activeAnswers[pathId] || [];
+
+            (node.options || []).forEach((opt, idx) => {
+                const isSelected = selections.includes(idx);
+                const optBtn = document.createElement('div');
+                optBtn.className = `flex flex-col p-4 rounded-xl cursor-pointer border transition-all ${isSelected ? 'bg-cyan-600/20 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'bg-slate-800/50 border-white/5 hover:border-cyan-500/50 hover:bg-slate-800'}`;
+                
+                optBtn.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-semibold ${isSelected ? 'text-cyan-300' : 'text-slate-300'}">${opt.label}</span>
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-cyan-400 bg-cyan-400 text-slate-900' : 'border-slate-500 text-transparent'}">
+                            <i class="fa-solid fa-check text-xs"></i>
+                        </div>
+                    </div>
+                `;
+                
+                optBtn.onclick = () => {
+                    if (isRoot) {
+                        // Multi-select for root
+                        if (isSelected) {
+                            activeAnswers[pathId] = selections.filter(i => i !== idx);
+                        } else {
+                            activeAnswers[pathId] = [...selections, idx];
+                        }
+                    } else {
+                        // Single-select for deeper nodes
+                        activeAnswers[pathId] = [idx];
+                    }
+                    // clear deeper answers for this pathId if changed
+                    clearDeeperAnswers(pathId);
+                    renderQuestionnaire();
+                };
+                
+                optionsGrid.appendChild(optBtn);
+            });
+            
+            block.appendChild(optionsGrid);
+            container.appendChild(block);
+
+            // Render children if selected
+            selections.forEach(idx => {
+                const selectedOpt = node.options[idx];
+                const childPathId = pathId + '-' + idx;
+                
+                const childContainer = document.createElement('div');
+                childContainer.className = 'mt-4 pl-4 md:pl-8 border-l-2 border-cyan-500/30 space-y-4';
+                
+                if (selectedOpt.next_node) {
+                    renderNode(selectedOpt.next_node, childPathId, false, childContainer);
+                    container.appendChild(childContainer);
+                } else if (selectedOpt.result && selectedOpt.department_id) {
+                    // Reached a leaf
+                    leafResults.push({
+                        deptId: selectedOpt.department_id,
+                        label: selectedOpt.result
+                    });
+                    const resultBlock = document.createElement('div');
+                    resultBlock.className = 'bg-emerald-900/30 border border-emerald-500/50 rounded-xl p-4 mt-4 flex items-center gap-3';
+                    resultBlock.innerHTML = `
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase text-emerald-500 font-bold">Gá»£i Ã½ cháº©n Ä‘oÃ¡n AI</p>
+                            <p class="text-sm text-emerald-300 font-bold">Báº¡n nÃªn Ä‘áº¿n: ${selectedOpt.result}</p>
+                        </div>
+                    `;
+                    container.appendChild(resultBlock);
+                }
+            });
+        }
+
+        function clearDeeperAnswers(prefix) {
+            Object.keys(activeAnswers).forEach(key => {
+                if (key.startsWith(prefix + '-')) {
+                    delete activeAnswers[key];
+                }
+            });
+        }
+
+        function checkCompletion() {
+            let hasSelection = activeAnswers['root'] && activeAnswers['root'].length > 0;
+            if (!hasSelection) {
+                startTriageBtn.disabled = true;
+                return;
+            }
+            
+            const isFullyAnswered = verifyNodeAnswered(symptomsData, 'root');
+            startTriageBtn.disabled = !isFullyAnswered;
+        }
+
+        function verifyNodeAnswered(node, pathId) {
+            const selections = activeAnswers[pathId] || [];
+            if (selections.length === 0) return false;
+            
+            for (let idx of selections) {
+                const opt = node.options[idx];
+                if (opt.next_node) {
+                    const childPathId = pathId + '-' + idx;
+                    if (!verifyNodeAnswered(opt.next_node, childPathId)) {
+                        return false;
+                    }
+                } else if (!opt.result) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        startTriageBtn.onclick = () => {
+            if (leafResults.length === 0) return;
+            startTriageBtn.disabled = true;
+            document.getElementById('triageStatus').textContent = `Äang tá»•ng há»£p lá»™ trÃ¬nh...`;
+            
+            // Collect unique departments
+            let targetDeptIds = [...new Set(leafResults.map(l => l.deptId))];
+            
+            medicalItinerary = [];
+            targetDeptIds.forEach(deptId => {
+                const config = DEPARTMENT_CONFIG[deptId];
+                if (config && config.rooms.length > 0) {
+                    let bestRoom = config.rooms[0];
+                    for (let i = 1; i < config.rooms.length; i++) {
+                        if (config.rooms[i].patients < bestRoom.patients) bestRoom = config.rooms[i];
+                    }
+                    medicalItinerary.push({
+                        deptLabel: config.label,
+                        roomName: bestRoom.name,
+                        x: bestRoom.gridX,
+                        y: bestRoom.gridY,
+                        patients: bestRoom.patients,
+                        severity: config.severity || 1
+                    });
+                }
+            });
+
+            medicalItinerary.sort((a, b) => {
+                if (b.severity !== a.severity) {
+                    return b.severity - a.severity;
+                }
+                return a.patients - b.patients;
+            });
+            renderItineraryPanelUI();
+            document.getElementById('triageStatus').textContent = "PhÃ¢n phá»‘i tuyáº¿n Ä‘a cháº·ng hoÃ n táº¥t!";
+        };
+
+        function renderItineraryPanelUI() {
+            itineraryStepsList.innerHTML = '';
+            
+            const itineraryPanelHeader = itineraryPanel.querySelector('.flex.justify-between.items-center.mb-3');
+            if (itineraryPanelHeader) {
+                if (medicalItinerary.length > 1) {
+                    itineraryPanelHeader.innerHTML = `
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-rectangle-list"></i> Äá» xuáº¥t AI
+                        </span>
+                        <span class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">TÃ¹y chá»‰nh thá»© tá»±</span>
+                    `;
+                } else {
+                    itineraryPanelHeader.innerHTML = `
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-rectangle-list"></i> HÃ nh trÃ¬nh khÃ¡m
+                        </span>
+                        <span class="text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30">Auto Sorted</span>
+                    `;
+                }
+            }
+
+            medicalItinerary.forEach((stop, index) => {
+                const stepRow = document.createElement('div');
+                stepRow.className = "flex items-start gap-3 p-2.5 bg-white/5 border border-white/5 rounded-xl text-xs relative";
+                
+                let reorderButtons = '';
+                if (medicalItinerary.length > 1) {
+                    reorderButtons = `
+                        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1">
+                            <button onclick="moveItineraryUp(${index})" class="text-slate-400 hover:text-cyan-400 disabled:opacity-30 disabled:hover:text-slate-400 transition-all" ${index === 0 ? 'disabled' : ''}>
+                                <i class="fa-solid fa-chevron-up text-[10px]"></i>
+                            </button>
+                            <button onclick="moveItineraryDown(${index})" class="text-slate-400 hover:text-cyan-400 disabled:opacity-30 disabled:hover:text-slate-400 transition-all" ${index === medicalItinerary.length - 1 ? 'disabled' : ''}>
+                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                let severityLabel = '';
+                if (stop.severity >= 4) {
+                    severityLabel = `<span class="text-[9px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 ml-2 shadow-[0_0_8px_rgba(239,68,68,0.3)]">Nguy cáº¥p</span>`;
+                } else if (stop.severity >= 3) {
+                    severityLabel = `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/30 ml-2 shadow-[0_0_8px_rgba(245,158,11,0.3)]">Trung bÃ¬nh</span>`;
+                } else {
+                    severityLabel = `<span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 ml-2 shadow-[0_0_8px_rgba(16,185,129,0.3)]">Nháº¹</span>`;
+                }
+
+                stepRow.innerHTML = `
+                    <div class="w-5 h-5 rounded-md bg-cyan-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 shadow-md shadow-cyan-600/40">
+                        ${index + 1}
+                    </div>
+                    <div class="flex-1 pr-6">
+                        <p class="font-bold text-white flex items-center">${stop.deptLabel} ${severityLabel}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${stop.roomName}</p>
+                        <div class="flex items-center gap-1 text-[10px] text-emerald-400 mt-1 font-medium">
+                            <i class="fa-solid fa-user-clock text-[9px]"></i> HÃ ng Ä‘á»£i: ${stop.patients} ngÆ°á»i
+                        </div>
+                    </div>
+                    ${reorderButtons}
+                `;
+                itineraryStepsList.appendChild(stepRow);
+            });
+            itineraryPanel.classList.remove('hidden');
+        }
+
+        function moveItineraryUp(index) {
+            if (index > 0) {
+                const temp = medicalItinerary[index];
+                medicalItinerary[index] = medicalItinerary[index - 1];
+                medicalItinerary[index - 1] = temp;
+                renderItineraryPanelUI();
+            }
+        }
+
+        function moveItineraryDown(index) {
+            if (index < medicalItinerary.length - 1) {
+                const temp = medicalItinerary[index];
+                medicalItinerary[index] = medicalItinerary[index + 1];
+                medicalItinerary[index + 1] = temp;
+                renderItineraryPanelUI();
+            }
+        }
+
+        /*******************************************************
+         * 3. KIáº¾N TRÃšC BLUEPRINT Máº¶T Báº°NG PHÃ‚N Bá»” 5 KHU Vá»°C
+         *******************************************************/
+        function buildRealisticHospitalBlueprint() {
+            // Khá»Ÿi táº¡o táº¥t cáº£ cÃ¡c Ã´ lÃ  tÆ°á»ng (1) trÆ°á»›c Ä‘á»ƒ thiáº¿t láº­p káº¿t cáº¥u chuáº©n
+            for (let z = 0; z <= 3; z++) {
+                multiFloorGrid[z] = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(1));
+            }
+
+            // --- Cáº¤U HÃŒNH Táº¦NG 0 (NGOÃ€I TRá»œI / Máº¶T Äáº¤T) ---
+            // Táº§ng 0 chá»‰ cÃ³ cÃ¡c trá»¥c hÃ nh lang Ä‘i bá»™ tá»± do káº¿t ná»‘i cÃ¡c sáº£nh tÃ²a nhÃ 
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    // Trá»¥c Ä‘Æ°á»ng ngang chÃ­nh liÃªn káº¿t
+                    if (r === 2 || r === 6 || r === 8 || r === 12) {
+                        multiFloorGrid[0][r][c] = 0;
+                    }
+                    // Trá»¥c Ä‘Æ°á»ng dá»c chÃ­nh liÃªn káº¿t
+                    if (c === 2 || c === 9 || c === 17) {
+                        multiFloorGrid[0][r][c] = 0;
+                    }
+                }
+            }
+            // Äáº£m báº£o cÃ¡c Ä‘iá»ƒm xuáº¥t phÃ¡t máº·c Ä‘á»‹nh luÃ´n walkable vÃ  Ä‘Æ°á»£c káº¿t ná»‘i
+            multiFloorGrid[0][1][1] = 0;   // Sáº£nh tiáº¿p Ä‘Ã³n K1
+            multiFloorGrid[0][2][1] = 0;   // Káº¿t ná»‘i sáº£nh
+            multiFloorGrid[0][1][13] = 0;  // Cá»•ng Giáº£i PhÃ³ng
+            multiFloorGrid[0][2][13] = 0;  // Káº¿t ná»‘i cá»•ng
+            multiFloorGrid[0][13][7] = 0;  // Quáº§y cáº¥p phÃ¡t thuá»‘c
+            multiFloorGrid[0][12][7] = 0;  // Káº¿t ná»‘i quáº§y thuá»‘c
+
+            // --- Cáº¤U HÃŒNH Táº¦NG 1 (HÃ€NH LANG LIÃŠN THÃ”NG TOÃ€N VIá»†N) ---
+            // Táº§ng 1 cho phÃ©p di chuyá»ƒn tá»± do giá»¯a cÃ¡c tÃ²a thÃ´ng qua hÃ nh lang trung tÃ¢m
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    // HÃ nh lang káº¿t ná»‘i liÃªn tÃ²a nhÃ 
+                    if (r === 7 || r === 8 || c === 5 || c === 14) {
+                        multiFloorGrid[1][r][c] = 0;
+                    }
+                    // HÃ nh lang ná»™i bá»™ cá»§a cÃ¡c khu vá»±c
+                    if (r === 2 || r === 12 || c === 2 || c === 9 || c === 17) {
+                        multiFloorGrid[1][r][c] = 0;
+                    }
+                }
+            }
+
+            // --- Cáº¤U HÃŒNH Táº¦NG 2 & Táº¦NG 3 (HÃ€NH LANG Bá»Š CÃ” Láº¬P GIá»®A CÃC TÃ’A) ---
+            // TrÃªn cÃ¡c táº§ng cao, hÃ nh lang liÃªn thÃ´ng chung bá»‹ bá»‹t kÃ­n (tÆ°á»ng 1),
+            // ngÆ°á»i bá»‡nh chá»‰ cÃ³ thá»ƒ Ä‘i láº¡i trong pháº¡m vi ná»™i bá»™ tÃ²a nhÃ  vÃ  dÃ¹ng thang mÃ¡y Ä‘i xuá»‘ng
+            for (let z of [2, 3]) {
+                for (let r = 0; r < GRID_ROWS; r++) {
+                    for (let c = 0; c < GRID_COLS; c++) {
+                        // TÃ²a P (Top-Left): c < 4, r <= 6 (Chá»‰ active á»Ÿ Táº§ng 3)
+                        if (z === 3 && c === 2 && r <= 6) multiFloorGrid[z][r][c] = 0;
+                        if (z === 3 && r === 2 && c <= 3) multiFloorGrid[z][r][c] = 0;
+
+                        // TÃ²a Q (Top-Middle): c >= 6 && c <= 12, r <= 3 (Active á»Ÿ Táº§ng 2 & 3)
+                        if (c === 9 && r <= 3) multiFloorGrid[z][r][c] = 0;
+                        if (r === 2 && c >= 6 && c <= 12) multiFloorGrid[z][r][c] = 0;
+
+                        // TÃ²a K2 (Top-Right): c > 15, r <= 6 (Active á»Ÿ Táº§ng 2 & 3)
+                        if (c === 17 && r <= 6) multiFloorGrid[z][r][c] = 0;
+                        if (r === 2 && c >= 16) multiFloorGrid[z][r][c] = 0;
+
+                        // TÃ²a K1 (Bottom-Right): c > 15, r >= 10 (Active á»Ÿ Táº§ng 2 & 3)
+                        if (c === 17 && r >= 10) multiFloorGrid[z][r][c] = 0;
+                        if (r === 12 && c >= 16) multiFloorGrid[z][r][c] = 0;
+                    }
+                }
+            }
+
+            // --- THIáº¾T Láº¬P VÃ™NG PHÃ’NG KHÃM (CHUYÃŠN KHOA) ---
+            // Táº§ng 1: TiÃªu hÃ³a (K2) vÃ  Tim máº¡ch (P)
+            for (let r = 1; r <= 5; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[1][r][c] = 3;
+                for (let c = 0; c < 2; c++) multiFloorGrid[1][r][c] = 3;
+            }
+            // Táº§ng 1: Cáº¥p cá»©u A9 (Bottom-Left)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 0; c < 2; c++) multiFloorGrid[1][r][c] = 3;
+            }
+
+            // Táº§ng 2: HÃ´ háº¥p (K1) vÃ  XÆ°Æ¡ng khá»›p (Q)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[2][r][c] = 3;
+            }
+            for (let r = 1; r <= 2; r++) {
+                for (let c = 7; c <= 11; c++) multiFloorGrid[2][r][c] = 3;
+            }
+
+            // Táº§ng 3: Tháº§n kinh (K2) vÃ  Phá»¥ sáº£n (P)
+            for (let r = 1; r <= 5; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[3][r][c] = 3;
+                for (let c = 0; c < 2; c++) multiFloorGrid[3][r][c] = 3;
+            }
+            // Táº§ng 3: Ná»™i Nhi (K1)
+            for (let r = 10; r <= 13; r++) {
+                for (let c = 18; c < GRID_COLS; c++) multiFloorGrid[3][r][c] = 3;
+            }
+
+            // --- THIáº¾T Láº¬P THANG MÃY CHO CÃC KHU TÃ’A ---
+            for (let z = 0; z <= 3; z++) {
+                // Thang mÃ¡y TÃ²a P (Active á»Ÿ Táº§ng 0, 1, 3)
+                if (z === 0 || z === 1 || z === 3) {
+                    multiFloorGrid[z][2][2] = 4;
+                }
+                // Thang mÃ¡y TÃ²a Q (Active á»Ÿ táº¥t cáº£ cÃ¡c táº§ng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][2][9] = 4;
+                }
+                // Thang mÃ¡y TÃ²a K2 (Active á»Ÿ táº¥t cáº£ cÃ¡c táº§ng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][2][17] = 4;
+                }
+                // Thang mÃ¡y TÃ²a K1 (Active á»Ÿ táº¥t cáº£ cÃ¡c táº§ng)
+                if (z === 0 || z === 1 || z === 2 || z === 3) {
+                    multiFloorGrid[z][12][17] = 4;
+                }
+                // Lá»‘i vÃ o trung chuyá»ƒn A9 (Active á»Ÿ Táº§ng 0 vÃ  1)
+                if (z === 0 || z === 1) {
+                    multiFloorGrid[z][12][2] = 4;
+                }
+            }
+        }
+
+        function renderHospitalArchitectureMap() {
+            gridMapEl.innerHTML = '';
+            gridMapEl.style.gridTemplateColumns = `repeat(${GRID_COLS}, 26px)`;
+
+            const currentGrid = multiFloorGrid[currentRenderFloor];
+
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell border-[0.5px] border-white/5';
+                    cell.id = `cell-${r}-${c}`;
+
+                    const type = currentGrid[r][c];
+
+                    if (type === 1) cell.classList.add('architectural-wall');
+                    if (type === 2) cell.classList.add('congested');
+                    if (type === 3) {
+                        cell.classList.add('room-zone');
+                        if ((r + c) % 5 === 0) cell.textContent = 'â˜…';
+                    }
+                    if (type === 4) {
+                        cell.classList.add('elevator');
+                        cell.innerHTML = '<i class="fa-solid fa-elevator text-[10px]"></i>';
+                    }
+                    if (type === 5) {
+                        cell.classList.add('stairs');
+                        cell.innerHTML = '<i class="fa-solid fa-stairs text-[10px]"></i>';
+                    }
+
+                    if (r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) {
+                        cell.className = 'cell start';
+                        cell.innerHTML = '<i class="fa-solid fa-street-view text-xs"></i>';
+                    }
+                    if (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) {
+                        cell.className = 'cell end';
+                        cell.innerHTML = '<i class="fa-solid fa-location-dot text-xs"></i>';
+                    }
+
+                    cell.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        if ((r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) ||
+                            (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) ||
+                            type === 1 || type === 4 || type === 5) return;
+
+                        isMouseDown = true;
+                        if (isShiftPressed) {
+                            dragMode = (type === 2) ? 'clear-congest' : 'set-congest';
+                        }
+                        updateCellWeight(r, c, dragMode);
+                    });
+                    cell.addEventListener('mouseenter', () => { if (isMouseDown && isShiftPressed) updateCellWeight(r, c, dragMode); });
+
+                    gridMapEl.appendChild(cell);
+                }
+            }
+        }
+
+        function updateCellWeight(r, c, mode) {
+            const type = multiFloorGrid[currentRenderFloor][r][c];
+            if ((r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) ||
+                (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) ||
+                type === 1 || type === 4 || type === 5) return;
+
+            const el = document.getElementById(`cell-${r}-${c}`);
+
+            if (mode === 'set-congest') {
+                multiFloorGrid[currentRenderFloor][r][c] = 2; el.className = 'cell congested';
+            } else if (mode === 'clear-congest') {
+                const isRoom = (currentRenderFloor === 1 && ((c > 15 && r >= 1 && r <= 6) || (c < 4 && r >= 1 && r <= 6))) ||
+                    (currentRenderFloor === 2 && ((c > 15 && r >= 10 && r <= 14) || (c >= 6 && c <= 12 && r >= 1 && r <= 3))) ||
+                    (currentRenderFloor === 3 && ((c > 15 && r >= 1 && r <= 6) || (c < 4 && r >= 1 && r <= 6) || (c > 15 && r >= 10 && r <= 14)));
+
+                multiFloorGrid[currentRenderFloor][r][c] = isRoom ? 3 : 0;
+                el.className = isRoom ? 'cell room-zone' : 'cell border-[0.5px] border-white/5';
+                if (isRoom && (r + c) % 5 === 0) el.textContent = 'â˜…';
+                else el.textContent = '';
+            }
+            executeAStarRoutingEngine();
+        }
+
+        let active3DPath = [];
+
+        function executeAStarRoutingEngine() {
+            if (!targetPos) return;
+            const startTime = performance.now();
+
+            // XÃ³a Ä‘Ã¡nh dáº¥u Ä‘Æ°á»ng Ä‘i cÅ© trÃªn UI
+            document.querySelectorAll('.cell').forEach(el => {
+                el.classList.remove('path');
+                const r = parseInt(el.id.split('-')[1]);
+                const c = parseInt(el.id.split('-')[2]);
+                const type = multiFloorGrid[currentRenderFloor][r][c];
+                if (type === 4) {
+                    el.innerHTML = '<i class="fa-solid fa-elevator text-[10px]"></i>';
+                } else if (type === 5) {
+                    el.innerHTML = '<i class="fa-solid fa-stairs text-[10px]"></i>';
+                } else if (r === startPos.r && c === startPos.c && currentRenderFloor === startPos.z) {
+                    el.innerHTML = '<i class="fa-solid fa-street-view text-xs"></i>';
+                } else if (targetPos && r === targetPos.r && c === targetPos.c && currentRenderFloor === targetPos.z) {
+                    el.innerHTML = '<i class="fa-solid fa-location-dot text-xs"></i>';
+                } else if (type === 3) {
+                    if ((r + c) % 5 === 0) el.textContent = 'â˜…';
+                    else el.textContent = '';
+                } else {
+                    el.textContent = '';
+                }
+            });
+
+            const C_FLOOR = 15.0;
+            const PENALTY_CONGESTED = 7.0;
+            const heuristicType = heuristicSelect.value;
+
+            // Thu tháº­p cÃ¡c tá»a Ä‘á»™ trung chuyá»ƒn dá»c (thang mÃ¡y/thang bá»™)
+            const verticalNodes = [];
+            for (let z = 0; z <= 3; z++) {
+                for (let r = 0; r < GRID_ROWS; r++) {
+                    for (let c = 0; c < GRID_COLS; c++) {
+                        const type = multiFloorGrid[z][r][c];
+                        if (type === 4 || type === 5) {
+                            if (!verticalNodes.some(n => n.r === r && n.c === c)) {
+                                verticalNodes.push({ r, c });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // HÃ m Heuristic 3D Elevator-Aware
+            const calculateHeuristic = (s) => {
+                if (s.z === targetPos.z) {
+                    return (heuristicType === 'manhattan') ?
+                        (Math.abs(s.r - targetPos.r) + Math.abs(s.c - targetPos.c)) :
+                        Math.sqrt(Math.pow(s.r - targetPos.r, 2) + Math.pow(s.c - targetPos.c, 2));
+                }
+
+                let minH = Infinity;
+                for (let i = 0; i < verticalNodes.length; i++) {
+                    const e = verticalNodes[i];
+                    let h2dToE = 0;
+                    let h2dFromE = 0;
+                    if (heuristicType === 'manhattan') {
+                        h2dToE = Math.abs(s.r - e.r) + Math.abs(s.c - e.c);
+                        h2dFromE = Math.abs(e.r - targetPos.r) + Math.abs(e.c - targetPos.c);
+                    } else {
+                        h2dToE = Math.sqrt(Math.pow(s.r - e.r, 2) + Math.pow(s.c - e.c, 2));
+                        h2dFromE = Math.sqrt(Math.pow(e.r - targetPos.r, 2) + Math.pow(e.c - targetPos.c, 2));
+                    }
+                    const hTotal = h2dToE + Math.abs(s.z - targetPos.z) * C_FLOOR + h2dFromE;
+                    if (hTotal < minH) {
+                        minH = hTotal;
+                    }
+                }
+                return minH;
+            };
+
+            const openHeap = new PriorityMinHeap();
+            const closedSet = new Set();
+            const openTracker = new Set();
+
+            const makeKey = (s) => `${s.r},${s.c},${s.z}`;
+
+            const cellMeta = {};
+            const startKey = makeKey(startPos);
+            cellMeta[startKey] = { f: 0, g: 0, h: calculateHeuristic(startPos), pR: -1, pC: -1, pZ: -1 };
+
+            openHeap.push({ r: startPos.r, c: startPos.c, z: startPos.z, f: cellMeta[startKey].h });
+            openTracker.add(startKey);
+
+            let targetFound = false;
+            let exploredNodesCount = 0;
+            const dRow = [-1, 1, 0, 0, -1, -1, 1, 1];
+            const dCol = [0, 0, -1, 1, -1, 1, -1, 1];
+            const moveCosts = [1.0, 1.0, 1.0, 1.0, 1.414, 1.414, 1.414, 1.414];
+
+            while (!openHeap.isEmpty()) {
+                const current = openHeap.pop();
+                const currKey = makeKey(current);
+
+                if (closedSet.has(currKey)) continue;
+                openTracker.delete(currKey);
+                closedSet.add(currKey);
+                exploredNodesCount++;
+
+                if (current.r === targetPos.r && current.c === targetPos.c && current.z === targetPos.z) {
+                    targetFound = true;
+                    break;
+                }
+
+                const currentCellType = multiFloorGrid[current.z][current.r][current.c];
+
+                // 1. TÃ¬m kiáº¿m trÃªn cÃ¹ng máº·t sÃ n (8 hÆ°á»›ng)
+                for (let i = 0; i < 8; i++) {
+                    const nR = current.r + dRow[i];
+                    const nC = current.c + dCol[i];
+                    const nZ = current.z;
+
+                    if (nR < 0 || nR >= GRID_ROWS || nC < 0 || nC >= GRID_COLS) continue;
+
+                    const nextCellType = multiFloorGrid[nZ][nR][nC];
+                    if (nextCellType === 1) continue; // Bá» qua tÆ°á»ng
+
+                    const nextKey = makeKey({ r: nR, c: nC, z: nZ });
+                    if (closedSet.has(nextKey)) continue;
+
+                    // TrÃ¡nh Ä‘i chÃ©o cáº¯t gÃ³c tÆ°á»ng
+                    if (i >= 4) {
+                        if (multiFloorGrid[nZ][current.r][nC] === 1 || multiFloorGrid[nZ][nR][current.c] === 1) continue;
+                    }
+
+                    let stepCost = moveCosts[i];
+                    if (nextCellType === 2) stepCost += PENALTY_CONGESTED; // Pháº¡t Ã¹n táº¯c
+
+                    const potentialG = cellMeta[currKey].g + stepCost;
+                    const hCost = calculateHeuristic({ r: nR, c: nC, z: nZ });
+                    const fCost = potentialG + hCost;
+
+                    if (!cellMeta[nextKey] || fCost < cellMeta[nextKey].f) {
+                        cellMeta[nextKey] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c, pZ: current.z };
+                        if (!openTracker.has(nextKey)) {
+                            openHeap.push({ r: nR, c: nC, z: nZ, f: fCost });
+                            openTracker.add(nextKey);
+                        }
+                    }
+                }
+
+                // 2. TÃ¬m kiáº¿m liÃªn káº¿t tháº³ng Ä‘á»©ng (Chuyá»ƒn táº§ng)
+                if (currentCellType === 4 || currentCellType === 5) {
+                    for (let nZ = 0; nZ <= 3; nZ++) {
+                        if (nZ === current.z) continue;
+
+                        const targetCellType = multiFloorGrid[nZ][current.r][current.c];
+                        if (targetCellType === 1) continue; // Bá» qua náº¿u táº§ng kia bá»‹ tÆ°á»ng bá»‹t kÃ­n
+
+                        const nextKey = makeKey({ r: current.r, c: current.c, z: nZ });
+                        if (closedSet.has(nextKey)) continue;
+
+                        const floorDiff = Math.abs(nZ - current.z);
+                        const verticalCost = floorDiff * C_FLOOR; // Chi phÃ­ di chuyá»ƒn tháº³ng Ä‘á»©ng váº­t lÃ½
+
+                        const potentialG = cellMeta[currKey].g + verticalCost;
+                        const hCost = calculateHeuristic({ r: current.r, c: current.c, z: nZ });
+                        const fCost = potentialG + hCost;
+
+                        if (!cellMeta[nextKey] || fCost < cellMeta[nextKey].f) {
+                            cellMeta[nextKey] = { f: fCost, g: potentialG, h: hCost, pR: current.r, pC: current.c, pZ: current.z };
+                            if (!openTracker.has(nextKey)) {
+                                openHeap.push({ r: current.r, c: current.c, z: nZ, f: fCost });
+                                openTracker.add(nextKey);
+                            }
+                        }
+                    }
+                }
+            }
+
+            const endTime = performance.now();
+            document.getElementById('metricTime').textContent = (endTime - startTime).toFixed(2);
+            document.getElementById('metricExplored').textContent = exploredNodesCount;
+
+            if (targetFound) {
+                active3DPath = [];
+                let trace = { r: targetPos.r, c: targetPos.c, z: targetPos.z };
+                const totalCost = cellMeta[makeKey(trace)].g;
+
+                while (trace.r !== -1) {
+                    active3DPath.push({ r: trace.r, c: trace.c, z: trace.z });
+                    const meta = cellMeta[makeKey(trace)];
+                    trace = { r: meta.pR, c: meta.pC, z: meta.pZ };
+                }
+                active3DPath.reverse();
+
+                document.getElementById('metricSteps').textContent = `${(active3DPath.length - 1) * 2} mÃ©t`;
+                document.getElementById('metricCost').textContent = totalCost.toFixed(1);
+
+                // TÃ´ mÃ u Ä‘Æ°á»ng Ä‘i trÃªn giao diá»‡n táº§ng Ä‘ang xem
+                active3DPath.forEach(pt => {
+                    if (pt.z === currentRenderFloor) {
+                        const isStart = (pt.r === startPos.r && pt.c === startPos.c && pt.z === startPos.z);
+                        const isEnd = (pt.r === targetPos.r && pt.c === targetPos.c && pt.z === targetPos.z);
+                        if (!isStart && !isEnd) {
+                            const cellEl = document.getElementById(`cell-${pt.r}-${pt.c}`);
+                            if (cellEl) {
+                                cellEl.classList.add('path');
+                            }
+                        }
+                    }
+                });
+
+                generateHumanReadableDirections(active3DPath);
+            } else {
+                active3DPath = [];
+                document.getElementById('metricSteps').textContent = 'N/A';
+                document.getElementById('metricCost').textContent = 'N/A';
+                stepDirectionsList.innerHTML = `<div class="text-rose-400 text-center font-semibold mt-4"><i class="fa-solid fa-triangle-exclamation"></i> KhÃ´ng cÃ³ lá»‘i Ä‘i, tuyáº¿n Ä‘Æ°á»ng bá»‹ cÃ´ láº­p!</div>`;
+            }
+        }
+
+        function generateHumanReadableDirections(path) {
+            stepDirectionsList.innerHTML = '';
+            let directions = [];
+
+            directions.push({
+                icon: 'fa-play-circle text-cyan-400',
+                text: `Khá»Ÿi hÃ nh táº¡i <strong class="text-white">${REAL_WORLD_MAP_LABELS[`${startPos.c},${startPos.r}`] || "Äiá»ƒm xuáº¥t phÃ¡t"}</strong> (Táº§ng ${startPos.z}).`
+            });
+
+            let currentSegmentLength = 0;
+            let lastDirection = null;
+
+            for (let i = 0; i < path.length - 1; i++) {
+                let curr = path[i];
+                let next = path[i + 1];
+
+                if (curr.z !== next.z) {
+                    if (currentSegmentLength > 0) {
+                        directions.push({
+                            icon: 'fa-arrow-turn-up text-cyan-300',
+                            text: `Tiáº¿n bÆ°á»›c thÃªm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                        });
+                        currentSegmentLength = 0;
+                        lastDirection = null;
+                    }
+                    const type = multiFloorGrid[curr.z][curr.r][curr.c];
+                    const transName = (type === 4) ? "Thang mÃ¡y" : "Thang bá»™";
+                    directions.push({
+                        icon: 'fa-elevator text-indigo-400 animate-pulse',
+                        text: `Äi vÃ o <strong class="text-white">${transName}</strong>, di chuyá»ƒn tá»« <strong class="text-cyan-300">Táº§ng ${curr.z}</strong> lÃªn/xuá»‘ng <strong class="text-cyan-300">Táº§ng ${next.z}</strong>.`
+                    });
+                    continue;
+                }
+
+                let dr = next.r - curr.r;
+                let dc = next.c - curr.c;
+                let currentDirection = "";
+
+                if (dr === -1 && dc === 0) currentDirection = "Äi tháº³ng theo hÃ nh lang hÆ°á»›ng Báº¯c";
+                else if (dr === 1 && dc === 0) currentDirection = "Äi tháº³ng theo hÃ nh lang hÆ°á»›ng Nam";
+                else if (dr === 0 && dc === -1) currentDirection = "Äi theo lá»‘i Ä‘i hÆ°á»›ng TÃ¢y";
+                else if (dr === 0 && dc === 1) currentDirection = "Äi theo lá»‘i Ä‘i hÆ°á»›ng ÄÃ´ng";
+                else currentDirection = "Di chuyá»ƒn chÃ©o xuyÃªn sáº£nh tÃ²a nhÃ ";
+
+                if (lastDirection === null) {
+                    lastDirection = currentDirection;
+                    currentSegmentLength = 2;
+                } else if (currentDirection === lastDirection) {
+                    currentSegmentLength += 2;
+                } else {
+                    directions.push({
+                        icon: 'fa-arrow-turn-up text-cyan-300',
+                        text: `Tiáº¿n bÆ°á»›c thÃªm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                    });
+                    lastDirection = currentDirection;
+                    currentSegmentLength = 2;
+                }
+            }
+
+            if (currentSegmentLength > 0 && lastDirection !== null) {
+                directions.push({
+                    icon: 'fa-arrow-trend-up text-cyan-300',
+                    text: `Tiáº¿n bÆ°á»›c thÃªm <span class="text-emerald-400 font-bold">${currentSegmentLength}m</span>: ${lastDirection}.`
+                });
+            }
+
+            const endStop = medicalItinerary[currentItineraryIndex];
+            directions.push({
+                icon: 'fa-flag-checkered text-rose-500 animate-pulse',
+                text: `Äáº¿n Ä‘Ã­ch: Di chuyá»ƒn tháº³ng vÃ o bÃªn trong <strong class="text-emerald-400">${endStop.roomName}</strong> (Táº§ng ${targetPos.z}).`
+            });
+
+            directions.forEach(dir => {
+                const item = document.createElement('div');
+                item.className = "flex gap-2.5 items-start bg-white/[0.02] p-2 rounded-lg border border-white/5";
+                item.innerHTML = `
+                    <div class="mt-0.5 text-xs text-center w-4 shrink-0"><i class="fa-solid ${dir.icon}"></i></div>
+                    <p class="text-slate-300 leading-tight">${dir.text}</p>
+                `;
+                stepDirectionsList.appendChild(item);
+            });
+        }
+
+        function changeRenderFloor(z) {
+            currentRenderFloor = z;
+
+            const floorLabels = {
+                0: "Táº§ng 0 (Sáº£nh tiáº¿p Ä‘Ã³n)",
+                1: "Táº§ng 1 (Khoa TiÃªu HÃ³a & Tim Máº¡ch)",
+                2: "Táº§ng 2 (Khoa HÃ´ Háº¥p & XÆ°Æ¡ng Khá»›p)",
+                3: "Táº§ng 3 (Khoa Tháº§n Kinh)"
+            };
+            document.getElementById('floorTitleLabel').textContent = floorLabels[z] || `Táº§ng ${z}`;
+
+            for (let i = 0; i <= 3; i++) {
+                const btn = document.getElementById(`btn-floor-${i}`);
+                if (btn) {
+                    if (i === z) {
+                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                    } else {
+                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                    }
+                }
+            }
+
+            renderHospitalArchitectureMap();
+
+            // Váº½ láº¡i path náº¿u cÃ³
+            if (active3DPath && active3DPath.length > 0) {
+                active3DPath.forEach(pt => {
+                    if (pt.z === currentRenderFloor) {
+                        const isStart = (pt.r === startPos.r && pt.c === startPos.c && pt.z === startPos.z);
+                        const isEnd = (pt.r === targetPos.r && pt.c === targetPos.c && pt.z === targetPos.z);
+                        if (!isStart && !isEnd) {
+                            const cellEl = document.getElementById(`cell-${pt.r}-${pt.c}`);
+                            if (cellEl) {
+                                cellEl.classList.add('path');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function setupNavigationSegment() {
+            if (medicalItinerary.length === 0) return;
+
+            const stop = medicalItinerary[currentItineraryIndex];
+
+            // Map ChuyÃªn khoa vá»›i táº§ng cá»¥ thá»ƒ
+            let targetZ = 0;
+            if (stop.deptLabel.includes("TiÃªu HÃ³a") || stop.deptLabel.includes("Tim Máº¡ch") || stop.deptLabel.includes("Ngoáº¡i")) {
+                targetZ = 1;
+            } else if (stop.deptLabel.includes("HÃ´ Háº¥p") || stop.deptLabel.includes("XÆ°Æ¡ng Khá»›p") || stop.deptLabel.includes("Máº¯t") || stop.deptLabel.includes("Tai MÅ©i")) {
+                targetZ = 2;
+            } else if (stop.deptLabel.includes("Tháº§n Kinh") || stop.deptLabel.includes("Nhi") || stop.deptLabel.includes("Truyá»n Nhiá»…m")) {
+                targetZ = 3;
+            }
+
+            targetPos = { r: stop.y, c: stop.x, z: targetZ };
+
+            document.getElementById('currentNavTargetLabel').textContent = `${stop.deptLabel} - ${stop.roomName}`;
+            document.getElementById('itineraryCounterBadge').textContent = `Cháº·ng ${currentItineraryIndex + 1} / ${medicalItinerary.length}`;
+            document.getElementById('currentStopBadge').textContent = currentItineraryIndex + 1;
+
+            if (currentItineraryIndex < medicalItinerary.length - 1) {
+                nextStopBtn.classList.remove('hidden');
+                nextStopBtn.className = "w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-emerald-900/20 mb-4 shrink-0";
+                nextStopBtn.querySelector('span').textContent = `HoÃ n táº¥t thá»§ tá»¥c - Chuyá»ƒn sang Cháº·ng ${currentItineraryIndex + 2}`;
+            } else {
+                nextStopBtn.classList.remove('hidden');
+                nextStopBtn.querySelector('span').textContent = `Káº¿t thÃºc ToÃ n bá»™ Lá»™ trÃ¬nh KhÃ¡m`;
+                nextStopBtn.className = "w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-extrabold text-white rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-cyan-900/20 mb-4 shrink-0";
+            }
+
+            changeRenderFloor(startPos.z);
+            executeAStarRoutingEngine();
+        }
+
+        function bindUserInteractions() {
+            document.getElementById('proceedToNavBtn').addEventListener('click', () => {
+                currentItineraryIndex = 0;
+                startPos = { r: 1, c: 1, z: 0 }; // Khá»Ÿi phÃ¡t táº¡i sáº£nh K1 táº§ng 0
+                const p1 = document.getElementById('phase1'); const p2 = document.getElementById('phase2');
+                p1.classList.add('-translate-x-full', 'opacity-0', 'pointer-events-none');
+                p2.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none'); p2.classList.add('translate-x-0');
+                setupNavigationSegment();
+            });
+
+            document.getElementById('backToPhase1Btn').addEventListener('click', () => {
+                const p1 = document.getElementById('phase1'); const p2 = document.getElementById('phase2');
+                p2.classList.remove('translate-x-0');
+                p2.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+                p1.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+            });
+
+            nextStopBtn.addEventListener('click', () => {
+                if (currentItineraryIndex < medicalItinerary.length - 1) {
+                    const prevStop = medicalItinerary[currentItineraryIndex];
+                    let prevZ = 0;
+                    if (prevStop.deptLabel.includes("TiÃªu HÃ³a") || prevStop.deptLabel.includes("Tim Máº¡ch") || prevStop.deptLabel.includes("Ngoáº¡i")) {
+                        prevZ = 1;
+                    } else if (prevStop.deptLabel.includes("HÃ´ Háº¥p") || prevStop.deptLabel.includes("XÆ°Æ¡ng Khá»›p") || prevStop.deptLabel.includes("Máº¯t") || prevStop.deptLabel.includes("Tai MÅ©i")) {
+                        prevZ = 2;
+                    } else if (prevStop.deptLabel.includes("Tháº§n Kinh") || prevStop.deptLabel.includes("Nhi") || prevStop.deptLabel.includes("Truyá»n Nhiá»…m")) {
+                        prevZ = 3;
+                    }
+                    startPos = { r: prevStop.y, c: prevStop.x, z: prevZ };
+                    currentItineraryIndex++;
+                    setupNavigationSegment();
+                } else {
+                    alert("Báº¡n Ä‘Ã£ hoÃ n thÃ nh viá»‡c mÃ´ phá»ng toÃ n bá»™ lá»™ trÃ¬nh khÃ¡m bá»‡nh thÃ´ng minh.");
+                    location.reload();
+                }
+            });
+
+            const bBFS = document.getElementById('btnBFS'); const bDFS = document.getElementById('btnDFS');
+            if(bBFS) {
+                bBFS.addEventListener('click', () => {
+                    currentAlgoMode = 'BFS';
+                    bBFS.className = "py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                    bDFS.className = "py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                    itineraryPanel.classList.add('hidden');
+                });
+            }
+            if(bDFS) {
+                bDFS.addEventListener('click', () => {
+                    currentAlgoMode = 'DFS';
+                    bDFS.className = "py-2 text-xs font-bold rounded-lg bg-cyan-600 text-white shadow-md shadow-cyan-600/20 transition-all";
+                    bBFS.className = "py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                    itineraryPanel.classList.add('hidden');
+                });
+            }
+
+            window.addEventListener('keydown', (e) => { if (e.key === 'Shift') isShiftPressed = true; });
+            window.addEventListener('keyup', (e) => { if (e.key === 'Shift') isShiftPressed = false; });
+            window.addEventListener('mouseup', () => { isMouseDown = false; dragMode = null; });
+
+            document.getElementById('startSelect').addEventListener('change', (e) => {
+                const [c, r] = e.target.value.split(',').map(Number);
+                startPos = { r, c, z: 0 };
+                changeRenderFloor(0);
+                executeAStarRoutingEngine();
+            });
+            heuristicSelect.addEventListener('change', executeAStarRoutingEngine);
+        }
+
+        initApp();
+    </script>
+</body>
+
+</html>
