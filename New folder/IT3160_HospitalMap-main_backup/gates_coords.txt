@@ -1,0 +1,4 @@
+floor_1 [0,4]: Cổng 1
+floor_1 [16,0]: Cổng 3
+floor_1 [16,9]: Cổng 4
+floor_1 [22,4]: Cổng 2

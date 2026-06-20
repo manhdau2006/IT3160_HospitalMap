@@ -1,0 +1,10 @@
+K_TRUYENNHEM - Khoa truyền nhiễm: x=2, y=7, z=0
+K_MAT - Khoa mắt: x=2, y=13, z=0
+K_TAIMUIHONG - Khoa Tai Mũi Họng: x=2, y=18, z=0
+K_HOHAP - Khoa Hô hấp: x=2, y=2, z=1
+K_NHIKHOA - Khoa Nhi: x=6, y=2, z=1
+K_NGOAITONGHOP - Khoa ngoại tổng hợp: x=2, y=13, z=1
+K_TIMMACH - Khoa Tim mạch: x=3, y=13, z=1
+K_TIEUHOA - Khoa Tiêu hóa: x=2, y=18, z=1
+K_TIEUHOA_N - Phòng nội soi: x=3, y=18, z=1
+K_THANKINH - Khoa thần kinh: x=5, y=18, z=1
