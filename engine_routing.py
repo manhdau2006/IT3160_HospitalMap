@@ -19,6 +19,7 @@ class RoutingEngine:
         """
         start_time = time.time()
         dfs_counter = itertools.count()
+        bfs_counter = itertools.count()
 
         start_tuple = tuple(start)
         goal_tuple = tuple(goal)
@@ -76,6 +77,8 @@ class RoutingEngine:
             start_f = 0.0
         elif algorithm == "dfs":
             start_f = -next(dfs_counter)
+        elif algorithm == "bfs":
+            start_f = next(bfs_counter)
         else:
             start_f = calculate_heuristic(start_tuple)
             
@@ -150,6 +153,11 @@ class RoutingEngine:
                             came_from[neighbor] = current
                             g_score[neighbor] = tentative_g
                             heapq.heappush(open_set, (-next(dfs_counter), neighbor))
+                    elif algorithm == "bfs":
+                        if neighbor not in g_score:
+                            came_from[neighbor] = current
+                            g_score[neighbor] = tentative_g
+                            heapq.heappush(open_set, (next(bfs_counter), neighbor))
                     else:
                         if neighbor not in g_score or tentative_g < g_score[neighbor]:
                             came_from[neighbor] = current
@@ -189,6 +197,11 @@ class RoutingEngine:
                                 came_from[target_node] = current
                                 g_score[target_node] = tentative_g
                                 heapq.heappush(open_set, (-next(dfs_counter), target_node))
+                        elif algorithm == "bfs":
+                            if target_node not in g_score:
+                                came_from[target_node] = current
+                                g_score[target_node] = tentative_g
+                                heapq.heappush(open_set, (next(bfs_counter), target_node))
                         else:
                             if target_node not in g_score or tentative_g < g_score[target_node]:
                                 came_from[target_node] = current
