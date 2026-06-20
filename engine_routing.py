@@ -216,6 +216,7 @@ class RoutingEngine:
                 "status": "success",
                 "path": path,
                 "cost": g_score[goal_tuple],
+                "nodes_expanded": len(closed_set),
                 "latency_ms": round(exec_time, 2)
             }
         else:
@@ -223,6 +224,7 @@ class RoutingEngine:
                 "status": "blocked",
                 "path": [],
                 "cost": -1,
+                "nodes_expanded": len(closed_set),
                 "latency_ms": round(exec_time, 2),
                 "message": "Path is fully blocked. Open List is empty."
             }

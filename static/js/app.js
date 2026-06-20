@@ -324,7 +324,7 @@ async function handleRoutingRequest(btnElement) {
         
         document.getElementById("route-stats").classList.remove("hidden");
         document.getElementById("stat-cost").innerText = data.cost;
-        document.getElementById("stat-latency").innerText = `${data.latency_ms} ms`;
+        document.getElementById("stat-nodes-expanded").innerText = data.nodes_expanded;
         
         showToast("Đã tìm thấy lộ trình!", "success");
         // Start Animation
