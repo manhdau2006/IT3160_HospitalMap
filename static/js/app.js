@@ -48,6 +48,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // button btn-route removed, routing is triggered per result item
+    
+    document.getElementById("btn-custom-route").addEventListener("click", () => {
+        const destSelect = document.getElementById("input-custom-dest");
+        const val = destSelect.value;
+        if (!val) {
+            showToast("Vui lòng chọn điểm đến", "error");
+            return;
+        }
+        
+        const parts = val.split(',').map(s => parseInt(s.trim()));
+        targetCoordinates = { r: parts[0], c: parts[1], z: parts[2] };
+        targetDepartmentId = null;
+        
+        const btn = document.getElementById("btn-custom-route");
+        handleRoutingRequest(btn);
+    });
 });
 
 let rawMapData = null;
@@ -75,11 +91,81 @@ async function fetchMapData() {
                 }
                 hospitalGrid.push(row);
             }
+            populateLocationsDropdown();
         } else {
             console.error("Failed to load map data");
         }
     } catch (e) {
         console.error("Error fetching map:", e);
+    }
+}
+
+function populateLocationsDropdown() {
+    if (!rawMapData) return;
+    
+    const selectStart = document.getElementById("input-start");
+    const selectDest = document.getElementById("input-custom-dest");
+    
+    let locations = [];
+    let seenNames = new Set();
+
+    const floors = [
+        { key: 'floor_1', name: 'Tầng 1', z: 0 },
+        { key: 'floor_2', name: 'Tầng 2', z: 1 }
+    ];
+
+    for (let floor of floors) {
+        if (!rawMapData[floor.key]) continue;
+        for (let r = 0; r < GRID_ROWS; r++) {
+            for (let c = 0; c < GRID_COLS; c++) {
+                const cell = rawMapData[floor.key][r][c];
+                if (cell && cell.text && cell.text.trim() !== "") {
+                    const locName = cell.text.trim();
+                    const dedupeKey = `${locName}_${floor.z}`;
+                    if (!seenNames.has(dedupeKey)) {
+                        seenNames.add(dedupeKey);
+                        locations.push({
+                            name: locName,
+                            r: r,
+                            c: c,
+                            z: floor.z,
+                            floorName: floor.name
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    // Sort locations: Gates first, then alphabetical
+    locations.sort((a, b) => {
+        const isGateA = a.name.toLowerCase().includes('cổng');
+        const isGateB = b.name.toLowerCase().includes('cổng');
+        if (isGateA && !isGateB) return -1;
+        if (!isGateA && isGateB) return 1;
+        return a.name.localeCompare(b.name);
+    });
+
+    if (selectStart) {
+        selectStart.innerHTML = "";
+        for (let loc of locations) {
+            const option = document.createElement("option");
+            option.value = `${loc.r},${loc.c},${loc.z}`;
+            option.textContent = `${loc.name} (${loc.floorName})`;
+            selectStart.appendChild(option);
+        }
+    }
+
+    if (selectDest) {
+        selectDest.innerHTML = '<option value="">-- Chọn điểm đến --</option>';
+        // Sort destinations alphabetically (no gate priority needed)
+        const destLocations = [...locations].sort((a, b) => a.name.localeCompare(b.name));
+        for (let loc of destLocations) {
+            const option = document.createElement("option");
+            option.value = `${loc.r},${loc.c},${loc.z}`;
+            option.textContent = `${loc.name} (${loc.floorName})`;
+            selectDest.appendChild(option);
+        }
     }
 }
 

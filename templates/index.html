@@ -76,12 +76,22 @@
                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Vị trí hiện tại</h3>
                     <div class="space-y-4">
                         <div>
-                            <select id="input-start" class="w-full bg-white/80 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="0,4,0">Cổng 1 (Phía Bắc)</option>
-                                <option value="22,4,0">Cổng 2 (Phía Nam)</option>
-                                <option value="16,0,0">Cổng 3 (Phía Tây)</option>
-                                <option value="16,9,0">Cổng 4 (Phía Đông)</option>
+                            <select id="input-start" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                                <option value="">Đang tải địa điểm...</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-6 mb-4">Điểm đến (Tùy chọn)</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-2">
+                            <select id="input-custom-dest" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                                <option value="">-- Chọn điểm đến --</option>
+                            </select>
+                            <button id="btn-custom-route" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors shadow-sm whitespace-nowrap flex items-center justify-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                                Đi
+                            </button>
                         </div>
                     </div>
 
