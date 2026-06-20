@@ -21,15 +21,15 @@ class TriageEngine:
         # Fallback to integration.py mapping if location_mapping.json doesn't contain explicit coords
         # Custom Map mapping:
         mapping = {
-            "K_TIEUHOA":      {"r": 6, "c": 8, "z": 1, "building": "Khu Tây"},
-            "K_NGOAITONGHOP": {"r": 13, "c": 3, "z": 1, "building": "Khu Bắc"},
-            "K_NHIKHOA":      {"r": 13, "c": 15, "z": 0, "building": "Khu Nam"},
-            "K_THANKINH":     {"r": 15, "c": 9, "z": 1, "building": "Khu Đông"},
-            "K_MAT":          {"r": 6, "c": 8, "z": 0, "building": "Khu Tây"},
-            "K_TAIMUIHONG":   {"r": 13, "c": 3, "z": 0, "building": "Khu Bắc"},
-            "K_TIMMACH":      {"r": 13, "c": 15, "z": 1, "building": "Khu Nam"},
-            "K_HOHAP":        {"r": 15, "c": 9, "z": 0, "building": "Khu Đông"},
-            "K_TRUYENNHEM":   {"r": 6, "c": 8, "z": 1, "building": "Khu Tây (Trệt)"}
+            "K_TIEUHOA":      {"r": 18, "c": 2, "z": 1, "building": "Tòa nhà Chính"},
+            "K_NGOAITONGHOP": {"r": 13, "c": 2, "z": 1, "building": "Tòa nhà Chính"},
+            "K_NHIKHOA":      {"r": 2,  "c": 6, "z": 1, "building": "Tòa nhà Chính"},
+            "K_THANKINH":     {"r": 18, "c": 5, "z": 1, "building": "Tòa nhà Chính"},
+            "K_MAT":          {"r": 13, "c": 2, "z": 0, "building": "Tòa nhà Chính"},
+            "K_TAIMUIHONG":   {"r": 18, "c": 2, "z": 0, "building": "Tòa nhà Chính"},
+            "K_TIMMACH":      {"r": 13, "c": 3, "z": 1, "building": "Tòa nhà Chính"},
+            "K_HOHAP":        {"r": 2,  "c": 2, "z": 1, "building": "Tòa nhà Chính"},
+            "K_TRUYENNHEM":   {"r": 7,  "c": 2, "z": 0, "building": "Khu Cách Ly"}
         }
         return mapping
 
