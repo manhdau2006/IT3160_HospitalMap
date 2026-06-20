@@ -52,7 +52,15 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
         "text": ""
       },
       {
@@ -60,27 +68,19 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
-        "text": ""
-      },
-      {
-        "type": "path",
-        "text": ""
-      },
-      {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -94,7 +94,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -122,7 +122,7 @@
         "text": "Khoa cấp cứu"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -136,7 +136,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -164,7 +164,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -178,7 +178,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -206,7 +206,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -220,7 +220,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -248,7 +248,7 @@
         "text": "Thang máy"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -262,12 +262,12 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "stairs",
-        "text": "Thang bộ"
+        "type": "wall",
+        "text": ""
       },
       {
         "type": "elevator",
@@ -290,7 +290,7 @@
         "text": "Thang máy"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -304,7 +304,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -332,7 +332,7 @@
         "text": "Phòng nghỉ"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -346,7 +346,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -374,7 +374,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -388,7 +388,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -416,7 +416,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -430,7 +430,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -454,11 +454,11 @@
         "text": ""
       },
       {
-        "type": "stairs",
-        "text": "Thang bộ"
+        "type": "wall",
+        "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -472,7 +472,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -500,7 +500,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -514,7 +514,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -542,7 +542,7 @@
         "text": "Nhà vệ sinh"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -556,7 +556,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -584,7 +584,7 @@
         "text": "Phòng chụp X-Quang"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -598,7 +598,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -626,7 +626,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -640,7 +640,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -668,7 +668,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -724,7 +724,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -752,7 +752,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -766,7 +766,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -794,7 +794,7 @@
         "text": "Quầy tiếp đón"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -808,7 +808,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -836,7 +836,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -850,7 +850,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -878,7 +878,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -892,7 +892,15 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
+        "text": ""
+      },
+      {
+        "type": "wall",
         "text": ""
       },
       {
@@ -900,27 +908,19 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
-        "text": ""
-      },
-      {
-        "type": "path",
-        "text": ""
-      },
-      {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1020,35 +1020,35 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1062,7 +1062,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1082,15 +1082,15 @@
         "text": ""
       },
       {
+        "type": "path",
+        "text": ""
+      },
+      {
         "type": "room-normal",
         "text": "Khoa Nhi"
       },
       {
-        "type": "path",
-        "text": ""
-      },
-      {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1104,7 +1104,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1132,7 +1132,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1146,7 +1146,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1174,7 +1174,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1188,7 +1188,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1216,7 +1216,7 @@
         "text": "Thang máy"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1230,12 +1230,12 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "stairs",
-        "text": "Thang bộ"
+        "type": "wall",
+        "text": ""
       },
       {
         "type": "elevator",
@@ -1258,7 +1258,7 @@
         "text": "Thang máy"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1272,7 +1272,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1300,7 +1300,7 @@
         "text": "Phòng siêu âm"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1314,7 +1314,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1342,7 +1342,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1356,7 +1356,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1384,7 +1384,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1398,7 +1398,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1422,11 +1422,11 @@
         "text": ""
       },
       {
-        "type": "stairs",
-        "text": "Thang bộ"
+        "type": "wall",
+        "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1440,7 +1440,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1468,7 +1468,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1482,7 +1482,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1510,7 +1510,7 @@
         "text": "Nhà vệ sinh"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1524,7 +1524,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1552,7 +1552,7 @@
         "text": "Phòng dụng cụ"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1566,7 +1566,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1594,7 +1594,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1608,7 +1608,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1636,7 +1636,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1650,7 +1650,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1678,7 +1678,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1692,7 +1692,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1720,7 +1720,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1734,7 +1734,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1762,7 +1762,7 @@
         "text": "Nhà vệ sinh"
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1776,7 +1776,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1804,7 +1804,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1818,7 +1818,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1846,7 +1846,7 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
@@ -1860,35 +1860,35 @@
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {
-        "type": "path",
+        "type": "wall",
         "text": ""
       },
       {

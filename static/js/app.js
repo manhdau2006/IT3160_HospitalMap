@@ -260,17 +260,17 @@ function handleTriageResponse(data) {
             const buildingName = res.building || "Chưa rõ";
             
             const card = document.createElement("div");
-            card.className = "bg-white p-4 rounded-xl border border-indigo-100 shadow-sm flex flex-col gap-2";
+            card.className = "bg-white p-3 rounded-xl border border-indigo-100 shadow-sm flex flex-col gap-1.5";
             card.innerHTML = `
                 <div class="flex justify-between items-start">
                     <div>
-                        <div class="font-bold text-indigo-700 text-lg">${res.result}</div>
-                        <div class="text-xs text-gray-500 bg-gray-100 inline-block px-2 py-1 rounded">Mức độ ưu tiên: ${res.severity}/10</div>
+                        <div class="font-bold text-indigo-700 text-base leading-tight">${res.result}</div>
+                        <div class="text-[10px] text-gray-500 bg-gray-100 inline-block px-1.5 py-0.5 rounded mt-1">Ưu tiên: ${res.severity}/10</div>
                     </div>
                 </div>
-                <div class="text-sm text-gray-600 font-mono">Vị trí: ${floorName} - ${buildingName}</div>
-                <button class="btn-route-item mt-2 w-full bg-indigo-100 hover:bg-indigo-600 hover:text-white text-indigo-700 font-semibold py-2 px-4 rounded-lg text-sm transition-all flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                <div class="text-xs text-gray-600 font-mono mt-1">Vị trí: ${floorName} - ${buildingName}</div>
+                <button class="btn-route-item mt-1.5 w-full bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 font-bold py-1.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
                     Dẫn đường
                 </button>
             `;

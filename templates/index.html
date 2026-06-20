@@ -63,63 +63,58 @@
         <section id="phase-routing" class="w-full glass-panel rounded-3xl p-6 shadow-2xl transition-all duration-500 ease-in-out hidden flex flex-col md:flex-row gap-4 fade-in-up" style="height: 92vh;">
             
             <!-- Sidebar Info -->
-            <div class="w-full md:w-1/5 flex flex-col gap-4" style="min-width:220px; max-width:260px;">
-                <div class="bg-white/60 p-4 rounded-2xl shadow-sm border border-white/40 flex-1 flex flex-col min-h-0">
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Kết quả chẩn đoán</h3>
-                    <div id="results-list" class="space-y-3 overflow-y-auto pr-1 flex-1">
+            <div class="w-full md:w-1/5 flex flex-col gap-4 bg-white/60 p-4 rounded-2xl shadow-sm border border-white/40 overflow-y-auto h-full" style="min-width:240px; max-width:280px;">
+                <div class="flex flex-col gap-1 shrink-0">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kết quả chẩn đoán</h3>
+                    <div id="results-list" class="space-y-3">
                         <!-- Results injected by JS -->
                         <div class="text-gray-500 text-sm">Đang tải...</div>
                     </div>
                 </div>
 
-                <div class="bg-white/60 p-4 rounded-2xl shadow-sm border border-white/40">
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Vị trí hiện tại</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <select id="input-start" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
-                                <option value="">Đang tải địa điểm...</option>
-                            </select>
-                        </div>
+                <div class="border-t border-gray-200/50 pt-4 flex flex-col gap-4 shrink-0">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Vị trí hiện tại</h3>
+                        <select id="input-start" class="w-full text-xs pl-3 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                            <option value="">Đang tải địa điểm...</option>
+                        </select>
                     </div>
 
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-6 mb-4">Điểm đến (Tùy chọn)</h3>
-                    <div class="space-y-4">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Điểm đến (Tùy chọn)</h3>
                         <div class="flex gap-2">
-                            <select id="input-custom-dest" class="w-full text-sm pl-4 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
+                            <select id="input-custom-dest" class="w-full text-xs pl-3 pr-8 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700 shadow-sm appearance-none cursor-pointer">
                                 <option value="">-- Chọn điểm đến --</option>
                             </select>
-                            <button id="btn-custom-route" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors shadow-sm whitespace-nowrap flex items-center justify-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                            <button id="btn-custom-route" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2.5 rounded-xl text-xs font-medium transition-colors shadow-sm whitespace-nowrap flex items-center justify-center gap-1">
                                 Đi
                             </button>
                         </div>
                     </div>
 
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mt-5 mb-4">Thuật toán dẫn đường</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <select id="input-algorithm" class="w-full bg-white/80 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="astar">A* (Đề xuất)</option>
-                                <option value="dijkstra">Dijkstra</option>
-                                <option value="bfs">BFS (Chiều rộng)</option>
-                                <option value="dfs">DFS (Chiều sâu)</option>
-                            </select>
-                        </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Thuật toán dẫn đường</h3>
+                        <select id="input-algorithm" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer">
+                            <option value="astar">A* (Đề xuất)</option>
+                            <option value="dijkstra">Dijkstra</option>
+                            <option value="bfs">BFS (Chiều rộng)</option>
+                            <option value="dfs">DFS (Chiều sâu)</option>
+                        </select>
                     </div>
 
-                    <div id="route-stats" class="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 hidden">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">Độ dài quãng đường:</span>
-                            <span id="stat-cost" class="font-bold text-indigo-700">0</span>
+                    <div id="route-stats" class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 hidden">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <span class="text-xs text-gray-600">Độ dài quãng đường:</span>
+                            <span id="stat-cost" class="text-xs font-bold text-indigo-700">0</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Số ô đã duyệt:</span>
-                            <span id="stat-nodes-expanded" class="font-bold text-indigo-700">0</span>
+                            <span class="text-xs text-gray-600">Số ô đã duyệt:</span>
+                            <span id="stat-nodes-expanded" class="text-xs font-bold text-indigo-700">0</span>
                         </div>
                     </div>
                 </div>
                 
-                <button id="btn-back" class="text-sm text-gray-500 hover:text-gray-800 font-medium text-left transition-colors flex items-center gap-2">
+                <button id="btn-back" class="mt-auto text-xs text-gray-500 hover:text-gray-800 font-medium text-left transition-colors flex items-center gap-2 pt-2 border-t border-gray-200/50 shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Quay lại chẩn đoán
                 </button>
